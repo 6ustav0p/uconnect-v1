@@ -1,512 +1,410 @@
 [
-    {
-        "prog_id": "101",
-        "prog_nombre": "DOCTORADO EN CIENCIAS AGRARIAS - DIURNA",
-        "facultad_id": "7",
-        "facultad_nombre": "FACULTAD DE CIENCIAS AGRICOLAS"
-    },
-    {
-        "prog_id": "6",
-        "prog_nombre": "INGENIER\u00cdA AGRON\u00d3MICA - DIURNA",
-        "facultad_id": "7",
-        "facultad_nombre": "FACULTAD DE CIENCIAS AGRICOLAS"
-    },
-    {
-        "prog_id": "50",
-        "prog_nombre": "MAESTR\u00cdA EN CIENCIAS AGRON\u00d3MICAS - DIURNA",
-        "facultad_id": "7",
-        "facultad_nombre": "FACULTAD DE CIENCIAS AGRICOLAS"
-    },
-    {
-        "prog_id": "10",
-        "prog_nombre": "BIOLOG\u00cdA - DIURNA",
-        "facultad_id": "12",
-        "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
-    },
-    {
-        "prog_id": "181",
-        "prog_nombre": "DOCTORADO EN CIENCIAS FISICAS - DIURNA",
-        "facultad_id": "12",
-        "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
-    },
-    {
-        "prog_id": "13",
-        "prog_nombre": "ESTAD\u00cdSTICA - DIURNA",
-        "facultad_id": "12",
-        "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
-    },
-    {
-        "prog_id": "18",
-        "prog_nombre": "F\u00cdSICA - DIURNA",
-        "facultad_id": "12",
-        "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
-    },
-    {
-        "prog_id": "9",
-        "prog_nombre": "GEOGRAF\u00cdA - DIURNA",
-        "facultad_id": "12",
-        "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
-    },
-    {
-        "prog_id": "95",
-        "prog_nombre": "MAESTR\u00cdA EN BIOTECNOLOG\u00cdA - VIERNES- SABADO",
-        "facultad_id": "12",
-        "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
-    },
-    {
-        "prog_id": "62",
-        "prog_nombre": "MAESTR\u00cdA EN CIENCIAS AMBIENTALES - VIERNES- SABADO",
-        "facultad_id": "12",
-        "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
-    },
-    {
-        "prog_id": "116",
-        "prog_nombre": "MAESTR\u00cdA EN CIENCIAS F\u00cdSICAS - DIURNA",
-        "facultad_id": "12",
-        "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
-    },
-    {
-        "prog_id": "102",
-        "prog_nombre": "MAESTR\u00cdA EN CIENCIAS QU\u00cdMICAS - VIERNES- SABADO",
-        "facultad_id": "12",
-        "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
-    },
-    {
-        "prog_id": "94",
-        "prog_nombre": "MAESTR\u00cdA EN GEOGRAFIA - VIERNES- SABADO",
-        "facultad_id": "12",
-        "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
-    },
-    {
-        "prog_id": "65",
-        "prog_nombre": "MAESTR\u00cdA EN MATEMATICAS - DIURNA",
-        "facultad_id": "12",
-        "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
-    },
-    {
-        "prog_id": "12",
-        "prog_nombre": "MATEM\u00c1TICAS - DIURNA",
-        "facultad_id": "12",
-        "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
-    },
-    {
-        "prog_id": "11",
-        "prog_nombre": "QU\u00cdMICA - DIURNA",
-        "facultad_id": "12",
-        "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
-    },
-    {
-        "prog_id": "225",
-        "prog_nombre": "ADMINISTRACION EN SALUD - Nocturna",
-        "facultad_id": "37",
-        "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
-    },
-    {
-        "prog_id": "229",
-        "prog_nombre": "ADMINISTRACION EN SALUD - SABATINA",
-        "facultad_id": "37",
-        "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
-    },
-    {
-        "prog_id": "227",
-        "prog_nombre": "ADMINISTRACION EN SALUD - Tarde",
-        "facultad_id": "37",
-        "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
-    },
-    {
-        "prog_id": "42",
-        "prog_nombre": "ADMINISTRACION EN SALUD - TN - TARDE-NOCHE",
-        "facultad_id": "37",
-        "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
-    },
-    {
-        "prog_id": "44",
-        "prog_nombre": "BACTERIOLOG\u00cdA - DIURNA",
-        "facultad_id": "37",
-        "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
-    },
-    {
-        "prog_id": "27",
-        "prog_nombre": "ENFERMER\u00cdA - DIURNA",
-        "facultad_id": "37",
-        "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
-    },
-    {
-        "prog_id": "47",
-        "prog_nombre": "ESPECIALIZACI\u00d3N  EN AUDITORIA DE LA CALIDAD EN SALUD - VIERNES- SABADO",
-        "facultad_id": "37",
-        "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
-    },
-    {
-        "prog_id": "46",
-        "prog_nombre": "ESPECIALIZACI\u00d3N EN GERENCIA ADMINISTRACI\u00d3N EN SALUD - VIERNES- SABADO",
-        "facultad_id": "37",
-        "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
-    },
-    {
-        "prog_id": "51",
-        "prog_nombre": "MAESTR\u00cdA EN SALUD PUBLICA - VIERNES- SABADO",
-        "facultad_id": "37",
-        "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
-    },
-    {
-        "prog_id": "45",
-        "prog_nombre": "TECNOLOG\u00cdA EN REGENCIA DE FARMACIA - Nocturna",
-        "facultad_id": "37",
-        "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
-    },
-    {
-        "prog_id": "222",
-        "prog_nombre": "ADMINISTRACI\u00d3N EN FINANZAS Y NEGOCIOS INTERNACIONALES-MJD - MARTES-JUEVES DIURNA",
-        "facultad_id": "18",
-        "facultad_nombre": "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS"
-    },
-    {
-        "prog_id": "221",
-        "prog_nombre": "ADMINISTRACI\u00d3N EN FINANZAS Y NEGOCIOS INTERNACIONALES-MJN - MARTES-JUEVES NOCTURNA",
-        "facultad_id": "18",
-        "facultad_nombre": "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS"
-    },
-    {
-        "prog_id": "281",
-        "prog_nombre": "ADMINISTRACI\u00d3N EN FINANZAS Y NEGOCIOS INTERNACIONALES-N - Nocturna",
-        "facultad_id": "18",
-        "facultad_nombre": "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS"
-    },
-    {
-        "prog_id": "223",
-        "prog_nombre": "ADMINISTRACI\u00d3N EN FINANZAS Y NEGOCIOS INTERNACIONALES-S - SABATINA",
-        "facultad_id": "18",
-        "facultad_nombre": "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS"
-    },
-    {
-        "prog_id": "49",
-        "prog_nombre": "ADMINISTRACI\u00d3N EN FINANZAS Y NEGOCIOS INTERNACIONALES-TN - TARDE-NOCHE",
-        "facultad_id": "18",
-        "facultad_nombre": "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS"
-    },
-    {
-        "prog_id": "285",
-        "prog_nombre": "DERECHO - Nocturna",
-        "facultad_id": "18",
-        "facultad_nombre": "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS"
-    },
-    {
-        "prog_id": "43",
-        "prog_nombre": "DERECHO - TARDE-NOCHE",
-        "facultad_id": "18",
-        "facultad_nombre": "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS"
-    },
-    {
-        "prog_id": "461",
-        "prog_nombre": "ESPECIALIZACI\u00d3N EN DERECHOS HUMANOS Y  JUSTICIA SOCIAL - VIERNES- SABADO",
-        "facultad_id": "18",
-        "facultad_nombre": "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS"
-    },
-    {
-        "prog_id": "526",
-        "prog_nombre": "ESPECIALIZACI\u00d3N EN DERECHOS HUMANOS Y JUSTICIA SOCIAL - VIERNES- SABADO",
-        "facultad_id": "18",
-        "facultad_nombre": "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS"
-    },
-    {
-        "prog_id": "341",
-        "prog_nombre": "DOCTORADO EN DIDACTICA DE LAS CIENCIAS - JUEVES- SABADO",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "24",
-        "prog_nombre": "LICENCIATURA EN CIENCIAS NATURALES Y EDUCACI\u00d3N AMBIENTAL - DIURNA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "284",
-        "prog_nombre": "LICENCIATURA EN CIENCIAS NATURALES Y EDUCACI\u00d3N AMBIENTAL - Nocturna",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "230",
-        "prog_nombre": "LICENCIATURA EN CIENCIAS NATURALES Y EDUCACI\u00d3N AMBIENTAL - SABATINA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "14",
-        "prog_nombre": "LICENCIATURA EN CIENCIAS SOCIALES - DIURNA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "15",
-        "prog_nombre": "LICENCIATURA EN EDUCACION ARTISTICA - DIURNA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "64",
-        "prog_nombre": "LICENCIATURA EN EDUCACI\u00d3N B\u00c1SICA CON \u00c9NFASIS EN ART\u00cdSTICA - DIURNA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "115",
-        "prog_nombre": "LICENCIATURA EN EDUCACI\u00d3N B\u00c1SICA CON \u00c9NFASIS EN CIENCIAS SOCIALES - DIURNA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "20",
-        "prog_nombre": "LICENCIATURA EN EDUCACI\u00d3N B\u00c1SICA CON \u00c9NFASIS EN HUMANIDADES INGL\u00c9S - DIURNA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "106",
-        "prog_nombre": "LICENCIATURA EN EDUCACI\u00d3N B\u00c1SICA CON \u00c9NFASIS EN HUMANIDADES LENGUA CASTELLANA - DIURNA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "61",
-        "prog_nombre": "LICENCIATURA EN EDUCACI\u00d3N F\u00cdSICA RECREACI\u00d3N Y DEPORTE - DIURNA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "282",
-        "prog_nombre": "LICENCIATURA EN EDUCACI\u00d3N INFANTIL - DIURNA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "63",
-        "prog_nombre": "LICENCIATURA EN EDUCACI\u00d3N INFANTIL - TARDE-NOCHE",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "22",
-        "prog_nombre": "LICENCIATURA EN INFORMATICA - DIURNA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "104",
-        "prog_nombre": "LICENCIATURA EN INFORM\u00c1TICA Y MEDIOS AUDIOVISUALES - DIURNA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "19",
-        "prog_nombre": "LICENCIATURA EN LENGUAS EXTRANJERAS CON ENFASIS EN INGLES - DIURNA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "25",
-        "prog_nombre": "LICENCIATURA EN LITERATURA Y LENGUA CASTELLANA - DIURNA",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "201",
-        "prog_nombre": "MAES DIDACTICA DE LAS CIENCIAS NATURALES - VIERNES- SABADO",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "141",
-        "prog_nombre": "MAESTR\u00cdA EN CIENCIAS SOCIALES - VIERNES- SABADO",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "162",
-        "prog_nombre": "Maestr\u00eda en Educaci\u00f3n - VIERNES- SABADO",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "161",
-        "prog_nombre": "MAESTRIA EN ENSE\u00d1ANZA DEL INGLES - VIERNES- SABADO",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "421",
-        "prog_nombre": "MAESTRIA EN INNOVACION EDUCATIVA CON TECNOLOGIA E INTELIGENCIA ARTIFICIAL - VIERNES- SABADO",
-        "facultad_id": "22",
-        "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-    },
-    {
-        "prog_id": "108",
-        "prog_nombre": "DOCTORADO EN CIENCIA Y TECNOLOG\u00cdA DE ALIMENTOS - LUNES- SABADO",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "117",
-        "prog_nombre": "Especializaci\u00f3n en Administraci\u00f3n Total de la Calidad - VIERNES- SABADO",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "121",
-        "prog_nombre": "ESPECIALIZACI\u00d3N EN HIGIERNE Y SEGURIDAD INDUSTRIAL - VIERNES- SABADO",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "16",
-        "prog_nombre": "INGENIER\u00cdA AMBIENTAL - DIURNA",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "105",
-        "prog_nombre": "INGENIER\u00cdA DE ALIMENTOS - DIURNA",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "283",
-        "prog_nombre": "INGENIER\u00cdA DE SISTEMAS - DIURNA",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "224",
-        "prog_nombre": "INGENIER\u00cdA DE SISTEMAS - JUEVES- SABADO",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "226",
-        "prog_nombre": "INGENIER\u00cdA DE SISTEMAS - NOCHE",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "228",
-        "prog_nombre": "INGENIER\u00cdA DE SISTEMAS - Tarde",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "17",
-        "prog_nombre": "INGENIER\u00cdA DE SISTEMAS - TARDE-NOCHE",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "26",
-        "prog_nombre": "INGENIER\u00cdA INDUSTRIAL - TARDE-NOCHE",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "21",
-        "prog_nombre": "INGENIER\u00cdA MEC\u00c1NICA - DIURNA",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "109",
-        "prog_nombre": "Maestr\u00eda en Ciencias Agroalimentarias - DIURNA",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "361",
-        "prog_nombre": "MAESTRIA EN INGENIERIA AMBIENTAL - VIERNES- SABADO",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "301",
-        "prog_nombre": "MAESTRIA EN INGENIERIA INDUSTRIAL - VIERNES- SABADO",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "48",
-        "prog_nombre": "MAESTRIA EN INGENIERIA MECANICA - VIERNES- SABADO",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "441",
-        "prog_nombre": "T\u00c9CNICO PROFESIONAL EN PROGRAMACI\u00d3N WEB - A DISTANCIA",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "503",
-        "prog_nombre": "TECNOLOG\u00cdA EN DESARROLLO DE SOFTWARE - DIURNA",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "502",
-        "prog_nombre": "TECNOLOG\u00cdA EN DESARROLLO DE SOFTWARE - DIURNA",
-        "facultad_id": "31",
-        "facultad_nombre": "FACULTAD DE INGENIERIAS"
-    },
-    {
-        "prog_id": "1",
-        "prog_nombre": "ACUICULTURA - DIURNA",
-        "facultad_id": "9",
-        "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
-    },
-    {
-        "prog_id": "401",
-        "prog_nombre": "DOCTORADO EN CIENCIAS ANIMALES DEL TROPICO - VIERNES- SABADO",
-        "facultad_id": "9",
-        "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
-    },
-    {
-        "prog_id": "122",
-        "prog_nombre": "DOCTORADO EN MICROBIOLOGIA Y SALUD TROPICAL - LUNES- VIERNES",
-        "facultad_id": "9",
-        "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
-    },
-    {
-        "prog_id": "321",
-        "prog_nombre": "ESPECIALIZACION EN MEDICINA Y CIRUGIA DE ANIMALES DE COMPA\u00d1IA - VIERNES- SABADO",
-        "facultad_id": "9",
-        "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
-    },
-    {
-        "prog_id": "103",
-        "prog_nombre": "ESPECIALIZACI\u00d3N EN PRODUCCI\u00d3N BOVINA TROPICAL - VIERNES- SABADO",
-        "facultad_id": "9",
-        "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
-    },
-    {
-        "prog_id": "182",
-        "prog_nombre": "MAESTRIA EN ACUICULTURA TROPICAL - LUNES- VIERNES",
-        "facultad_id": "9",
-        "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
-    },
-    {
-        "prog_id": "107",
-        "prog_nombre": "MAESTR\u00cdA EN CIENCIAS VETERINARIAS DEL TROPICO - DIURNA",
-        "facultad_id": "9",
-        "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
-    },
-    {
-        "prog_id": "110",
-        "prog_nombre": "MAESTR\u00cdA EN MICROBIOLOG\u00cdA TROPICAL - DIURNA",
-        "facultad_id": "9",
-        "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
-    },
-    {
-        "prog_id": "8",
-        "prog_nombre": "MEDICINA VETERINARIA Y ZOOTECNIA - DIURNA",
-        "facultad_id": "9",
-        "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
-    }
+  {
+    "prog_id": "101",
+    "prog_nombre": "DOCTORADO EN CIENCIAS AGRARIAS",
+    "facultad_id": "7",
+    "facultad_nombre": "FACULTAD DE CIENCIAS AGRICOLAS"
+  },
+  {
+    "prog_id": "6",
+    "prog_nombre": "INGENIERÍA AGRONÓMICA",
+    "facultad_id": "7",
+    "facultad_nombre": "FACULTAD DE CIENCIAS AGRICOLAS"
+  },
+  {
+    "prog_id": "50",
+    "prog_nombre": "MAESTRÍA EN CIENCIAS AGRONÓMICAS",
+    "facultad_id": "7",
+    "facultad_nombre": "FACULTAD DE CIENCIAS AGRICOLAS"
+  },
+  {
+    "prog_id": "10",
+    "prog_nombre": "BIOLOGÍA",
+    "facultad_id": "12",
+    "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
+  },
+  {
+    "prog_id": "181",
+    "prog_nombre": "DOCTORADO EN CIENCIAS FISICAS",
+    "facultad_id": "12",
+    "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
+  },
+  {
+    "prog_id": "13",
+    "prog_nombre": "ESTADÍSTICA",
+    "facultad_id": "12",
+    "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
+  },
+  {
+    "prog_id": "18",
+    "prog_nombre": "FÍSICA",
+    "facultad_id": "12",
+    "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
+  },
+  {
+    "prog_id": "9",
+    "prog_nombre": "GEOGRAFÍA",
+    "facultad_id": "12",
+    "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
+  },
+  {
+    "prog_id": "95",
+    "prog_nombre": "MAESTRÍA EN BIOTECNOLOGÍA",
+    "facultad_id": "12",
+    "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
+  },
+  {
+    "prog_id": "62",
+    "prog_nombre": "MAESTRÍA EN CIENCIAS AMBIENTALES",
+    "facultad_id": "12",
+    "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
+  },
+  {
+    "prog_id": "116",
+    "prog_nombre": "MAESTRÍA EN CIENCIAS FÍSICAS",
+    "facultad_id": "12",
+    "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
+  },
+  {
+    "prog_id": "102",
+    "prog_nombre": "MAESTRÍA EN CIENCIAS QUÍMICAS",
+    "facultad_id": "12",
+    "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
+  },
+  {
+    "prog_id": "94",
+    "prog_nombre": "MAESTRÍA EN GEOGRAFIA",
+    "facultad_id": "12",
+    "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
+  },
+  {
+    "prog_id": "65",
+    "prog_nombre": "MAESTRÍA EN MATEMATICAS",
+    "facultad_id": "12",
+    "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
+  },
+  {
+    "prog_id": "12",
+    "prog_nombre": "MATEMÁTICAS",
+    "facultad_id": "12",
+    "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
+  },
+  {
+    "prog_id": "11",
+    "prog_nombre": "QUÍMICA",
+    "facultad_id": "12",
+    "facultad_nombre": "FACULTAD DE CIENCIAS BASICAS"
+  },
+  {
+    "prog_id": "225",
+    "prog_nombre": "ADMINISTRACION EN SALUD",
+    "facultad_id": "37",
+    "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
+  },
+  {
+    "prog_id": "44",
+    "prog_nombre": "BACTERIOLOGÍA",
+    "facultad_id": "37",
+    "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
+  },
+  {
+    "prog_id": "27",
+    "prog_nombre": "ENFERMERÍA",
+    "facultad_id": "37",
+    "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
+  },
+  {
+    "prog_id": "47",
+    "prog_nombre": "ESPECIALIZACIÓN EN AUDITORIA DE LA CALIDAD EN SALUD",
+    "facultad_id": "37",
+    "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
+  },
+  {
+    "prog_id": "46",
+    "prog_nombre": "ESPECIALIZACIÓN EN GERENCIA ADMINISTRACIÓN EN SALUD",
+    "facultad_id": "37",
+    "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
+  },
+  {
+    "prog_id": "51",
+    "prog_nombre": "MAESTRÍA EN SALUD PUBLICA",
+    "facultad_id": "37",
+    "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
+  },
+  {
+    "prog_id": "45",
+    "prog_nombre": "TECNOLOGÍA EN REGENCIA DE FARMACIA",
+    "facultad_id": "37",
+    "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
+  },
+  {
+    "prog_id": "49",
+    "prog_nombre": "ADMINISTRACIÓN EN FINANZAS Y NEGOCIOS INTERNACIONALES",
+    "facultad_id": "18",
+    "facultad_nombre": "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS"
+  },
+  {
+    "prog_id": "43",
+    "prog_nombre": "DERECHO",
+    "facultad_id": "18",
+    "facultad_nombre": "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS"
+  },
+  {
+    "prog_id": "461",
+    "prog_nombre": "ESPECIALIZACIÓN EN DERECHOS HUMANOS Y JUSTICIA SOCIAL",
+    "facultad_id": "18",
+    "facultad_nombre": "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS"
+  },
+  {
+    "prog_id": "341",
+    "prog_nombre": "DOCTORADO EN DIDACTICA DE LAS CIENCIAS",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "24",
+    "prog_nombre": "LICENCIATURA EN CIENCIAS NATURALES Y EDUCACIÓN AMBIENTAL",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "14",
+    "prog_nombre": "LICENCIATURA EN CIENCIAS SOCIALES",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "15",
+    "prog_nombre": "LICENCIATURA EN EDUCACION ARTISTICA",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "64",
+    "prog_nombre": "LICENCIATURA EN EDUCACIÓN BÁSICA CON ÉNFASIS EN ARTÍSTICA",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "115",
+    "prog_nombre": "LICENCIATURA EN EDUCACIÓN BÁSICA CON ÉNFASIS EN CIENCIAS SOCIALES",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "20",
+    "prog_nombre": "LICENCIATURA EN EDUCACIÓN BÁSICA CON ÉNFASIS EN HUMANIDADES INGLÉS",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "106",
+    "prog_nombre": "LICENCIATURA EN EDUCACIÓN BÁSICA CON ÉNFASIS EN HUMANIDADES LENGUA CASTELLANA",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "61",
+    "prog_nombre": "LICENCIATURA EN EDUCACIÓN FÍSICA RECREACIÓN Y DEPORTE",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "282",
+    "prog_nombre": "LICENCIATURA EN EDUCACIÓN INFANTIL",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "22",
+    "prog_nombre": "LICENCIATURA EN INFORMATICA",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "104",
+    "prog_nombre": "LICENCIATURA EN INFORMÁTICA Y MEDIOS AUDIOVISUALES",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "19",
+    "prog_nombre": "LICENCIATURA EN LENGUAS EXTRANJERAS CON ENFASIS EN INGLES",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "25",
+    "prog_nombre": "LICENCIATURA EN LITERATURA Y LENGUA CASTELLANA",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "201",
+    "prog_nombre": "MAESTRÍA EN DIDACTICA DE LAS CIENCIAS NATURALES",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "141",
+    "prog_nombre": "MAESTRÍA EN CIENCIAS SOCIALES",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "162",
+    "prog_nombre": "MAESTRÍA EN EDUCACIÓN",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "161",
+    "prog_nombre": "MAESTRIA EN ENSEÑANZA DEL INGLES",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "421",
+    "prog_nombre": "MAESTRIA EN INNOVACION EDUCATIVA CON TECNOLOGIA E INTELIGENCIA ARTIFICIAL",
+    "facultad_id": "22",
+    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
+  },
+  {
+    "prog_id": "108",
+    "prog_nombre": "DOCTORADO EN CIENCIA Y TECNOLOGÍA DE ALIMENTOS",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "117",
+    "prog_nombre": "ESPECIALIZACIÓN EN ADMINISTRACIÓN TOTAL DE LA CALIDAD",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "121",
+    "prog_nombre": "ESPECIALIZACIÓN EN HIGIENE Y SEGURIDAD INDUSTRIAL",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "16",
+    "prog_nombre": "INGENIERÍA AMBIENTAL",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "105",
+    "prog_nombre": "INGENIERÍA DE ALIMENTOS",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "17",
+    "prog_nombre": "INGENIERÍA DE SISTEMAS",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "26",
+    "prog_nombre": "INGENIERÍA INDUSTRIAL",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "21",
+    "prog_nombre": "INGENIERÍA MECÁNICA",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "109",
+    "prog_nombre": "MAESTRÍA EN CIENCIAS AGROALIMENTARIAS",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "361",
+    "prog_nombre": "MAESTRIA EN INGENIERIA AMBIENTAL",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "301",
+    "prog_nombre": "MAESTRIA EN INGENIERIA INDUSTRIAL",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "48",
+    "prog_nombre": "MAESTRIA EN INGENIERIA MECANICA",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "441",
+    "prog_nombre": "TÉCNICO PROFESIONAL EN PROGRAMACIÓN WEB",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "503",
+    "prog_nombre": "TECNOLOGÍA EN DESARROLLO DE SOFTWARE",
+    "facultad_id": "31",
+    "facultad_nombre": "FACULTAD DE INGENIERIAS"
+  },
+  {
+    "prog_id": "1",
+    "prog_nombre": "ACUICULTURA",
+    "facultad_id": "9",
+    "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
+  },
+  {
+    "prog_id": "401",
+    "prog_nombre": "DOCTORADO EN CIENCIAS ANIMALES DEL TROPICO",
+    "facultad_id": "9",
+    "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
+  },
+  {
+    "prog_id": "122",
+    "prog_nombre": "DOCTORADO EN MICROBIOLOGIA Y SALUD TROPICAL",
+    "facultad_id": "9",
+    "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
+  },
+  {
+    "prog_id": "321",
+    "prog_nombre": "ESPECIALIZACION EN MEDICINA Y CIRUGIA DE ANIMALES DE COMPAÑIA",
+    "facultad_id": "9",
+    "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
+  },
+  {
+    "prog_id": "103",
+    "prog_nombre": "ESPECIALIZACIÓN EN PRODUCCIÓN BOVINA TROPICAL",
+    "facultad_id": "9",
+    "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
+  },
+  {
+    "prog_id": "182",
+    "prog_nombre": "MAESTRIA EN ACUICULTURA TROPICAL",
+    "facultad_id": "9",
+    "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
+  },
+  {
+    "prog_id": "107",
+    "prog_nombre": "MAESTRÍA EN CIENCIAS VETERINARIAS DEL TROPICO",
+    "facultad_id": "9",
+    "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
+  },
+  {
+    "prog_id": "110",
+    "prog_nombre": "MAESTRÍA EN MICROBIOLOGÍA TROPICAL",
+    "facultad_id": "9",
+    "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
+  },
+  {
+    "prog_id": "8",
+    "prog_nombre": "MEDICINA VETERINARIA Y ZOOTECNIA",
+    "facultad_id": "9",
+    "facultad_nombre": "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA"
+  }
 ]

@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { config } from "./config";
 import { logger, normalizeText } from "./utils";
-import { ollamaService, database, chatRepository } from "./services";
+import { ollamaService, database, chatRepository, pepRepository } from "./services";
 import { localDataService } from "./services/local-data.service";
 import {
   ChatMessage,
@@ -106,7 +106,7 @@ export class Chatbot {
       this.updateSessionContext(sessionId, entities);
 
       // Obtener contexto académico
-      const context = this.getAcademicContext(entities);
+      const context = await this.getAcademicContext(entities);
       logger.debug("Contexto académico", {
         facultades: context.facultades.length,
         programas: context.programas.length,
@@ -366,12 +366,15 @@ export class Chatbot {
   // CONTEXTO ACADÉMICO
   // ============================================
 
-  private getAcademicContext(entities: ExtractedEntities): AcademicContext {
+  private async getAcademicContext(
+    entities: ExtractedEntities,
+  ): Promise<AcademicContext> {
     const context: AcademicContext = {
       facultades: [],
       programas: [],
       materias: [],
       summary: "",
+      pep: null,
     };
 
     // Si hay programa, buscar sus materias
@@ -395,6 +398,15 @@ export class Chatbot {
         jornada,
       );
       context.materias = materias;
+
+      // PEP (perfil general del programa)
+      const programaInfo = programasInfo[0];
+      if (programaInfo) {
+        const pep = await pepRepository.findByProgramaId(programaInfo.prog_id);
+        if (pep) {
+          context.pep = pep;
+        }
+      }
 
       // Generar resumen
       if (semestre) {
@@ -480,6 +492,9 @@ export class Chatbot {
     if (context.materias.length > 0) {
       const pensum = context.materias[0]?.pensum;
       sources.push(`Pensum ${pensum || "actualizado"}`);
+    }
+    if (context.pep?.programaNombre) {
+      sources.push(`PEP ${context.pep.programaNombre}`);
     }
 
     return sources.length > 0 ? sources : ["Base de conocimiento local"];

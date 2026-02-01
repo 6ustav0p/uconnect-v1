@@ -9,7 +9,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { chatbot } from "../chatbot";
 import { localDataService } from "../services/local-data.service";
-import { chatRepository } from "../services";
+import { chatRepository, pepRepository, pepParserService } from "../services";
 import { logger } from "../utils";
 
 const app = express();
@@ -336,6 +336,179 @@ app.get("/api/programas-con-pensum", (_req: Request, res: Response) => {
 });
 
 // ============================================
+// ADMIN - PEP (Perfil de Programa)
+// ============================================
+
+// Parser JSON más grande solo para admin
+const adminJsonParser = express.json({ limit: "500kb" });
+
+// Crear o actualizar PEP (texto plano -> parseado a JSON)
+app.post(
+  "/api/admin/pep",
+  adminJsonParser,
+  async (req: Request, res: Response) => {
+    try {
+      const { programaId, programaNombre, contenido } = req.body;
+
+      // Validaciones
+      if (!programaId || typeof programaId !== "string") {
+        return res.status(400).json({
+          error: true,
+          code: "INVALID_REQUEST",
+          message: "El campo 'programaId' es requerido",
+        });
+      }
+
+      if (!programaNombre || typeof programaNombre !== "string") {
+        return res.status(400).json({
+          error: true,
+          code: "INVALID_REQUEST",
+          message: "El campo 'programaNombre' es requerido",
+        });
+      }
+
+      if (!contenido || typeof contenido !== "string") {
+        return res.status(400).json({
+          error: true,
+          code: "INVALID_REQUEST",
+          message: "El campo 'contenido' (texto plano del PEP) es requerido",
+        });
+      }
+
+      // Verificar que el programa exista
+      const programaExiste = localDataService
+        .getProgramas()
+        .some((p) => p.prog_id === programaId);
+
+      if (!programaExiste) {
+        return res.status(400).json({
+          error: true,
+          code: "PROGRAMA_NOT_FOUND",
+          message: `No existe un programa con ID: ${programaId}`,
+        });
+      }
+
+      // Parsear texto a JSON
+      const pepProfile = pepParserService.parse(
+        contenido,
+        programaId,
+        programaNombre,
+      );
+
+      // Guardar en MongoDB
+      const saved = await pepRepository.upsert(pepProfile);
+
+      logger.info("PEP guardado", {
+        programaId,
+        programaNombre,
+      });
+
+      res.status(201).json({
+        message: "PEP guardado correctamente",
+        data: saved,
+      });
+    } catch (error) {
+      logger.error("Error en POST /api/admin/pep", {
+        error: (error as Error).message,
+      });
+
+      res.status(500).json({
+        error: true,
+        code: "INTERNAL_ERROR",
+        message: "Error guardando PEP",
+      });
+    }
+  },
+);
+
+// Obtener PEP por programaId
+app.get("/api/admin/pep/:programaId", async (req: Request, res: Response) => {
+  try {
+    const { programaId } = req.params;
+
+    const pep = await pepRepository.findByProgramaId(programaId);
+
+    if (!pep) {
+      return res.status(404).json({
+        error: true,
+        code: "PEP_NOT_FOUND",
+        message: `No existe PEP para el programa: ${programaId}`,
+      });
+    }
+
+    res.json({ data: pep });
+  } catch (error) {
+    logger.error("Error en GET /api/admin/pep/:programaId", {
+      error: (error as Error).message,
+    });
+
+    res.status(500).json({
+      error: true,
+      code: "INTERNAL_ERROR",
+      message: "Error obteniendo PEP",
+    });
+  }
+});
+
+// Listar todos los PEPs
+app.get("/api/admin/peps", async (_req: Request, res: Response) => {
+  try {
+    const peps = await pepRepository.findAll();
+
+    res.json({
+      data: peps,
+      total: peps.length,
+    });
+  } catch (error) {
+    logger.error("Error en GET /api/admin/peps", {
+      error: (error as Error).message,
+    });
+
+    res.status(500).json({
+      error: true,
+      code: "INTERNAL_ERROR",
+      message: "Error obteniendo PEPs",
+    });
+  }
+});
+
+// Eliminar PEP
+app.delete(
+  "/api/admin/pep/:programaId",
+  async (req: Request, res: Response) => {
+    try {
+      const { programaId } = req.params;
+
+      const deleted = await pepRepository.deleteByProgramaId(programaId);
+
+      if (!deleted) {
+        return res.status(404).json({
+          error: true,
+          code: "PEP_NOT_FOUND",
+          message: `No existe PEP para el programa: ${programaId}`,
+        });
+      }
+
+      logger.info("PEP eliminado", { programaId });
+
+      res.json({
+        message: "PEP eliminado correctamente",
+      });
+    } catch (error) {
+      logger.error("Error en DELETE /api/admin/pep/:programaId", {
+        error: (error as Error).message,
+      });
+
+      res.status(500).json({
+        error: true,
+        code: "INTERNAL_ERROR",
+        message: "Error eliminando PEP",
+      });
+    }
+  },
+);
+
+// ============================================
 // 404 HANDLER
 // ============================================
 
@@ -395,6 +568,12 @@ Endpoints disponibles:
   
   GET    /api/stats             - Estadísticas
   GET    /api/health            - Health check
+
+Admin PEP:
+  POST   /api/admin/pep         - Crear/actualizar PEP
+  GET    /api/admin/pep/:id     - Obtener PEP por programaId
+  GET    /api/admin/peps        - Listar todos los PEPs
+  DELETE /api/admin/pep/:id     - Eliminar PEP
 
 CORS habilitado para: ${CORS_ORIGIN}
       `);

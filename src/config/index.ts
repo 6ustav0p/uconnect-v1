@@ -15,8 +15,8 @@ export const config = {
   // Ollama AI Configuration
   ollama: {
     host: getEnvVar("OLLAMA_HOST", false) || "http://localhost:11434",
-    model: getEnvVar("OLLAMA_MODEL", false) || "llama3.2",
-    maxOutputTokens: 2048,
+    model: getEnvVar("OLLAMA_MODEL", false) || "glm-4.6:cloud",
+    maxOutputTokens: 4096,
     temperature: 0.7,
   },
 
@@ -50,6 +50,11 @@ export const config = {
     maxApiResults: 50,
     cacheEnabled: true,
     cacheTTLSeconds: 3600, // 1 hora
+  },
+
+  // PEP (Perfil de Programa) Configuration
+  peps: {
+    dir: getEnvVar("PEPS_DIR", false) || "peps",
   },
 
   // Environment

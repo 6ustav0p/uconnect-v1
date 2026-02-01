@@ -4,6 +4,7 @@ import {
   SYSTEM_PROMPT,
   RESPONSE_GENERATION_PROMPT,
   ENTITY_EXTRACTION_PROMPT,
+  PEP_EXTRACTION_PROMPT,
 } from "../config/prompts";
 import { logger, truncateText, formatForContext } from "../utils";
 import {
@@ -14,6 +15,7 @@ import {
   ProgramaAcademico,
   MateriaPensum,
   ExtractedEntities,
+  PepProfile,
 } from "../types";
 
 export class OllamaService {
@@ -223,6 +225,73 @@ export class OllamaService {
   }
 
   // ============================================
+  // EXTRACCIÓN PEP (PERFIL DE PROGRAMA)
+  // ============================================
+
+  async extractPepProfile(
+    programa: ProgramaAcademico,
+    pepText: string,
+  ): Promise<PepProfile> {
+    try {
+      const prompt = PEP_EXTRACTION_PROMPT.replace(
+        "{programaNombre}",
+        programa.prog_nombre,
+      )
+        .replace("{programaId}", programa.prog_id)
+        .replace("{pepText}", pepText);
+
+      const response = await this.client.chat({
+        model: config.ollama.model,
+        messages: [
+          {
+            role: "system",
+            content:
+              "Eres un extractor de información. Responde SOLO con JSON válido.",
+          },
+          { role: "user", content: prompt },
+        ],
+        options: {
+          temperature: 0.2,
+          num_predict: 1024,
+        },
+      });
+
+      const responseText = response.message.content;
+
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error("No se pudo extraer JSON del PEP");
+      }
+
+      const parsed = JSON.parse(jsonMatch[0]);
+
+      return {
+        programaId: parsed.programaId || programa.prog_id,
+        programaNombre: parsed.programaNombre || programa.prog_nombre,
+        resumen: parsed.resumen || "",
+        historia: parsed.historia || "",
+        perfilProfesional: parsed.perfilProfesional || "",
+        perfilOcupacional: parsed.perfilOcupacional || "",
+        mision: parsed.mision || "",
+        vision: parsed.vision || "",
+        objetivos: parsed.objetivos || [],
+        competencias: parsed.competencias || [],
+        camposOcupacionales: parsed.camposOcupacionales || [],
+        lineasInvestigacion: parsed.lineasInvestigacion || [],
+        requisitosIngreso: parsed.requisitosIngreso || "",
+        requisitosGrado: parsed.requisitosGrado || "",
+        fuente: parsed.fuente || "",
+        actualizadoEn: new Date(),
+      };
+    } catch (error) {
+      logger.error("Error extrayendo PEP con Ollama", {
+        error: (error as Error).message,
+      });
+      throw error;
+    }
+  }
+
+  // ============================================
   // OPTIMIZACIÓN DE QUERIES
   // ============================================
 
@@ -262,6 +331,49 @@ export class OllamaService {
 
     if (context.summary) {
       parts.push(`RESUMEN: ${context.summary}`);
+    }
+
+    if (context.pep) {
+      const pepParts: string[] = [];
+      pepParts.push(`Programa: ${context.pep.programaNombre}`);
+      if (context.pep.resumen) pepParts.push(`Resumen: ${context.pep.resumen}`);
+      if (context.pep.historia) pepParts.push(`Historia: ${context.pep.historia}`);
+      if (context.pep.perfilProfesional)
+        pepParts.push(`Perfil profesional: ${context.pep.perfilProfesional}`);
+      if (context.pep.perfilOcupacional)
+        pepParts.push(`Perfil ocupacional: ${context.pep.perfilOcupacional}`);
+      if (context.pep.mision) pepParts.push(`Misión: ${context.pep.mision}`);
+      if (context.pep.vision) pepParts.push(`Visión: ${context.pep.vision}`);
+      if (context.pep.objetivos && context.pep.objetivos.length > 0) {
+        pepParts.push(`Objetivos: ${context.pep.objetivos.join("; ")}`);
+      }
+      if (context.pep.competencias && context.pep.competencias.length > 0) {
+        pepParts.push(
+          `Competencias: ${context.pep.competencias.join("; ")}`,
+        );
+      }
+      if (
+        context.pep.camposOcupacionales &&
+        context.pep.camposOcupacionales.length > 0
+      ) {
+        pepParts.push(
+          `Campos ocupacionales: ${context.pep.camposOcupacionales.join("; ")}`,
+        );
+      }
+      if (
+        context.pep.lineasInvestigacion &&
+        context.pep.lineasInvestigacion.length > 0
+      ) {
+        pepParts.push(
+          `Líneas de investigación: ${context.pep.lineasInvestigacion.join("; ")}`,
+        );
+      }
+      if (context.pep.requisitosIngreso)
+        pepParts.push(`Requisitos de ingreso: ${context.pep.requisitosIngreso}`);
+      if (context.pep.requisitosGrado)
+        pepParts.push(`Requisitos de grado: ${context.pep.requisitosGrado}`);
+
+      parts.push(`\nINFO GENERAL DEL PROGRAMA (PEP):\n${pepParts.join("\n")}`);
     }
 
     if (context.facultades.length > 0) {

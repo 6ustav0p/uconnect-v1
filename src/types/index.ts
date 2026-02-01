@@ -131,6 +131,30 @@ export interface AcademicContext {
   programas: ProgramaAcademico[];
   materias: MateriaPensum[];
   summary: string;
+  pep?: PepProfile | null;
+}
+
+// ============================================
+// TIPOS PARA PEP (Perfil de Programa)
+// ============================================
+
+export interface PepProfile {
+  programaId: string;
+  programaNombre: string;
+  resumen: string;
+  historia?: string;
+  perfilProfesional?: string;
+  perfilOcupacional?: string;
+  mision?: string;
+  vision?: string;
+  objetivos?: string[];
+  competencias?: string[];
+  camposOcupacionales?: string[];
+  lineasInvestigacion?: string[];
+  requisitosIngreso?: string;
+  requisitosGrado?: string;
+  fuente?: string;
+  actualizadoEn?: Date;
 }
 
 // ============================================
