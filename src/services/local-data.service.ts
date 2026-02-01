@@ -49,8 +49,19 @@ export class LocalDataService {
   // PROGRAMAS ACADÉMICOS
   // ============================================
 
+  /**
+   * Verifica si un programa es de postgrado (maestría, doctorado, especialización)
+   */
+  private esPostgrado(nombrePrograma: string): boolean {
+    const normalized = normalizeText(nombrePrograma);
+    return /maestr[ií]a|doctorado|especializaci[oó]n/i.test(normalized);
+  }
+
   getProgramas(nombre?: string, facultadNombre?: string): ProgramaAcademico[] {
-    let results = this.programas;
+    // Filtrar solo programas de pregrado (excluir postgrados)
+    let results = this.programas.filter(
+      (p) => !this.esPostgrado(p.prog_nombre),
+    );
 
     if (nombre) {
       const normalized = normalizeText(nombre);
@@ -274,16 +285,24 @@ export class LocalDataService {
   }
 
   /**
-   * Obtiene estadísticas generales
+   * Obtiene estadísticas generales (solo pregrado)
    */
   getEstadisticas() {
     const materiasUnicas = new Set(this.pensum.map((m) => m.codigo_materia))
       .size;
-    const programasConPensum = new Set(this.pensum.map((m) => m.programa)).size;
+    // Filtrar solo programas de pregrado
+    const programasPregrado = this.programas.filter(
+      (p) => !this.esPostgrado(p.prog_nombre),
+    );
+    const programasConPensum = new Set(
+      this.pensum
+        .filter((m) => !this.esPostgrado(m.programa))
+        .map((m) => m.programa),
+    ).size;
 
     return {
       facultades: this.facultades.length,
-      programas: this.programas.length,
+      programas: programasPregrado.length,
       programasConPensum,
       materiasUnicas,
       registrosPensum: this.pensum.length,
@@ -291,10 +310,12 @@ export class LocalDataService {
   }
 
   /**
-   * Lista todos los programas únicos que tienen pensum
+   * Lista todos los programas únicos de pregrado que tienen pensum
    */
   getProgramasConPensum(): string[] {
-    return [...new Set(this.pensum.map((m) => m.programa))].sort();
+    return [...new Set(this.pensum.map((m) => m.programa))]
+      .filter((p) => !this.esPostgrado(p))
+      .sort();
   }
 }
 

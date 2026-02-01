@@ -41,6 +41,14 @@ function normalizeText(text: string): string {
     .trim();
 }
 
+/**
+ * Verifica si un programa es de postgrado (maestría, doctorado, especialización)
+ */
+function esPostgrado(nombrePrograma: string): boolean {
+  const normalized = normalizeText(nombrePrograma);
+  return /maestr[ií]a|doctorado|especializaci[oó]n/i.test(normalized);
+}
+
 function buscarFacultades(nombre?: string) {
   if (!nombre) return facultades;
   const normalized = normalizeText(nombre);
@@ -50,7 +58,8 @@ function buscarFacultades(nombre?: string) {
 }
 
 function buscarProgramas(nombre?: string, facultadNombre?: string) {
-  let results = [...programas];
+  // Filtrar solo programas de pregrado (excluir maestrías, doctorados, especializaciones)
+  let results = programas.filter((p: any) => !esPostgrado(p.prog_nombre));
 
   if (nombre) {
     const normalized = normalizeText(nombre);
