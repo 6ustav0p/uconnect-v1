@@ -166,12 +166,9 @@ export class Chatbot {
       rawQuery: message,
     };
 
-    // Detectar saludos
-    if (
-      /^(hola|buenos?\s*d[ií]as?|buenas?\s*(tardes?|noches?)|hey|saludos?|qu[eé]\s*tal)/i.test(
-        normalized,
-      )
-    ) {
+    // Detectar saludos (SOLO si es un saludo simple sin pregunta adicional)
+    const saludoRegex = /^(hola|buenos?\s*d[ií]as?|buenas?\s*(tardes?|noches?)|hey|saludos?|qu[eé]\s*tal)[\s,!?.]*$/i;
+    if (saludoRegex.test(normalized)) {
       entities.intenciones.push("SALUDO");
       return entities;
     }

@@ -186,7 +186,34 @@ export class LocalDataService {
     // Las frases más específicas van primero para evitar coincidencias parciales
     // NOTA: Usar \s (un backslash) porque new RegExp() interpreta el string literalmente
     const keywordMap: [string, string][] = [
-      // Ingenierías - frases completas primero
+      // ============================================
+      // NOMBRES DE PROFESIONALES → CARRERAS
+      // (cuando preguntan por "ingeniero" en vez de "ingeniería")
+      // ============================================
+      ["ingeniero\\s+industrial", "INGENIERIA INDUSTRIAL"],
+      ["ingeniero\\s+de\\s+sistemas|ingeniero\\s+en\\s+sistemas", "INGENIERIA DE SISTEMAS"],
+      ["ingeniero\\s+mecanico", "INGENIERIA MECANICA"],
+      ["ingeniero\\s+ambiental", "INGENIERIA AMBIENTAL"],
+      ["ingeniero\\s+de\\s+alimentos", "INGENIERIA DE ALIMENTOS"],
+      ["ingeniero\\s+agronomo|agronomo", "INGENIERIA AGRONOMICA"],
+      ["medico\\s+veterinario|veterinario|zootecnista", "MEDICINA VETERINARIA Y ZOOTECNIA"],
+      ["enfermero|enfermera", "ENFERMERIA"],
+      ["abogado|abogada", "DERECHO"],
+      ["administrador.*finanzas|financiero", "ADMINISTRACION EN FINANZAS Y NEGOCIOS INTERNACIONALES"],
+      ["administrador.*salud", "ADMINISTRACION EN SALUD"],
+      ["biologo|biologa", "BIOLOGIA"],
+      ["quimico(?!.*farmacia)", "QUIMICA"],
+      ["fisico(?!.*deporte)", "FISICA"],
+      ["estadistico|estadista", "ESTADISTICA"],
+      ["geografo|geografa", "GEOGRAFIA"],
+      ["matematico", "MATEMATICAS"],
+      ["bacteriologo|bacteriologa", "BACTERIOLOGIA"],
+      ["regente.*farmacia|farmaceutico", "TECNOLOGIA EN REGENCIA DE FARMACIA"],
+      ["desarrollador.*software|programador", "TECNOLOGIA EN DESARROLLO DE SOFTWARE"],
+      
+      // ============================================
+      // INGENIERÍAS - frases completas primero
+      // ============================================
       ["ingenieria\\s+industrial", "INGENIERIA INDUSTRIAL"],
       ["ingenieria\\s+de\\s+sistemas", "INGENIERIA DE SISTEMAS"],
       ["ingenieria\\s+mecanica", "INGENIERIA MECANICA"],
