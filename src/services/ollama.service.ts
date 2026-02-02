@@ -68,6 +68,56 @@ export class OllamaService {
   }
 
   // ============================================
+  // UTILIDADES DE LIMPIEZA DE RESPUESTAS
+  // ============================================
+
+  /**
+   * Limpia la respuesta del modelo eliminando "thinking" o razonamiento interno
+   * Algunos modelos como glm-4 incluyen su proceso de pensamiento en la respuesta
+   */
+  private cleanModelResponse(response: string): string {
+    let cleaned = response;
+
+    // Eliminar bloques de pensamiento con etiquetas <think>...</think>
+    cleaned = cleaned.replace(/<think>[\s\S]*?<\/think>/gi, "");
+
+    // Eliminar bloques que empiecen con "Deconstruct", "Analyze", "Structure", etc.
+    // Estos son patrones de chain-of-thought
+    const thinkingPatterns = [
+      /^[\s\S]*?(?=¡?Hola|Claro|Según|El perfil|La información|De acuerdo|Con gusto)/i,
+      /Deconstruct[\s\S]*?(?=\n\n(?:¡?Hola|Claro|Según|El perfil|INFORMACIÓN))/gi,
+      /Analyze[\s\S]*?(?=\n\n(?:¡?Hola|Claro|Según|El perfil|INFORMACIÓN))/gi,
+      /Structure[\s\S]*?(?=\n\n(?:¡?Hola|Claro|Según|El perfil|INFORMACIÓN))/gi,
+      /Final Review[\s\S]*?(?=\n\n(?:¡?Hola|Claro|Según|El perfil|INFORMACIÓN))/gi,
+    ];
+
+    // Detectar si hay un bloque de pensamiento largo al inicio
+    // Buscar donde empieza la respuesta real (después de </think> o después de patrones conocidos)
+    const responseStarters = [
+      "¡Hola", "Hola", "Claro", "Según el", "El perfil", "La información", 
+      "De acuerdo", "Con gusto", "INFORMACIÓN OFICIAL", "**INFORMACIÓN"
+    ];
+
+    for (const starter of responseStarters) {
+      const idx = cleaned.indexOf(starter);
+      if (idx > 100) { // Si el starter está muy lejos del inicio, hay pensamiento antes
+        // Verificar que no estamos cortando algo importante
+        const beforeStarter = cleaned.substring(0, idx);
+        if (beforeStarter.includes("Deconstruct") || 
+            beforeStarter.includes("Analyze") || 
+            beforeStarter.includes("</think>") ||
+            beforeStarter.includes("Core Question") ||
+            beforeStarter.includes("Constraints:")) {
+          cleaned = cleaned.substring(idx);
+          break;
+        }
+      }
+    }
+
+    return cleaned.trim();
+  }
+
+  // ============================================
   // GENERACIÓN DE RESPUESTAS
   // ============================================
 
@@ -90,7 +140,8 @@ export class OllamaService {
         },
       });
 
-      const assistantMessage = response.message.content;
+      const rawResponse = response.message.content;
+      const assistantMessage = this.cleanModelResponse(rawResponse);
       messages.push({ role: "assistant", content: assistantMessage });
 
       const tokensUsed = {
@@ -144,7 +195,8 @@ export class OllamaService {
         },
       });
 
-      const assistantMessage = response.message.content;
+      const rawResponse = response.message.content;
+      const assistantMessage = this.cleanModelResponse(rawResponse);
       messages.push({ role: "assistant", content: assistantMessage });
 
       const tokensUsed = {
