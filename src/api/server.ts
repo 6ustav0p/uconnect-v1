@@ -9,7 +9,12 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { chatbot } from "../chatbot";
 import { localDataService } from "../services/local-data.service";
-import { chatRepository, pepRepository, pepParserService } from "../services";
+import {
+  chatRepository,
+  pepRepository,
+  pepParserService,
+  pepUploadService,
+} from "../services";
 import { logger } from "../utils";
 
 const app = express();
@@ -503,6 +508,132 @@ app.delete(
         error: true,
         code: "INTERNAL_ERROR",
         message: "Error eliminando PEP",
+      });
+    }
+  },
+);
+
+// ============================================
+// ADMIN - PEP UPLOADS (Textract + S3)
+// ============================================
+
+// Inicializar carga masiva (genera URLs pre-firmadas)
+app.post(
+  "/api/admin/pep-uploads/init",
+  adminJsonParser,
+  async (req: Request, res: Response) => {
+    try {
+      const { files } = req.body;
+
+      if (!Array.isArray(files) || files.length === 0) {
+        return res.status(400).json({
+          error: true,
+          code: "INVALID_REQUEST",
+          message: "El campo 'files' debe ser un array con al menos 1 archivo",
+        });
+      }
+
+      for (const file of files) {
+        if (!file?.fileName || !file?.contentType) {
+          return res.status(400).json({
+            error: true,
+            code: "INVALID_REQUEST",
+            message: "Cada archivo debe incluir 'fileName' y 'contentType'",
+          });
+        }
+      }
+
+      const result = await pepUploadService.initUpload(files);
+
+      res.status(201).json({
+        message: "Upload inicializado",
+        data: result,
+      });
+    } catch (error) {
+      logger.error("Error en POST /api/admin/pep-uploads/init", {
+        error: (error as Error).message,
+      });
+
+      res.status(500).json({
+        error: true,
+        code: "INTERNAL_ERROR",
+        message: "Error inicializando upload",
+      });
+    }
+  },
+);
+
+// Completar carga masiva (asigna programaId y dispara procesamiento)
+app.post(
+  "/api/admin/pep-uploads/complete",
+  adminJsonParser,
+  async (req: Request, res: Response) => {
+    try {
+      const { uploadId, mappings } = req.body;
+
+      if (!uploadId || typeof uploadId !== "string") {
+        return res.status(400).json({
+          error: true,
+          code: "INVALID_REQUEST",
+          message: "El campo 'uploadId' es requerido",
+        });
+      }
+
+      if (!Array.isArray(mappings) || mappings.length === 0) {
+        return res.status(400).json({
+          error: true,
+          code: "INVALID_REQUEST",
+          message: "El campo 'mappings' debe ser un array con al menos 1 item",
+        });
+      }
+
+      const upload = await pepUploadService.completeUpload(uploadId, mappings);
+
+      res.json({
+        message: "Procesamiento iniciado",
+        data: upload,
+      });
+    } catch (error) {
+      logger.error("Error en POST /api/admin/pep-uploads/complete", {
+        error: (error as Error).message,
+      });
+
+      res.status(500).json({
+        error: true,
+        code: "INTERNAL_ERROR",
+        message: "Error completando upload",
+      });
+    }
+  },
+);
+
+// Consultar estado de carga masiva
+app.get(
+  "/api/admin/pep-uploads/:uploadId",
+  async (req: Request, res: Response) => {
+    try {
+      const { uploadId } = req.params;
+
+      const upload = await pepUploadService.getUpload(uploadId);
+
+      if (!upload) {
+        return res.status(404).json({
+          error: true,
+          code: "UPLOAD_NOT_FOUND",
+          message: `No existe upload con ID: ${uploadId}`,
+        });
+      }
+
+      res.json({ data: upload });
+    } catch (error) {
+      logger.error("Error en GET /api/admin/pep-uploads/:uploadId", {
+        error: (error as Error).message,
+      });
+
+      res.status(500).json({
+        error: true,
+        code: "INTERNAL_ERROR",
+        message: "Error obteniendo estado del upload",
       });
     }
   },

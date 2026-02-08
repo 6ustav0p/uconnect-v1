@@ -6,6 +6,7 @@ export interface IPepProfile extends Document {
   programaNombre: string;
   programaNombreNormalized: string;
   resumen: string;
+  rawText?: string;
   historia?: string;
   perfilProfesional?: string;
   perfilOcupacional?: string;
@@ -28,7 +29,8 @@ const PepProfileSchema = new Schema<IPepProfile>(
     programaId: { type: String, required: true, unique: true, index: true },
     programaNombre: { type: String, required: true },
     programaNombreNormalized: { type: String, required: true, index: true },
-    resumen: { type: String, required: true },
+    resumen: { type: String, required: false, default: "" },
+    rawText: String,
     historia: String,
     perfilProfesional: String,
     perfilOcupacional: String,

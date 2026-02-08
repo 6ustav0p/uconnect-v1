@@ -55,6 +55,7 @@ export class PepRepository {
       programaId: doc.programaId,
       programaNombre: doc.programaNombre,
       resumen: doc.resumen,
+      rawText: doc.rawText,
       historia: doc.historia,
       perfilProfesional: doc.perfilProfesional,
       perfilOcupacional: doc.perfilOcupacional,

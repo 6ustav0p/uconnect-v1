@@ -20,6 +20,16 @@ export const config = {
     temperature: 0.7,
   },
 
+  // AWS / Textract / S3 Configuration
+  aws: {
+    region: getEnvVar("AWS_REGION", false) || "us-east-1",
+    accessKeyId: getEnvVar("AWS_ACCESS_KEY_ID", false),
+    secretAccessKey: getEnvVar("AWS_SECRET_ACCESS_KEY", false),
+    sessionToken: getEnvVar("AWS_SESSION_TOKEN", false),
+    s3Bucket: getEnvVar("TEXTRACT_S3_BUCKET", false),
+    s3Prefix: getEnvVar("TEXTRACT_S3_PREFIX", false) || "pep-uploads",
+  },
+
   // MongoDB Configuration
   mongodb: {
     uri: getEnvVar("MONGODB_URI"),

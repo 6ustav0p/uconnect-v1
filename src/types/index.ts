@@ -142,6 +142,7 @@ export interface PepProfile {
   programaId: string;
   programaNombre: string;
   resumen: string;
+  rawText?: string;
   historia?: string;
   perfilProfesional?: string;
   perfilOcupacional?: string;

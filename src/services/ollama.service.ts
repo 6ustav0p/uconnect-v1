@@ -424,6 +424,11 @@ export class OllamaService {
         pepParts.push(`Requisitos de ingreso: ${context.pep.requisitosIngreso}`);
       if (context.pep.requisitosGrado)
         pepParts.push(`Requisitos de grado: ${context.pep.requisitosGrado}`);
+      if (context.pep.rawText) {
+        pepParts.push(
+          `Texto completo (OCR): ${truncateText(context.pep.rawText, 4000)}`,
+        );
+      }
 
       parts.push(`\nINFO GENERAL DEL PROGRAMA (PEP):\n${pepParts.join("\n")}`);
     }
