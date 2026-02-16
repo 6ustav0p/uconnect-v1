@@ -6,7 +6,15 @@ import {
   ENTITY_EXTRACTION_PROMPT,
   PEP_EXTRACTION_PROMPT,
 } from "../config/prompts";
-import { logger, truncateText, formatForContext, extractRelevantChunks, extractPrincipiosValores, formatPrincipiosForLLM, shouldParsePrincipios } from "../utils";
+import {
+  logger,
+  truncateText,
+  formatForContext,
+  extractRelevantChunks,
+  extractPrincipiosValores,
+  formatPrincipiosForLLM,
+  shouldParsePrincipios,
+} from "../utils";
 import {
   ChatMessage,
   ChatbotResponse,
@@ -94,20 +102,31 @@ export class OllamaService {
     // Detectar si hay un bloque de pensamiento largo al inicio
     // Buscar donde empieza la respuesta real (después de </think> o después de patrones conocidos)
     const responseStarters = [
-      "¡Hola", "Hola", "Claro", "Según el", "El perfil", "La información", 
-      "De acuerdo", "Con gusto", "INFORMACIÓN OFICIAL", "**INFORMACIÓN"
+      "¡Hola",
+      "Hola",
+      "Claro",
+      "Según el",
+      "El perfil",
+      "La información",
+      "De acuerdo",
+      "Con gusto",
+      "INFORMACIÓN OFICIAL",
+      "**INFORMACIÓN",
     ];
 
     for (const starter of responseStarters) {
       const idx = cleaned.indexOf(starter);
-      if (idx > 100) { // Si el starter está muy lejos del inicio, hay pensamiento antes
+      if (idx > 100) {
+        // Si el starter está muy lejos del inicio, hay pensamiento antes
         // Verificar que no estamos cortando algo importante
         const beforeStarter = cleaned.substring(0, idx);
-        if (beforeStarter.includes("Deconstruct") || 
-            beforeStarter.includes("Analyze") || 
-            beforeStarter.includes("</think>") ||
-            beforeStarter.includes("Core Question") ||
-            beforeStarter.includes("Constraints:")) {
+        if (
+          beforeStarter.includes("Deconstruct") ||
+          beforeStarter.includes("Analyze") ||
+          beforeStarter.includes("</think>") ||
+          beforeStarter.includes("Core Question") ||
+          beforeStarter.includes("Constraints:")
+        ) {
           cleaned = cleaned.substring(idx);
           break;
         }
@@ -192,10 +211,12 @@ export class OllamaService {
       promptEstimadoTokens: Math.ceil(prompt.length / 4),
       mensajesEnHistorial: (history || []).length,
     };
-    
+
     logger.info("📤 PROMPT ENVIADO AL LLM", promptStats);
     logger.debug("📝 Contexto formateado (preview)", {
-      preview: formattedContext.substring(0, 500) + (formattedContext.length > 500 ? "..." : ""),
+      preview:
+        formattedContext.substring(0, 500) +
+        (formattedContext.length > 500 ? "..." : ""),
     });
 
     messages.push({ role: "user", content: prompt });
@@ -401,54 +422,59 @@ export class OllamaService {
   // FORMATEO DE CONTEXTO
   // ============================================
 
-  private formatAcademicContext(context: AcademicContext, userQuery: string): string {
+  private formatAcademicContext(
+    context: AcademicContext,
+    userQuery: string,
+  ): string {
     const parts: string[] = [];
     const sizeTracker: Record<string, number> = {};
 
     if (context.summary) {
       parts.push(`RESUMEN: ${context.summary}`);
-      sizeTracker['resumen'] = context.summary.length;
+      sizeTracker["resumen"] = context.summary.length;
     }
 
     if (context.pep) {
       const pepParts: string[] = [];
       const pepFieldSizes: Record<string, number> = {};
-      
+
       pepParts.push(`Programa: ${context.pep.programaNombre}`);
-      
+
       if (context.pep.resumen) {
         pepParts.push(`Resumen: ${context.pep.resumen}`);
-        pepFieldSizes['resumen'] = context.pep.resumen.length;
+        pepFieldSizes["resumen"] = context.pep.resumen.length;
       }
       if (context.pep.historia) {
         pepParts.push(`Historia: ${context.pep.historia}`);
-        pepFieldSizes['historia'] = context.pep.historia.length;
+        pepFieldSizes["historia"] = context.pep.historia.length;
       }
       if (context.pep.perfilProfesional) {
         pepParts.push(`Perfil profesional: ${context.pep.perfilProfesional}`);
-        pepFieldSizes['perfilProfesional'] = context.pep.perfilProfesional.length;
+        pepFieldSizes["perfilProfesional"] =
+          context.pep.perfilProfesional.length;
       }
       if (context.pep.perfilOcupacional) {
         pepParts.push(`Perfil ocupacional: ${context.pep.perfilOcupacional}`);
-        pepFieldSizes['perfilOcupacional'] = context.pep.perfilOcupacional.length;
+        pepFieldSizes["perfilOcupacional"] =
+          context.pep.perfilOcupacional.length;
       }
       if (context.pep.mision) {
         pepParts.push(`Misión: ${context.pep.mision}`);
-        pepFieldSizes['mision'] = context.pep.mision.length;
+        pepFieldSizes["mision"] = context.pep.mision.length;
       }
       if (context.pep.vision) {
         pepParts.push(`Visión: ${context.pep.vision}`);
-        pepFieldSizes['vision'] = context.pep.vision.length;
+        pepFieldSizes["vision"] = context.pep.vision.length;
       }
       if (context.pep.objetivos && context.pep.objetivos.length > 0) {
         const objetivosStr = context.pep.objetivos.join("; ");
         pepParts.push(`Objetivos: ${objetivosStr}`);
-        pepFieldSizes['objetivos'] = objetivosStr.length;
+        pepFieldSizes["objetivos"] = objetivosStr.length;
       }
       if (context.pep.competencias && context.pep.competencias.length > 0) {
         const competenciasStr = context.pep.competencias.join("; ");
         pepParts.push(`Competencias: ${competenciasStr}`);
-        pepFieldSizes['competencias'] = competenciasStr.length;
+        pepFieldSizes["competencias"] = competenciasStr.length;
       }
       if (
         context.pep.camposOcupacionales &&
@@ -456,7 +482,7 @@ export class OllamaService {
       ) {
         const camposStr = context.pep.camposOcupacionales.join("; ");
         pepParts.push(`Campos ocupacionales: ${camposStr}`);
-        pepFieldSizes['camposOcupacionales'] = camposStr.length;
+        pepFieldSizes["camposOcupacionales"] = camposStr.length;
       }
       if (
         context.pep.lineasInvestigacion &&
@@ -464,24 +490,27 @@ export class OllamaService {
       ) {
         const lineasStr = context.pep.lineasInvestigacion.join("; ");
         pepParts.push(`Líneas de investigación: ${lineasStr}`);
-        pepFieldSizes['lineasInvestigacion'] = lineasStr.length;
+        pepFieldSizes["lineasInvestigacion"] = lineasStr.length;
       }
       if (context.pep.requisitosIngreso) {
-        pepParts.push(`Requisitos de ingreso: ${context.pep.requisitosIngreso}`);
-        pepFieldSizes['requisitosIngreso'] = context.pep.requisitosIngreso.length;
+        pepParts.push(
+          `Requisitos de ingreso: ${context.pep.requisitosIngreso}`,
+        );
+        pepFieldSizes["requisitosIngreso"] =
+          context.pep.requisitosIngreso.length;
       }
       if (context.pep.requisitosGrado) {
         pepParts.push(`Requisitos de grado: ${context.pep.requisitosGrado}`);
-        pepFieldSizes['requisitosGrado'] = context.pep.requisitosGrado.length;
+        pepFieldSizes["requisitosGrado"] = context.pep.requisitosGrado.length;
       }
       if (context.pep.rawText) {
         // Usar extracción inteligente de fragmentos relevantes
         const extraction = extractRelevantChunks(
-          context.pep.rawText, 
-          userQuery, 
-          6000  // Aumentado de 4000 a 6000 para permitir secciones más largas completas
+          context.pep.rawText,
+          userQuery,
+          6000, // Aumentado de 4000 a 6000 para permitir secciones más largas completas
         );
-        
+
         // PARSING INTELIGENTE: Si la query es sobre principios/valores, extraerlos estructurados
         let textoParaLLM = extraction.text;
         if (shouldParsePrincipios(userQuery)) {
@@ -489,25 +518,30 @@ export class OllamaService {
           if (principios.length > 0) {
             const principiosFormateados = formatPrincipiosForLLM(principios);
             // Agregar antes del fragmento OCR crudo
-            textoParaLLM = principiosFormateados + '\n---\n\n' + extraction.text;
-            
+            textoParaLLM =
+              principiosFormateados + "\n---\n\n" + extraction.text;
+
             logger.info("✅ PRINCIPIOS PARSEADOS", {
               cantidadPrincipios: principios.length,
-              nombresExtraidos: principios.map(p => p.nombre),
+              nombresExtraidos: principios.map((p) => p.nombre),
             });
           }
         }
-        
-        pepParts.push(`Texto completo (OCR - fragmentos relevantes): ${textoParaLLM}`);
-        pepFieldSizes['rawText'] = context.pep.rawText.length;
-        pepFieldSizes['rawTextExtraido'] = extraction.text.length;
-        pepFieldSizes['rawTextChunksUsados'] = extraction.chunksUsed;
-        
+
+        pepParts.push(
+          `Texto completo (OCR - fragmentos relevantes): ${textoParaLLM}`,
+        );
+        pepFieldSizes["rawText"] = context.pep.rawText.length;
+        pepFieldSizes["rawTextExtraido"] = extraction.text.length;
+        pepFieldSizes["rawTextChunksUsados"] = extraction.chunksUsed;
+
         // Log de la extracción inteligente
         logger.info("🔍 EXTRACCIÓN INTELIGENTE DE PEP", {
           textoOriginalChars: context.pep.rawText.length,
           textoExtraidoChars: extraction.text.length,
-          porcentajeUsado: Math.round((extraction.text.length / context.pep.rawText.length) * 100),
+          porcentajeUsado: Math.round(
+            (extraction.text.length / context.pep.rawText.length) * 100,
+          ),
           chunksEncontrados: extraction.chunksUsed,
           palabrasClaveEncontradas: extraction.foundKeywords,
           consultaUsuario: userQuery.substring(0, 100),
@@ -516,10 +550,13 @@ export class OllamaService {
 
       const pepContent = `\nINFO GENERAL DEL PROGRAMA (PEP):\n${pepParts.join("\n")}`;
       parts.push(pepContent);
-      sizeTracker['pep'] = pepContent.length;
-      
+      sizeTracker["pep"] = pepContent.length;
+
       // Log detallado de qué campos del PEP se incluyeron
-      const totalPepChars = Object.values(pepFieldSizes).reduce((sum, val) => sum + val, 0);
+      const totalPepChars = Object.values(pepFieldSizes).reduce(
+        (sum, val) => sum + val,
+        0,
+      );
       logger.info("📄 CAMPOS PEP INCLUIDOS EN CONTEXTO", {
         camposIncluidos: Object.keys(pepFieldSizes),
         cantidadCampos: Object.keys(pepFieldSizes).length,
@@ -551,8 +588,11 @@ export class OllamaService {
     }
 
     const fullContext = parts.join("\n");
-    const truncated = truncateText(fullContext, config.chatbot.maxContextTokens * 4);
-    
+    const truncated = truncateText(
+      fullContext,
+      config.chatbot.maxContextTokens * 4,
+    );
+
     // Log detallado del contexto formateado
     logger.info("📄 CONTEXTO FORMATEADO PARA LLM", {
       seccionesIncluidas: parts.length,
@@ -562,7 +602,7 @@ export class OllamaService {
       estimadoTokens: Math.ceil(truncated.length / 4),
       maxTokensConfig: config.chatbot.maxContextTokens,
     });
-    
+
     return truncated;
   }
 

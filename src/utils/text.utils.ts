@@ -17,9 +17,9 @@ export function normalizeForOCR(text: string): string {
   return text
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")     // Quitar acentos
-    .replace(/[^a-z0-9\s]/g, " ")        // Reemplazar símbolos por espacio
-    .replace(/\s+/g, " ")                 // Normalizar espacios múltiples
+    .replace(/[\u0300-\u036f]/g, "") // Quitar acentos
+    .replace(/[^a-z0-9\s]/g, " ") // Reemplazar símbolos por espacio
+    .replace(/\s+/g, " ") // Normalizar espacios múltiples
     .trim();
 }
 
@@ -163,7 +163,7 @@ export function truncateText(text: string, maxLength: number): string {
 /**
  * Extrae fragmentos relevantes de un texto largo basándose en palabras clave de la consulta
  * Usa búsqueda semántica simple para encontrar las secciones más relevantes
- * 
+ *
  * @param text Texto completo (ej: rawText del PEP)
  * @param query Pregunta del usuario
  * @param maxLength Máximo de caracteres a retornar
@@ -180,10 +180,10 @@ export function extractRelevantChunks(
 
   // Extraer palabras clave de la consulta
   const queryKeywords = extractKeywords(query);
-  
+
   // Agregar variantes y palabras relacionadas comunes
   const expandedKeywords = new Set<string>();
-  queryKeywords.forEach(kw => {
+  queryKeywords.forEach((kw) => {
     expandedKeywords.add(kw);
     // Agregar variantes según el término
     if (kw.includes("objetivo")) {
@@ -239,31 +239,36 @@ export function extractRelevantChunks(
   // Dividir texto en secciones
   let paragraphs: string[] = [];
   // Opción 1: Intentar dividir por secciones numeradas o títulos en mayúsculas
-  const sectionPattern = /(?:^|\n)(?:[\d\.]+\s+[A-ZÑÁÉÍÓÚ][^\n]{5,}|[A-ZÑÁÉÍÓÚ\s]{10,})(?=\n)/gm;
+  const sectionPattern =
+    /(?:^|\n)(?:[\d\.]+\s+[A-ZÑÁÉÍÓÚ][^\n]{5,}|[A-ZÑÁÉÍÓÚ\s]{10,})(?=\n)/gm;
   const matches = Array.from(text.matchAll(sectionPattern));
-  
+
   if (matches.length > 2) {
     // Dividir por posiciones de títulos y capturar el contenido DESPUÉS del título
     for (let i = 0; i < matches.length; i++) {
       const titleStart = matches[i].index || 0;
       const contentStart = titleStart + matches[i][0].length; // Empezar DESPUÉS del título
-      const end = i < matches.length - 1 ? (matches[i + 1].index || text.length) : text.length;
-      
+      const end =
+        i < matches.length - 1
+          ? matches[i + 1].index || text.length
+          : text.length;
+
       // Capturar título + contenido
       const section = text.slice(titleStart, end).trim();
-      if (section.length > 150) { // Asegurar que hay contenido sustancial
+      if (section.length > 150) {
+        // Asegurar que hay contenido sustancial
         paragraphs.push(section);
       }
     }
   }
-  
+
   // Opción 2: Dividir por párrafos dobles si no hay suficientes secciones
   if (paragraphs.length < 3) {
     const doubleNewlineParagraphs = text
       .split(/\n\n+/)
-      .map(p => p.trim())
-      .filter(p => p.length > 50);
-      
+      .map((p) => p.trim())
+      .filter((p) => p.length > 50);
+
     if (doubleNewlineParagraphs.length > 3) {
       paragraphs = doubleNewlineParagraphs;
     }
@@ -272,9 +277,9 @@ export function extractRelevantChunks(
   // Opción 3: Si aún no hay párrafos, dividir en chunks de tamaño fijo con superposición
   if (paragraphs.length < 3) {
     const chunkSize = 800; // Tamaño del chunk
-    const overlap = 200;   // Superposición entre chunks
-    
-    for (let i = 0; i < text.length; i += (chunkSize - overlap)) {
+    const overlap = 200; // Superposición entre chunks
+
+    for (let i = 0; i < text.length; i += chunkSize - overlap) {
       const chunk = text.slice(i, i + chunkSize).trim();
       if (chunk.length > 100) {
         paragraphs.push(chunk);
@@ -289,18 +294,18 @@ export function extractRelevantChunks(
     matchedKeywords: string[];
   }
 
-  const scoredChunks: ScoredChunk[] = paragraphs.map(paragraph => {
+  const scoredChunks: ScoredChunk[] = paragraphs.map((paragraph) => {
     const normalizedParagraph = normalizeForOCR(paragraph); // Usar normalización tolerante a OCR
     let score = 0;
     const matchedKeywords: string[] = [];
 
-    keywords.forEach(keyword => {
+    keywords.forEach((keyword) => {
       const normalizedKeyword = normalizeForOCR(keyword);
       // Búsqueda más flexible: substring match con regex tolerante a espacios
       const flexiblePattern = normalizedKeyword.replace(/\s+/g, "\\s+");
-      const regex = new RegExp(flexiblePattern, 'gi');
+      const regex = new RegExp(flexiblePattern, "gi");
       const matches = normalizedParagraph.match(regex);
-      
+
       if (matches && matches.length > 0) {
         // Más peso si la palabra aparece múltiples veces
         score += matches.length * 10;
@@ -316,11 +321,14 @@ export function extractRelevantChunks(
         for (let j = i + 1; j < keywords.length; j++) {
           const kw1 = normalizeForOCR(keywords[i]);
           const kw2 = normalizeForOCR(keywords[j]);
-          
+
           // Crear regex que busque kw1 y kw2 con hasta 50 chars entre ellas
-          const proximityPattern = new RegExp(`${kw1}.{0,50}${kw2}|${kw2}.{0,50}${kw1}`, 'gi');
+          const proximityPattern = new RegExp(
+            `${kw1}.{0,50}${kw2}|${kw2}.{0,50}${kw1}`,
+            "gi",
+          );
           const proximityMatches = normalizedParagraph.match(proximityPattern);
-          
+
           if (proximityMatches && proximityMatches.length > 0) {
             score += 50000; // BONUS GIGANTESCO para keywords en proximidad
           }
@@ -340,13 +348,13 @@ export function extractRelevantChunks(
     if (paragraph.length > 200 && paragraph.length < 2000) {
       score += 5;
     }
-    
+
     // BONUS IMPORTANTE: Paragraphs con contenido sustancial (más de 300 chars)
     // Esto ayuda a priorizar secciones con contenido real sobre menciones en índices
     if (paragraph.length > 300) {
       score += 15; // Bonus alto para contenido sustancial
     }
-    
+
     // PENALIZACIÓN para párrafos que parecen ser índices (muchos números, pocas palabras)
     const wordCount = paragraph.split(/\s+/).length;
     const numberCount = (paragraph.match(/\d+/g) || []).length;
@@ -367,27 +375,28 @@ export function extractRelevantChunks(
 
   for (const chunk of scoredChunks) {
     if (chunk.score === 0) break; // No incluir chunks sin relevancia
-    
+
     const chunkLength = chunk.text.length + 4; // +4 por "\n\n\n"
-    
+
     // Si es el PRIMER chunk y tiene buen score, inclúyelo AUNQUE exceda el límite
     if (currentLength === 0 && chunk.score > 10) {
       // Truncar si es necesario
-      const truncatedText = chunk.text.length > maxLength 
-        ? chunk.text.slice(0, maxLength - 3) + "..."
-        : chunk.text;
-      
+      const truncatedText =
+        chunk.text.length > maxLength
+          ? chunk.text.slice(0, maxLength - 3) + "..."
+          : chunk.text;
+
       selectedChunks.push({
         text: truncatedText,
         score: chunk.score,
-        matchedKeywords: chunk.matchedKeywords
+        matchedKeywords: chunk.matchedKeywords,
       });
       currentLength += truncatedText.length;
-      chunk.matchedKeywords.forEach(kw => allMatchedKeywords.add(kw));
+      chunk.matchedKeywords.forEach((kw) => allMatchedKeywords.add(kw));
     } else if (currentLength + chunkLength <= maxLength) {
       selectedChunks.push(chunk);
       currentLength += chunkLength;
-      chunk.matchedKeywords.forEach(kw => allMatchedKeywords.add(kw));
+      chunk.matchedKeywords.forEach((kw) => allMatchedKeywords.add(kw));
     } else {
       break;
     }
@@ -395,26 +404,26 @@ export function extractRelevantChunks(
 
   // Si no encontramos chunks relevantes, usar el inicio del texto
   if (selectedChunks.length === 0) {
-    return { 
-      text: text.slice(0, maxLength - 3) + "...", 
+    return {
+      text: text.slice(0, maxLength - 3) + "...",
       foundKeywords: [],
-      chunksUsed: 0
+      chunksUsed: 0,
     };
   }
 
   // Re-ordenar chunks en el orden original del texto para mantener coherencia
-  const textPositions = selectedChunks.map(chunk => ({
+  const textPositions = selectedChunks.map((chunk) => ({
     chunk,
-    position: text.indexOf(chunk.text)
+    position: text.indexOf(chunk.text),
   }));
   textPositions.sort((a, b) => a.position - b.position);
 
-  const result = textPositions.map(tp => tp.chunk.text).join("\n\n---\n\n");
+  const result = textPositions.map((tp) => tp.chunk.text).join("\n\n---\n\n");
 
   return {
     text: result,
     foundKeywords: Array.from(allMatchedKeywords),
-    chunksUsed: selectedChunks.length
+    chunksUsed: selectedChunks.length,
   };
 }
 

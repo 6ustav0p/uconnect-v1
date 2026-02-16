@@ -221,7 +221,6 @@ Si los fragmentos NO responden la pregunta específica:
 
 La respuesta debe sentirse COMPLETA: primero lo oficial del PEP, luego tu valor agregado práctico.`;
 
-
 export const QUERY_OPTIMIZATION_PROMPT = `Dado el mensaje del usuario, genera los parámetros óptimos para consultar las APIs académicas.
 
 MENSAJE: "{message}"

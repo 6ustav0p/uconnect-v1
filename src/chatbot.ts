@@ -1,7 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 import { config } from "./config";
 import { logger, normalizeText } from "./utils";
-import { ollamaService, database, chatRepository, pepRepository } from "./services";
+import {
+  ollamaService,
+  database,
+  chatRepository,
+  pepRepository,
+} from "./services";
 import { localDataService } from "./services/local-data.service";
 import {
   ChatMessage,
@@ -107,30 +112,34 @@ export class Chatbot {
 
       // Obtener contexto académico
       const context = await this.getAcademicContext(entities);
-      
+
       // Log detallado de información recopilada
       const contextStats = {
         facultades: context.facultades.length,
         programas: context.programas.length,
         materias: context.materias.length,
         pepIncluido: !!context.pep,
-        pepCampos: context.pep ? Object.keys(context.pep).filter(k => context.pep![k as keyof typeof context.pep]).length : 0,
+        pepCampos: context.pep
+          ? Object.keys(context.pep).filter(
+              (k) => context.pep![k as keyof typeof context.pep],
+            ).length
+          : 0,
         resumen: context.summary || "Sin resumen",
       };
-      
+
       logger.info("📊 CONTEXTO ACADÉMICO RECOPILADO", contextStats);
-      
+
       if (context.materias.length > 0) {
         logger.info("📚 Materias encontradas", {
           total: context.materias.length,
-          primeras5: context.materias.slice(0, 5).map(m => m.materia),
+          primeras5: context.materias.slice(0, 5).map((m) => m.materia),
         });
       }
-      
+
       if (context.programas.length > 0) {
         logger.info("🎓 Programas encontrados", {
           total: context.programas.length,
-          nombres: context.programas.slice(0, 5).map(p => p.prog_nombre),
+          nombres: context.programas.slice(0, 5).map((p) => p.prog_nombre),
         });
       }
 
@@ -188,7 +197,8 @@ export class Chatbot {
     };
 
     // Detectar saludos (SOLO si es un saludo simple sin pregunta adicional)
-    const saludoRegex = /^(hola|buenos?\s*d[ií]as?|buenas?\s*(tardes?|noches?)|hey|saludos?|qu[eé]\s*tal)[\s,!?.]*$/i;
+    const saludoRegex =
+      /^(hola|buenos?\s*d[ií]as?|buenas?\s*(tardes?|noches?)|hey|saludos?|qu[eé]\s*tal)[\s,!?.]*$/i;
     if (saludoRegex.test(normalized)) {
       entities.intenciones.push("SALUDO");
       return entities;
@@ -424,11 +434,11 @@ export class Chatbot {
           programaId: programaInfo.prog_id,
           programaNombre: programaInfo.prog_nombre,
         });
-        
+
         const pep = await pepRepository.findByProgramaId(programaInfo.prog_id);
         if (pep) {
           context.pep = pep;
-          
+
           // Log detallado del PEP encontrado
           const pepStats = {
             programaId: pep.programaId,
@@ -454,7 +464,7 @@ export class Chatbot {
               perfilProfesionalChars: pep.perfilProfesional?.length || 0,
               perfilOcupacionalChars: pep.perfilOcupacional?.length || 0,
               rawTextChars: pep.rawText?.length || 0,
-              totalEstimadoChars: (
+              totalEstimadoChars:
                 (pep.resumen?.length || 0) +
                 (pep.historia?.length || 0) +
                 (pep.perfilProfesional?.length || 0) +
@@ -463,12 +473,11 @@ export class Chatbot {
                 (pep.vision?.length || 0) +
                 (pep.objetivos?.join("; ").length || 0) +
                 (pep.competencias?.join("; ").length || 0) +
-                (pep.rawText?.length || 0)
-              ),
+                (pep.rawText?.length || 0),
             },
             actualizadoEn: pep.actualizadoEn,
           };
-          
+
           logger.info("📋 PEP ENCONTRADO Y CARGADO", pepStats);
           logger.info("📏 Tamaño total del PEP", {
             caracteres: pepStats.tamanos.totalEstimadoChars,

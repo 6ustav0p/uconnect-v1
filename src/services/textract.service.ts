@@ -14,13 +14,14 @@ export class TextractService {
   constructor() {
     this.client = new TextractClient({
       region: config.aws.region,
-      credentials: config.aws.accessKeyId && config.aws.secretAccessKey
-        ? {
-            accessKeyId: config.aws.accessKeyId,
-            secretAccessKey: config.aws.secretAccessKey,
-            sessionToken: config.aws.sessionToken || undefined,
-          }
-        : undefined,
+      credentials:
+        config.aws.accessKeyId && config.aws.secretAccessKey
+          ? {
+              accessKeyId: config.aws.accessKeyId,
+              secretAccessKey: config.aws.secretAccessKey,
+              sessionToken: config.aws.sessionToken || undefined,
+            }
+          : undefined,
     });
   }
 
@@ -44,7 +45,11 @@ export class TextractService {
     return response.JobId;
   }
 
-  async waitForJob(jobId: string, maxAttempts = 120, delayMs = 5000): Promise<void> {
+  async waitForJob(
+    jobId: string,
+    maxAttempts = 120,
+    delayMs = 5000,
+  ): Promise<void> {
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       const command = new GetDocumentTextDetectionCommand({ JobId: jobId });
       const response = await this.client.send(command);
@@ -75,10 +80,11 @@ export class TextractService {
     const lines: string[] = [];
 
     do {
-      const command: GetDocumentTextDetectionCommand = new GetDocumentTextDetectionCommand({
-        JobId: jobId,
-        NextToken: nextToken,
-      });
+      const command: GetDocumentTextDetectionCommand =
+        new GetDocumentTextDetectionCommand({
+          JobId: jobId,
+          NextToken: nextToken,
+        });
       const response: any = await this.client.send(command);
 
       if (response.Blocks && response.Blocks.length > 0) {
@@ -91,7 +97,9 @@ export class TextractService {
     return lines.join("\n");
   }
 
-  async extractTextFromS3(s3Key: string): Promise<{ jobId: string; text: string }> {
+  async extractTextFromS3(
+    s3Key: string,
+  ): Promise<{ jobId: string; text: string }> {
     logger.info("Iniciando Textract", { s3Key });
     const jobId = await this.startTextDetection(s3Key);
     await this.waitForJob(jobId);
