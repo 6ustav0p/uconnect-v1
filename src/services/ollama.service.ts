@@ -6,7 +6,7 @@ import {
   ENTITY_EXTRACTION_PROMPT,
   PEP_EXTRACTION_PROMPT,
 } from "../config/prompts";
-import { logger, truncateText, formatForContext } from "../utils";
+import { logger, truncateText, formatForContext, extractRelevantChunks, extractPrincipiosValores, formatPrincipiosForLLM, shouldParsePrincipios } from "../utils";
 import {
   ChatMessage,
   ChatbotResponse,
@@ -173,7 +173,7 @@ export class OllamaService {
   ): Promise<ChatbotResponse> {
     const messages = this.getOrCreateHistory(sessionId, history);
 
-    const formattedContext = this.formatAcademicContext(context);
+    const formattedContext = this.formatAcademicContext(context, message);
     const formattedHistory = this.formatHistoryForPrompt(history || []);
 
     const prompt = RESPONSE_GENERATION_PROMPT.replace(
@@ -182,6 +182,21 @@ export class OllamaService {
     )
       .replace("{question}", message)
       .replace("{history}", formattedHistory);
+
+    // Log detallado de tamaño de información enviada al LLM
+    const promptStats = {
+      contextoChars: formattedContext.length,
+      contextoEstimadoTokens: Math.ceil(formattedContext.length / 4),
+      historialChars: formattedHistory.length,
+      promptTotalChars: prompt.length,
+      promptEstimadoTokens: Math.ceil(prompt.length / 4),
+      mensajesEnHistorial: (history || []).length,
+    };
+    
+    logger.info("📤 PROMPT ENVIADO AL LLM", promptStats);
+    logger.debug("📝 Contexto formateado (preview)", {
+      preview: formattedContext.substring(0, 500) + (formattedContext.length > 500 ? "..." : ""),
+    });
 
     messages.push({ role: "user", content: prompt });
 
@@ -204,7 +219,15 @@ export class OllamaService {
         output: response.eval_count || 0,
       };
 
-      logger.info("Respuesta contextual generada", { sessionId, tokensUsed });
+      // Log detallado de tokens utilizados
+      logger.info("📥 RESPUESTA DEL LLM RECIBIDA", {
+        sessionId,
+        tokensInput: tokensUsed.input,
+        tokensOutput: tokensUsed.output,
+        tokensTotal: tokensUsed.input + tokensUsed.output,
+        respuestaChars: assistantMessage.length,
+        respuestaEstimadaTokens: Math.ceil(assistantMessage.length / 4),
+      });
 
       return {
         message: assistantMessage,
@@ -378,59 +401,132 @@ export class OllamaService {
   // FORMATEO DE CONTEXTO
   // ============================================
 
-  private formatAcademicContext(context: AcademicContext): string {
+  private formatAcademicContext(context: AcademicContext, userQuery: string): string {
     const parts: string[] = [];
+    const sizeTracker: Record<string, number> = {};
 
     if (context.summary) {
       parts.push(`RESUMEN: ${context.summary}`);
+      sizeTracker['resumen'] = context.summary.length;
     }
 
     if (context.pep) {
       const pepParts: string[] = [];
+      const pepFieldSizes: Record<string, number> = {};
+      
       pepParts.push(`Programa: ${context.pep.programaNombre}`);
-      if (context.pep.resumen) pepParts.push(`Resumen: ${context.pep.resumen}`);
-      if (context.pep.historia) pepParts.push(`Historia: ${context.pep.historia}`);
-      if (context.pep.perfilProfesional)
+      
+      if (context.pep.resumen) {
+        pepParts.push(`Resumen: ${context.pep.resumen}`);
+        pepFieldSizes['resumen'] = context.pep.resumen.length;
+      }
+      if (context.pep.historia) {
+        pepParts.push(`Historia: ${context.pep.historia}`);
+        pepFieldSizes['historia'] = context.pep.historia.length;
+      }
+      if (context.pep.perfilProfesional) {
         pepParts.push(`Perfil profesional: ${context.pep.perfilProfesional}`);
-      if (context.pep.perfilOcupacional)
+        pepFieldSizes['perfilProfesional'] = context.pep.perfilProfesional.length;
+      }
+      if (context.pep.perfilOcupacional) {
         pepParts.push(`Perfil ocupacional: ${context.pep.perfilOcupacional}`);
-      if (context.pep.mision) pepParts.push(`Misión: ${context.pep.mision}`);
-      if (context.pep.vision) pepParts.push(`Visión: ${context.pep.vision}`);
+        pepFieldSizes['perfilOcupacional'] = context.pep.perfilOcupacional.length;
+      }
+      if (context.pep.mision) {
+        pepParts.push(`Misión: ${context.pep.mision}`);
+        pepFieldSizes['mision'] = context.pep.mision.length;
+      }
+      if (context.pep.vision) {
+        pepParts.push(`Visión: ${context.pep.vision}`);
+        pepFieldSizes['vision'] = context.pep.vision.length;
+      }
       if (context.pep.objetivos && context.pep.objetivos.length > 0) {
-        pepParts.push(`Objetivos: ${context.pep.objetivos.join("; ")}`);
+        const objetivosStr = context.pep.objetivos.join("; ");
+        pepParts.push(`Objetivos: ${objetivosStr}`);
+        pepFieldSizes['objetivos'] = objetivosStr.length;
       }
       if (context.pep.competencias && context.pep.competencias.length > 0) {
-        pepParts.push(
-          `Competencias: ${context.pep.competencias.join("; ")}`,
-        );
+        const competenciasStr = context.pep.competencias.join("; ");
+        pepParts.push(`Competencias: ${competenciasStr}`);
+        pepFieldSizes['competencias'] = competenciasStr.length;
       }
       if (
         context.pep.camposOcupacionales &&
         context.pep.camposOcupacionales.length > 0
       ) {
-        pepParts.push(
-          `Campos ocupacionales: ${context.pep.camposOcupacionales.join("; ")}`,
-        );
+        const camposStr = context.pep.camposOcupacionales.join("; ");
+        pepParts.push(`Campos ocupacionales: ${camposStr}`);
+        pepFieldSizes['camposOcupacionales'] = camposStr.length;
       }
       if (
         context.pep.lineasInvestigacion &&
         context.pep.lineasInvestigacion.length > 0
       ) {
-        pepParts.push(
-          `Líneas de investigación: ${context.pep.lineasInvestigacion.join("; ")}`,
-        );
+        const lineasStr = context.pep.lineasInvestigacion.join("; ");
+        pepParts.push(`Líneas de investigación: ${lineasStr}`);
+        pepFieldSizes['lineasInvestigacion'] = lineasStr.length;
       }
-      if (context.pep.requisitosIngreso)
+      if (context.pep.requisitosIngreso) {
         pepParts.push(`Requisitos de ingreso: ${context.pep.requisitosIngreso}`);
-      if (context.pep.requisitosGrado)
+        pepFieldSizes['requisitosIngreso'] = context.pep.requisitosIngreso.length;
+      }
+      if (context.pep.requisitosGrado) {
         pepParts.push(`Requisitos de grado: ${context.pep.requisitosGrado}`);
+        pepFieldSizes['requisitosGrado'] = context.pep.requisitosGrado.length;
+      }
       if (context.pep.rawText) {
-        pepParts.push(
-          `Texto completo (OCR): ${truncateText(context.pep.rawText, 4000)}`,
+        // Usar extracción inteligente de fragmentos relevantes
+        const extraction = extractRelevantChunks(
+          context.pep.rawText, 
+          userQuery, 
+          6000  // Aumentado de 4000 a 6000 para permitir secciones más largas completas
         );
+        
+        // PARSING INTELIGENTE: Si la query es sobre principios/valores, extraerlos estructurados
+        let textoParaLLM = extraction.text;
+        if (shouldParsePrincipios(userQuery)) {
+          const principios = extractPrincipiosValores(context.pep.rawText);
+          if (principios.length > 0) {
+            const principiosFormateados = formatPrincipiosForLLM(principios);
+            // Agregar antes del fragmento OCR crudo
+            textoParaLLM = principiosFormateados + '\n---\n\n' + extraction.text;
+            
+            logger.info("✅ PRINCIPIOS PARSEADOS", {
+              cantidadPrincipios: principios.length,
+              nombresExtraidos: principios.map(p => p.nombre),
+            });
+          }
+        }
+        
+        pepParts.push(`Texto completo (OCR - fragmentos relevantes): ${textoParaLLM}`);
+        pepFieldSizes['rawText'] = context.pep.rawText.length;
+        pepFieldSizes['rawTextExtraido'] = extraction.text.length;
+        pepFieldSizes['rawTextChunksUsados'] = extraction.chunksUsed;
+        
+        // Log de la extracción inteligente
+        logger.info("🔍 EXTRACCIÓN INTELIGENTE DE PEP", {
+          textoOriginalChars: context.pep.rawText.length,
+          textoExtraidoChars: extraction.text.length,
+          porcentajeUsado: Math.round((extraction.text.length / context.pep.rawText.length) * 100),
+          chunksEncontrados: extraction.chunksUsed,
+          palabrasClaveEncontradas: extraction.foundKeywords,
+          consultaUsuario: userQuery.substring(0, 100),
+        });
       }
 
-      parts.push(`\nINFO GENERAL DEL PROGRAMA (PEP):\n${pepParts.join("\n")}`);
+      const pepContent = `\nINFO GENERAL DEL PROGRAMA (PEP):\n${pepParts.join("\n")}`;
+      parts.push(pepContent);
+      sizeTracker['pep'] = pepContent.length;
+      
+      // Log detallado de qué campos del PEP se incluyeron
+      const totalPepChars = Object.values(pepFieldSizes).reduce((sum, val) => sum + val, 0);
+      logger.info("📄 CAMPOS PEP INCLUIDOS EN CONTEXTO", {
+        camposIncluidos: Object.keys(pepFieldSizes),
+        cantidadCampos: Object.keys(pepFieldSizes).length,
+        tamanosPorCampo: pepFieldSizes,
+        totalCaracteresPEP: totalPepChars,
+        tokensEstimadosPEP: Math.ceil(totalPepChars / 4),
+      });
     }
 
     if (context.facultades.length > 0) {
@@ -455,7 +551,19 @@ export class OllamaService {
     }
 
     const fullContext = parts.join("\n");
-    return truncateText(fullContext, config.chatbot.maxContextTokens * 4);
+    const truncated = truncateText(fullContext, config.chatbot.maxContextTokens * 4);
+    
+    // Log detallado del contexto formateado
+    logger.info("📄 CONTEXTO FORMATEADO PARA LLM", {
+      seccionesIncluidas: parts.length,
+      caracteresAntesTruncado: fullContext.length,
+      caracteresDespuesTruncado: truncated.length,
+      fueTruncado: truncated.length < fullContext.length,
+      estimadoTokens: Math.ceil(truncated.length / 4),
+      maxTokensConfig: config.chatbot.maxContextTokens,
+    });
+    
+    return truncated;
   }
 
   private groupMateriasBySemestre(materias: MateriaPensum[]): string {

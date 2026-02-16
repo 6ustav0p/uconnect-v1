@@ -107,11 +107,32 @@ export class Chatbot {
 
       // Obtener contexto académico
       const context = await this.getAcademicContext(entities);
-      logger.debug("Contexto académico", {
+      
+      // Log detallado de información recopilada
+      const contextStats = {
         facultades: context.facultades.length,
         programas: context.programas.length,
         materias: context.materias.length,
-      });
+        pepIncluido: !!context.pep,
+        pepCampos: context.pep ? Object.keys(context.pep).filter(k => context.pep![k as keyof typeof context.pep]).length : 0,
+        resumen: context.summary || "Sin resumen",
+      };
+      
+      logger.info("📊 CONTEXTO ACADÉMICO RECOPILADO", contextStats);
+      
+      if (context.materias.length > 0) {
+        logger.info("📚 Materias encontradas", {
+          total: context.materias.length,
+          primeras5: context.materias.slice(0, 5).map(m => m.materia),
+        });
+      }
+      
+      if (context.programas.length > 0) {
+        logger.info("🎓 Programas encontrados", {
+          total: context.programas.length,
+          nombres: context.programas.slice(0, 5).map(p => p.prog_nombre),
+        });
+      }
 
       // Generar respuesta con IA
       const response = await ollamaService.generateContextualResponse(
@@ -399,9 +420,65 @@ export class Chatbot {
       // PEP (perfil general del programa)
       const programaInfo = programasInfo[0];
       if (programaInfo) {
+        logger.debug("🔍 Buscando PEP del programa", {
+          programaId: programaInfo.prog_id,
+          programaNombre: programaInfo.prog_nombre,
+        });
+        
         const pep = await pepRepository.findByProgramaId(programaInfo.prog_id);
         if (pep) {
           context.pep = pep;
+          
+          // Log detallado del PEP encontrado
+          const pepStats = {
+            programaId: pep.programaId,
+            programaNombre: pep.programaNombre,
+            camposDisponibles: {
+              resumen: !!pep.resumen,
+              historia: !!pep.historia,
+              perfilProfesional: !!pep.perfilProfesional,
+              perfilOcupacional: !!pep.perfilOcupacional,
+              mision: !!pep.mision,
+              vision: !!pep.vision,
+              objetivos: pep.objetivos?.length || 0,
+              competencias: pep.competencias?.length || 0,
+              camposOcupacionales: pep.camposOcupacionales?.length || 0,
+              lineasInvestigacion: pep.lineasInvestigacion?.length || 0,
+              requisitosIngreso: !!pep.requisitosIngreso,
+              requisitosGrado: !!pep.requisitosGrado,
+              rawText: !!pep.rawText,
+            },
+            tamanos: {
+              resumenChars: pep.resumen?.length || 0,
+              historiaChars: pep.historia?.length || 0,
+              perfilProfesionalChars: pep.perfilProfesional?.length || 0,
+              perfilOcupacionalChars: pep.perfilOcupacional?.length || 0,
+              rawTextChars: pep.rawText?.length || 0,
+              totalEstimadoChars: (
+                (pep.resumen?.length || 0) +
+                (pep.historia?.length || 0) +
+                (pep.perfilProfesional?.length || 0) +
+                (pep.perfilOcupacional?.length || 0) +
+                (pep.mision?.length || 0) +
+                (pep.vision?.length || 0) +
+                (pep.objetivos?.join("; ").length || 0) +
+                (pep.competencias?.join("; ").length || 0) +
+                (pep.rawText?.length || 0)
+              ),
+            },
+            actualizadoEn: pep.actualizadoEn,
+          };
+          
+          logger.info("📋 PEP ENCONTRADO Y CARGADO", pepStats);
+          logger.info("📏 Tamaño total del PEP", {
+            caracteres: pepStats.tamanos.totalEstimadoChars,
+            tokensEstimados: Math.ceil(pepStats.tamanos.totalEstimadoChars / 4),
+          });
+        } else {
+          logger.warn("⚠️ PEP no encontrado en base de datos", {
+            programaId: programaInfo.prog_id,
+            programaNombre: programaInfo.prog_nombre,
+          });
         }
       }
 

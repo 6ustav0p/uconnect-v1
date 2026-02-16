@@ -431,7 +431,9 @@ app.get("/api/admin/pep/:programaId", async (req: Request, res: Response) => {
   try {
     const { programaId } = req.params;
 
-    const pep = await pepRepository.findByProgramaId(programaId);
+    // Asegurar que programaId sea string
+    const id = Array.isArray(programaId) ? programaId[0] : programaId;
+    const pep = await pepRepository.findByProgramaId(id);
 
     if (!pep) {
       return res.status(404).json({
@@ -484,7 +486,9 @@ app.delete(
     try {
       const { programaId } = req.params;
 
-      const deleted = await pepRepository.deleteByProgramaId(programaId);
+      // Asegurar que programaId sea string
+      const id = Array.isArray(programaId) ? programaId[0] : programaId;
+      const deleted = await pepRepository.deleteByProgramaId(id);
 
       if (!deleted) {
         return res.status(404).json({
@@ -614,7 +618,9 @@ app.get(
     try {
       const { uploadId } = req.params;
 
-      const upload = await pepUploadService.getUpload(uploadId);
+      // Asegurar que uploadId sea string
+      const id = Array.isArray(uploadId) ? uploadId[0] : uploadId;
+      const upload = await pepUploadService.getUpload(id);
 
       if (!upload) {
         return res.status(404).json({

@@ -75,11 +75,11 @@ export class TextractService {
     const lines: string[] = [];
 
     do {
-      const command = new GetDocumentTextDetectionCommand({
+      const command: GetDocumentTextDetectionCommand = new GetDocumentTextDetectionCommand({
         JobId: jobId,
         NextToken: nextToken,
       });
-      const response = await this.client.send(command);
+      const response: any = await this.client.send(command);
 
       if (response.Blocks && response.Blocks.length > 0) {
         lines.push(...this.extractLines(response.Blocks));
