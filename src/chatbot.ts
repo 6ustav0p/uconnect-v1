@@ -7,6 +7,7 @@ import {
   database,
   chatRepository,
   pepRepository,
+  academusoftService,
 } from "./services";
 import { localDataService } from "./services/local-data.service";
 import {
@@ -428,8 +429,10 @@ export class Chatbot {
     if (entities.programas.length > 0) {
       const programa = entities.programas[0];
 
-      // Buscar información del programa
-      const programasInfo = localDataService.getProgramas(programa);
+      // Buscar información del programa (API Academusoft)
+      const programasInfo = await academusoftService.getProgramas({
+        programa_nombre: programa,
+      });
       context.programas = programasInfo;
 
       // Buscar materias del programa
@@ -520,7 +523,7 @@ export class Chatbot {
 
     // Si pregunta por facultades
     if (entities.intenciones.includes("INFO_FACULTAD")) {
-      context.facultades = localDataService.getFacultades();
+      context.facultades = await academusoftService.getFacultades();
     }
 
     // Si pregunta por programas en general (listar todos)
@@ -529,8 +532,8 @@ export class Chatbot {
         entities.intenciones.includes("LISTAR")) &&
       entities.programas.length === 0
     ) {
-      // Incluir todos los programas
-      context.programas = localDataService.getProgramas();
+      // Incluir todos los programas (API Academusoft)
+      context.programas = await academusoftService.getProgramas();
       context.summary = `Lista de ${context.programas.length} programas académicos disponibles`;
     }
 

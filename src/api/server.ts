@@ -14,6 +14,7 @@ import {
   pepRepository,
   pepParserService,
   pepUploadService,
+  academusoftService,
 } from "../services";
 import { logger } from "../utils";
 
@@ -230,10 +231,10 @@ app.delete("/api/chat/:sessionId", async (req: Request, res: Response) => {
 // DATOS ACADÉMICOS
 // ============================================
 
-// Listar facultades
-app.get("/api/facultades", (_req: Request, res: Response) => {
+// Listar facultades (API Academusoft)
+app.get("/api/facultades", async (_req: Request, res: Response) => {
   try {
-    const facultades = localDataService.getFacultades();
+    const facultades = await academusoftService.getFacultades();
 
     res.json({
       data: facultades,
@@ -248,15 +249,15 @@ app.get("/api/facultades", (_req: Request, res: Response) => {
   }
 });
 
-// Listar programas (solo pregrado)
-app.get("/api/programas", (req: Request, res: Response) => {
+// Listar programas (API Academusoft)
+app.get("/api/programas", async (req: Request, res: Response) => {
   try {
     const { nombre, facultad } = req.query;
 
-    const programas = localDataService.getProgramas(
-      nombre as string | undefined,
-      facultad as string | undefined,
-    );
+    const programas = await academusoftService.getProgramas({
+      programa_nombre: nombre as string | undefined,
+      facultad_nombre: facultad as string | undefined,
+    });
 
     res.json({
       data: programas,
@@ -380,10 +381,11 @@ app.post(
         });
       }
 
-      // Verificar que el programa exista
-      const programaExiste = localDataService
-        .getProgramas()
-        .some((p) => p.prog_id === programaId);
+      // Verificar que el programa exista (API Academusoft)
+      const allProgramas = await academusoftService.getProgramas();
+      const programaExiste = allProgramas.some(
+        (p) => p.prog_id === programaId,
+      );
 
       if (!programaExiste) {
         return res.status(400).json({
