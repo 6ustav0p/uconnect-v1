@@ -300,14 +300,37 @@ export class Chatbot {
     if (/creditos?/i.test(normalized)) {
       entities.intenciones.push("CREDITOS");
     }
-    if (/facultad/i.test(normalized)) {
+    // Detectar facultad siempre (no solo cuando dice "facultad")
+    const facultadDetectada = this.detectarFacultad(normalized);
+    if (facultadDetectada) {
+      entities.facultades.push(facultadDetectada);
+      if (!entities.intenciones.includes("INFO_FACULTAD")) {
+        entities.intenciones.push("INFO_FACULTAD");
+      }
+    } else if (/facultad/i.test(normalized)) {
+      // Dice "facultad" pero no detectamos cuál específica
       entities.intenciones.push("INFO_FACULTAD");
     }
+
     if (/programa|carrera/i.test(normalized)) {
       entities.intenciones.push("INFO_PROGRAMA");
     }
-    if (/listar|cuales|todos/i.test(normalized)) {
+    if (/listar|cuales|todos|que\s+(programas|carreras)\s+(hay|ofrece|tiene)/i.test(normalized)) {
       entities.intenciones.push("LISTAR");
+    }
+
+    // Disambiguación: si es listado y se detectó facultad,
+    // el match de programa específico es probablemente un falso positivo
+    if (
+      entities.intenciones.includes("LISTAR") &&
+      entities.facultades.length > 0 &&
+      entities.programas.length > 0
+    ) {
+      logger.debug("Disambiguación: listado por facultad, limpiando programa", {
+        programaDescartado: entities.programas[0],
+        facultad: entities.facultades[0],
+      });
+      entities.programas = [];
     }
 
     if (entities.intenciones.length === 0) {
@@ -315,6 +338,56 @@ export class Chatbot {
     }
 
     return entities;
+  }
+
+  // ============================================
+  // DETECCIÓN DE FACULTAD
+  // ============================================
+
+  /**
+   * Detecta el nombre de la facultad mencionada en el mensaje.
+   * Mapea keywords comunes a los nombres oficiales de las facultades.
+   */
+  private detectarFacultad(normalized: string): string | null {
+    const facultadKeywords: Array<{ keywords: RegExp; nombre: string }> = [
+      {
+        keywords: /ingenieria|ingenierias|\bing\b/i,
+        nombre: "FACULTAD DE INGENIERIAS",
+      },
+      {
+        keywords: /agricola|agricolas|agronomia|agro\b/i,
+        nombre: "FACULTAD DE CIENCIAS AGRICOLAS",
+      },
+      {
+        keywords: /ciencias\s*basicas|basicas|fisica|quimica|biologia|estadistica|matematica|geografia/i,
+        nombre: "FACULTAD DE CIENCIAS BASICAS",
+      },
+      {
+        keywords: /salud|enfermeria|medicina(?!\s*veterinaria)|bacteriologia/i,
+        nombre: "FACULTAD DE CIENCIAS DE LA SALUD",
+      },
+      {
+        keywords: /economica|juridica|administrativa|derecho|administracion|finanzas|comercio/i,
+        nombre: "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS",
+      },
+      {
+        keywords: /educacion|humanas|pedagogia|licenciatura|sociales/i,
+        nombre: "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS",
+      },
+      {
+        keywords: /veterinaria|zootecnia|animal/i,
+        nombre: "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNIA",
+      },
+    ];
+
+    for (const { keywords, nombre } of facultadKeywords) {
+      if (keywords.test(normalized)) {
+        logger.debug("Facultad detectada", { nombre });
+        return nombre;
+      }
+    }
+
+    return null;
   }
 
   // ============================================
@@ -435,23 +508,47 @@ export class Chatbot {
       });
       context.programas = programasInfo;
 
-      // Buscar materias del programa
+      // Buscar materias del programa (API con fallback a datos locales)
       const semestre =
         entities.semestres.length > 0 ? entities.semestres[0] : undefined;
       const jornada =
         entities.jornadas.length > 0 ? entities.jornadas[0] : undefined;
 
-      const materias = localDataService.getMaterias(
-        programa,
+      let materias = await academusoftService.getPensum({
+        programa_nombre: programa,
         semestre,
-        undefined,
-        jornada,
-      );
+      });
+
+      // Deduplicar resultados
+      const seen = new Set<string>();
+      materias = materias.filter((m) => {
+        const key = `${m.programa}|${m.semestre}|${m.materia}|${m.jornada}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
+      // Filtrar por jornada
+      if (jornada) {
+        materias = materias.filter((m) =>
+          normalizeText(m.jornada).includes(normalizeText(jornada)),
+        );
+      } else if (materias.length > 0) {
+        const primeraJornada = materias[0].jornada;
+        materias = materias.filter((m) => m.jornada === primeraJornada);
+      }
+
       context.materias = materias;
 
-      // PEP (perfil general del programa)
+      // PEP: solo cargar si la consulta amerita perfil del programa
+      // (no para consultas simples de materias/pensum/créditos)
+      const pensumOnlyIntents = ["INFO_PENSUM", "CREDITOS", "LISTAR", "INFO_FACULTAD"];
+      const isPensumOnlyQuery = entities.intenciones.every((i) =>
+        pensumOnlyIntents.includes(i),
+      );
+
       const programaInfo = programasInfo[0];
-      if (programaInfo) {
+      if (programaInfo && !isPensumOnlyQuery) {
         logger.debug("🔍 Buscando PEP del programa", {
           programaId: programaInfo.prog_id,
           programaNombre: programaInfo.prog_nombre,
@@ -523,18 +620,40 @@ export class Chatbot {
 
     // Si pregunta por facultades
     if (entities.intenciones.includes("INFO_FACULTAD")) {
-      context.facultades = await academusoftService.getFacultades();
+      if (entities.facultades.length > 0) {
+        // Filtrar por la facultad detectada
+        context.facultades = await academusoftService.getFacultades({
+          nombre: entities.facultades[0],
+        });
+      } else {
+        context.facultades = await academusoftService.getFacultades();
+      }
     }
 
-    // Si pregunta por programas en general (listar todos)
+    // Si pregunta por programas en general (sin programa específico detectado)
     if (
       (entities.intenciones.includes("INFO_PROGRAMA") ||
-        entities.intenciones.includes("LISTAR")) &&
+        entities.intenciones.includes("LISTAR") ||
+        entities.intenciones.includes("INFO_FACULTAD")) &&
       entities.programas.length === 0
     ) {
-      // Incluir todos los programas (API Academusoft)
-      context.programas = await academusoftService.getProgramas();
-      context.summary = `Lista de ${context.programas.length} programas académicos disponibles`;
+      if (entities.facultades.length > 0) {
+        // Filtrar programas por la facultad detectada
+        const facultadNombre = entities.facultades[0];
+        context.programas = await academusoftService.getProgramas({
+          facultad_nombre: facultadNombre,
+        });
+        context.summary = `Programas académicos de la ${facultadNombre}: ${context.programas.length} encontrados`;
+        logger.info("Programas filtrados por facultad", {
+          facultad: facultadNombre,
+          count: context.programas.length,
+          programas: context.programas.map((p) => p.prog_nombre),
+        });
+      } else {
+        // Sin facultad específica: incluir todos los programas
+        context.programas = await academusoftService.getProgramas();
+        context.summary = `Lista de ${context.programas.length} programas académicos disponibles`;
+      }
     }
 
     return context;

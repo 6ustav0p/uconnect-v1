@@ -434,6 +434,29 @@ export class OllamaService {
       sizeTracker["resumen"] = context.summary.length;
     }
 
+    // Datos académicos primero (lo más actionable para el LLM)
+    if (context.materias.length > 0) {
+      const materiasAgrupadas = this.groupMateriasBySemestre(context.materias);
+      parts.push(`\nMATERIAS DEL PENSUM:\n${materiasAgrupadas}`);
+    }
+
+    if (context.programas.length > 0) {
+      const programasStr = formatForContext<ProgramaAcademico>(
+        context.programas,
+        20,
+        ["prog_nombre", "facultad_nombre"],
+      );
+      parts.push(`\nPROGRAMAS ACADÉMICOS:\n${programasStr}`);
+    }
+
+    if (context.facultades.length > 0) {
+      const facultadesStr = formatForContext<Facultad>(context.facultades, 10, [
+        "unid_nombre",
+      ]);
+      parts.push(`\nFACULTADES:\n${facultadesStr}`);
+    }
+
+    // PEP al final (suplementario, puede ser muy grande)
     if (context.pep) {
       const pepParts: string[] = [];
       const pepFieldSizes: Record<string, number> = {};
@@ -564,27 +587,6 @@ export class OllamaService {
         totalCaracteresPEP: totalPepChars,
         tokensEstimadosPEP: Math.ceil(totalPepChars / 4),
       });
-    }
-
-    if (context.facultades.length > 0) {
-      const facultadesStr = formatForContext<Facultad>(context.facultades, 10, [
-        "unid_nombre",
-      ]);
-      parts.push(`\nFACULTADES:\n${facultadesStr}`);
-    }
-
-    if (context.programas.length > 0) {
-      const programasStr = formatForContext<ProgramaAcademico>(
-        context.programas,
-        20,
-        ["prog_nombre", "facultad_nombre"],
-      );
-      parts.push(`\nPROGRAMAS ACADÉMICOS:\n${programasStr}`);
-    }
-
-    if (context.materias.length > 0) {
-      const materiasAgrupadas = this.groupMateriasBySemestre(context.materias);
-      parts.push(`\nMATERIAS DEL PENSUM:\n${materiasAgrupadas}`);
     }
 
     const fullContext = parts.join("\n");
