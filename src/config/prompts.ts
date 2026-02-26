@@ -308,13 +308,13 @@ El proceso de admisión se basa en los resultados de las Pruebas Saber 11 (ICFES
 
 El aspirante pregunta sobre el programa: {programa}
 
-DOCUMENTOS OFICIALES (INCLUIR SIEMPRE EN LA RESPUESTA):
-• Simulador de Promedio Ponderado por Programa: {simuladorUrl}
-• Puntajes de Referencia (mínimos y máximos por programa y jornada): {puntajesUrl}
+DOCUMENTOS OFICIALES (INCLUIR SIEMPRE EN LA RESPUESTA CON FORMATO MARKDOWN DE LINK):
+• [Simulador de Promedio Ponderado por Programa]({simuladorUrl})
+• [Puntajes de Referencia (mínimos y máximos por programa y jornada)]({puntajesUrl})
 
 INSTRUCCIONES:
 - Responde sobre el programa mencionado combinando la info académica con la orientación de admisión
-- SIEMPRE incluye ambos enlaces en tu respuesta
+- SIEMPRE incluye ambos enlaces en tu respuesta usando formato markdown: [texto](url)
 - NO inventes puntajes - refiere a los documentos oficiales
 - Sugiere al aspirante usar el simulador para calcular su puntaje y compararlo con los puntajes de referencia
 `;

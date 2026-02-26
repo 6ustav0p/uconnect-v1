@@ -703,11 +703,11 @@ export class Chatbot {
       "### 🧮 ¿Cómo calcular tu puntaje?\n" +
       "Puedes usar el **Simulador de Promedio Ponderado** oficial para estimar tu puntaje de admisión " +
       "ingresando tus resultados del Saber 11:\n" +
-      `• 📊 **Simulador de Promedio Ponderado por Programa**: ${simuladorUrl}\n\n` +
+      `• 📊 [**Simulador de Promedio Ponderado por Programa**](${simuladorUrl})\n\n` +
       "### 📋 ¿Cuáles son los puntajes de referencia?\n" +
       "Consulta los **puntajes mínimos y máximos de referencia** por programa y jornada " +
       "para el período actual:\n" +
-      `• 📈 **Puntajes de Referencia**: ${puntajesUrl}\n\n` +
+      `• 📈 [**Puntajes de Referencia**](${puntajesUrl})\n\n` +
       "### 💡 Recomendación\n" +
       "1. Descarga el **simulador** e ingresa tus puntajes del ICFES\n" +
       "2. Compara tu resultado con los **puntajes de referencia** del programa que te interesa\n" +
@@ -741,8 +741,8 @@ export class Chatbot {
       if (!finalMessage.includes(simuladorUrl)) {
         finalMessage +=
           "\n\n---\n" +
-          `📊 **Simulador de Promedio Ponderado**: ${simuladorUrl}\n` +
-          `📈 **Puntajes de Referencia**: ${puntajesUrl}`;
+          `📊 [**Simulador de Promedio Ponderado**](${simuladorUrl})\n` +
+          `📈 [**Puntajes de Referencia**](${puntajesUrl})`;
       }
 
       await chatRepository.addMessage(sessionId, "assistant", finalMessage);

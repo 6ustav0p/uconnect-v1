@@ -71,10 +71,10 @@ export const config = {
   admision: {
     simuladorUrl:
       getEnvVar("ADMISION_SIMULADOR_URL", false) ||
-      "https://docs.google.com/spreadsheets/d/19qet5I99Jb4Ljs3XuujKvJByFiV5Lbqk/edit?usp=drive_link&ouid=109302368797394955464&rtpof=true&sd=true",
+      "https://docs.google.com/spreadsheets/d/19qet5I99Jb4Ljs3XuujKvJByFiV5Lbqk/edit?usp=sharing",
     puntajesReferenciaUrl:
       getEnvVar("ADMISION_PUNTAJES_URL", false) ||
-      "https://docs.google.com/spreadsheets/d/1gGAAJJyBuJ8qjbkOOppEh0wBlOfRyyue/edit?usp=drive_link&ouid=109302368797394955464&rtpof=true&sd=true",
+      "https://docs.google.com/spreadsheets/d/1gGAAJJyBuJ8qjbkOOppEh0wBlOfRyyue/edit?usp=sharing",
   },
 
   // Environment
