@@ -15,6 +15,7 @@
     "mcp": "node dist/mcp/server.js",
     "mcp:dev": "ts-node src/mcp/server.ts",
     "peps:ingest": "ts-node src/peps/ingest.ts",
+    "gpt": "ts-node src/gpt-agent.ts",
     "clean": "rimraf dist",
     "test": "echo \"No tests yet\" && exit 0"
   },
@@ -38,6 +39,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@modelcontextprotocol/sdk": "^1.25.3",
+    "@openai/agents": "^0.2.0",
     "@types/uuid": "^10.0.0",
     "@aws-sdk/client-s3": "^3.758.0",
     "@aws-sdk/client-textract": "^3.758.0",
@@ -50,6 +52,7 @@
     "helmet": "^8.1.0",
     "mongoose": "^9.1.5",
     "ollama": "^0.6.3",
+    "openai": "^4.75.0",
     "uuid": "^13.0.0",
     "zod": "^4.3.6"
   }
