@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { config } from "./config";
+import { ADMISION_CONTEXT } from "./config/prompts";
 import { logger, normalizeText } from "./utils";
 import {
   ollamaService,
@@ -105,6 +106,18 @@ export class Chatbot {
       if (entities.intenciones.includes("DESPEDIDA")) {
         this.sessionContext.delete(sessionId); // Limpiar contexto
         return this.handleFarewell(sessionId, startTime);
+      }
+
+      // Verificar intención de admisión
+      if (entities.intenciones.includes("INFO_ADMISION")) {
+        this.updateSessionContext(sessionId, entities);
+        return this.handleAdmisionIntent(
+          sessionId,
+          userMessage,
+          entities,
+          history,
+          startTime,
+        );
       }
 
       // Actualizar contexto de la sesión
@@ -272,6 +285,12 @@ export class Chatbot {
     if (normalized.includes("diurna")) entities.jornadas.push("DIURNA");
     if (normalized.includes("nocturna")) entities.jornadas.push("NOCTURNA");
     if (normalized.includes("distancia")) entities.jornadas.push("DISTANCIA");
+
+    // Detectar intención de admisión / puntajes
+    const admisionRegex = /admisi[oó]n|inscripci[oó]n|inscribirme|proceso\s*(de)?\s*(admisi[oó]n|inscripci[oó]n|entrada|ingreso|selecci[oó]n)|requisitos?\s*(de)?\s*ingreso|como\s*(entro|ingreso|me\s*inscribo)|puedo\s*(entrar|ingresar|aspirar)|puntaje|icfes|saber\s*11|aspirante|aspirar|simulador|ponderado|puntaje\s*m[ií]nimo|nota\s*de\s*corte|corte\s*(de)?\s*(admisi[oó]n)?|promedio\s*ponderado|calcular\s*(mi)?\s*puntaje/i;
+    if (admisionRegex.test(normalized)) {
+      entities.intenciones.push("INFO_ADMISION");
+    }
 
     // Detectar intenciones
     if (/materias?|asignaturas?|pensum/i.test(normalized)) {
@@ -531,7 +550,8 @@ export class Chatbot {
       "Puedo ayudarte con información sobre:\n\n" +
       "📚 **Programas académicos** - Carreras disponibles\n" +
       "📋 **Pensum** - Materias por semestre\n" +
-      "🏛️ **Facultades** - Información de facultades\n\n" +
+      "🏛️ **Facultades** - Información de facultades\n" +
+      "📝 **Proceso de admisión** - Puntajes y simulador\n\n" +
       "¿En qué puedo ayudarte hoy?";
 
     await chatRepository.addMessage(sessionId, "assistant", greeting);
@@ -539,6 +559,88 @@ export class Chatbot {
     return {
       message: greeting,
       sources: [],
+      tokensUsed: { input: 0, output: 0 },
+    };
+  }
+
+  private async handleAdmisionIntent(
+    sessionId: string,
+    userMessage: string,
+    entities: ExtractedEntities,
+    history: ChatMessage[],
+    startTime: number,
+  ): Promise<ChatbotResponse> {
+    const simuladorUrl = config.admision.simuladorUrl;
+    const puntajesUrl = config.admision.puntajesReferenciaUrl;
+
+    const admisionInfo =
+      "## 📝 Proceso de Admisión - Universidad de Córdoba\n\n" +
+      "El ingreso a la Universidad de Córdoba se realiza a través de un **proceso de selección basado en los resultados de las Pruebas Saber 11 (ICFES)**. " +
+      "Cada programa académico asigna **pesos diferentes** a las áreas evaluadas (Lectura Crítica, Matemáticas, Ciencias Naturales, Sociales y Ciudadanas, Inglés, entre otras), " +
+      "por lo que el **promedio ponderado** varía según la carrera a la que aspires.\n\n" +
+      "### 🧮 ¿Cómo calcular tu puntaje?\n" +
+      "Puedes usar el **Simulador de Promedio Ponderado** oficial para estimar tu puntaje de admisión " +
+      "ingresando tus resultados del Saber 11:\n" +
+      `• 📊 **Simulador de Promedio Ponderado por Programa**: ${simuladorUrl}\n\n` +
+      "### 📋 ¿Cuáles son los puntajes de referencia?\n" +
+      "Consulta los **puntajes mínimos y máximos de referencia** por programa y jornada " +
+      "para el período actual:\n" +
+      `• 📈 **Puntajes de Referencia**: ${puntajesUrl}\n\n` +
+      "### 💡 Recomendación\n" +
+      "1. Descarga el **simulador** e ingresa tus puntajes del ICFES\n" +
+      "2. Compara tu resultado con los **puntajes de referencia** del programa que te interesa\n" +
+      "3. Así podrás tener una orientación clara sobre tus posibilidades de ingreso\n";
+
+    // Si hay programa específico, enriquecer con contexto del programa + IA
+    if (entities.programas.length > 0) {
+      const context = await this.getAcademicContext(entities);
+      context.summary = `Información de admisión para el programa ${entities.programas[0]}`;
+
+      // Inyectar info de admisión en el contexto para que la IA la use
+      const admisionContext = ADMISION_CONTEXT
+        .replace("{simuladorUrl}", simuladorUrl)
+        .replace("{puntajesUrl}", puntajesUrl)
+        .replace("{programa}", entities.programas[0]);
+
+      const enrichedContext: AcademicContext = {
+        ...context,
+        summary: `${context.summary}\n\n${admisionContext}`,
+      };
+
+      const response = await ollamaService.generateContextualResponse(
+        sessionId,
+        userMessage,
+        enrichedContext,
+        history,
+      );
+
+      // Asegurar que los links siempre estén presentes en la respuesta
+      let finalMessage = response.message;
+      if (!finalMessage.includes(simuladorUrl)) {
+        finalMessage +=
+          "\n\n---\n" +
+          `📊 **Simulador de Promedio Ponderado**: ${simuladorUrl}\n` +
+          `📈 **Puntajes de Referencia**: ${puntajesUrl}`;
+      }
+
+      await chatRepository.addMessage(sessionId, "assistant", finalMessage);
+
+      return {
+        message: finalMessage,
+        sources: [
+          "Proceso de Admisión - Universidad de Córdoba",
+          ...this.getSources(context),
+        ],
+        tokensUsed: response.tokensUsed,
+      };
+    }
+
+    // Sin programa específico: respuesta fija informativa
+    await chatRepository.addMessage(sessionId, "assistant", admisionInfo);
+
+    return {
+      message: admisionInfo,
+      sources: ["Proceso de Admisión - Universidad de Córdoba"],
       tokensUsed: { input: 0, output: 0 },
     };
   }
@@ -578,6 +680,9 @@ export class Chatbot {
     }
     if (context.pep?.programaNombre) {
       sources.push(`PEP ${context.pep.programaNombre}`);
+    }
+    if (context.summary?.includes("admisión")) {
+      sources.push("Proceso de Admisión - Universidad de Córdoba");
     }
 
     return sources.length > 0 ? sources : ["Base de conocimiento local"];

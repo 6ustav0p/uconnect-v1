@@ -67,6 +67,16 @@ export const config = {
     dir: getEnvVar("PEPS_DIR", false) || "peps",
   },
 
+  // Admision Configuration
+  admision: {
+    simuladorUrl:
+      getEnvVar("ADMISION_SIMULADOR_URL", false) ||
+      "https://docs.google.com/spreadsheets/d/19qet5I99Jb4Ljs3XuujKvJByFiV5Lbqk/edit?usp=drive_link&ouid=109302368797394955464&rtpof=true&sd=true",
+    puntajesReferenciaUrl:
+      getEnvVar("ADMISION_PUNTAJES_URL", false) ||
+      "https://docs.google.com/spreadsheets/d/1gGAAJJyBuJ8qjbkOOppEh0wBlOfRyyue/edit?usp=drive_link&ouid=109302368797394955464&rtpof=true&sd=true",
+  },
+
   // Environment
   env: getEnvVar("NODE_ENV", false) || "development",
   isDev: (getEnvVar("NODE_ENV", false) || "development") === "development",

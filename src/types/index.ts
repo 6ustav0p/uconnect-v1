@@ -86,6 +86,7 @@ export type IntentType =
   | "INFO_PROGRAMA"
   | "INFO_MATERIA"
   | "INFO_PENSUM"
+  | "INFO_ADMISION"
   | "LISTAR_FACULTADES"
   | "LISTAR_PROGRAMAS"
   | "LISTAR_MATERIAS"
