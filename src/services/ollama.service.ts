@@ -89,10 +89,32 @@ export class OllamaService {
     // Eliminar bloques de pensamiento con etiquetas <think>...</think>
     cleaned = cleaned.replace(/<think>[\s\S]*?<\/think>/gi, "");
 
+    // Eliminar patrones de chain-of-thought en inglés y español
+    const thinkingPhrases = [
+      /\*?\*?Final Polish:?[\s\S]*?(?=\n\n|$)/gi,
+      /\*?\*?Final Review:?[\s\S]*?(?=\n\n|$)/gi,
+      /The draft looks good[\s\S]*?(?=\n\n|$)/gi,
+      /Let me think[\s\S]*?(?=\n\n|$)/gi,
+      /I should also mention[\s\S]*?(?=\n\n)/gi,
+      /Review the draft[\s\S]*?(?=\n\n)/gi,
+      /Deconstruct[\s\S]*?(?=\n\n)/gi,
+      /Analyze[\s\S]*?(?=\n\n)/gi,
+      /Structure[\s\S]*?(?=\n\n)/gi,
+      /Core Question:[\s\S]*?(?=\n\n)/gi,
+      /Constraints:[\s\S]*?(?=\n\n)/gi,
+    ];
+
+    for (const pattern of thinkingPhrases) {
+      cleaned = cleaned.replace(pattern, "");
+    }
+
+    // Eliminar líneas que empiecen con * y contengan palabras de planificación
+    cleaned = cleaned.replace(/^\s*\*\s*(Introduce|Create|Review|I should|Mention|Copy|Cite|The response).*$/gim, "");
+
     // Eliminar bloques que empiecen con "Deconstruct", "Analyze", "Structure", etc.
     // Estos son patrones de chain-of-thought
     const thinkingPatterns = [
-      /^[\s\S]*?(?=¡?Hola|Claro|Según|El perfil|La información|De acuerdo|Con gusto)/i,
+      /^[\s\S]*?(?=¡?Hola|Claro,|Según|El perfil|La información|De acuerdo|Con gusto)/i,
       /Deconstruct[\s\S]*?(?=\n\n(?:¡?Hola|Claro|Según|El perfil|INFORMACIÓN))/gi,
       /Analyze[\s\S]*?(?=\n\n(?:¡?Hola|Claro|Según|El perfil|INFORMACIÓN))/gi,
       /Structure[\s\S]*?(?=\n\n(?:¡?Hola|Claro|Según|El perfil|INFORMACIÓN))/gi,

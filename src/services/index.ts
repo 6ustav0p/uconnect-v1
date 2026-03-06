@@ -7,3 +7,4 @@ export { pepParserService, PepParserService } from "./pep-parser.service";
 export { s3Service, S3Service } from "./s3.service";
 export { textractService, TextractService } from "./textract.service";
 export { pepUploadService, PepUploadService } from "./pep-upload.service";
+export { gptAgentService, GptAgentService } from "./gpt-agent.service";

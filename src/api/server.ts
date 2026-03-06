@@ -14,6 +14,7 @@ import {
   pepRepository,
   pepParserService,
   pepUploadService,
+  gptAgentService,
 } from "../services";
 import { logger } from "../utils";
 
@@ -67,6 +68,7 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 app.get("/api/health", async (_req: Request, res: Response) => {
   try {
     const ollamaAvailable = await checkOllamaHealth();
+    const gptAvailable = await gptAgentService.isAvailable();
 
     res.json({
       status: "ok",
@@ -74,6 +76,7 @@ app.get("/api/health", async (_req: Request, res: Response) => {
       services: {
         database: "connected",
         ollama: ollamaAvailable ? "available" : "unavailable",
+        gpt: gptAvailable ? "available" : "unavailable",
       },
     });
   } catch (error) {
@@ -83,6 +86,7 @@ app.get("/api/health", async (_req: Request, res: Response) => {
       services: {
         database: "unknown",
         ollama: "unknown",
+        gpt: "unknown",
       },
     });
   }
@@ -222,6 +226,66 @@ app.delete("/api/chat/:sessionId", async (req: Request, res: Response) => {
       error: true,
       code: "INTERNAL_ERROR",
       message: "Error finalizando sesión",
+    });
+  }
+});
+
+// ============================================
+// GPT AGENT ENDPOINT (RAG con OpenAI)
+// ============================================
+
+// Enviar mensaje al GPT Agent
+app.post("/api/gpt/chat", chatLimiter, async (req: Request, res: Response) => {
+  try {
+    const { message } = req.body;
+
+    // Validaciones
+    if (!message || typeof message !== "string") {
+      return res.status(400).json({
+        error: true,
+        code: "INVALID_REQUEST",
+        message: "El campo 'message' es requerido",
+      });
+    }
+
+    if (message.length > 1000) {
+      return res.status(400).json({
+        error: true,
+        code: "MESSAGE_TOO_LONG",
+        message: "El mensaje no puede exceder 1000 caracteres",
+      });
+    }
+
+    // Procesar con GPT Agent
+    const result = await gptAgentService.processQuery(message.trim());
+
+    res.json({
+      response: result.response,
+      documents: result.documents,
+    });
+  } catch (error) {
+    logger.error("Error en /api/gpt/chat", { error: (error as Error).message });
+
+    res.status(500).json({
+      error: true,
+      code: "INTERNAL_ERROR",
+      message: "Error procesando el mensaje con GPT. Intenta de nuevo.",
+    });
+  }
+});
+
+// Verificar disponibilidad de GPT
+app.get("/api/gpt/health", async (_req: Request, res: Response) => {
+  try {
+    const available = await gptAgentService.isAvailable();
+    res.json({
+      status: available ? "available" : "unavailable",
+      provider: "openai",
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: "error",
+      provider: "openai",
     });
   }
 });
@@ -693,10 +757,14 @@ async function startServer() {
 📚 Documentación: API_DOCS.md
 
 Endpoints disponibles:
-  POST   /api/chat              - Enviar mensaje al chatbot
+  POST   /api/chat              - Enviar mensaje al chatbot (Ollama)
   POST   /api/chat/session      - Crear nueva sesión
   GET    /api/chat/:id/history  - Historial de chat
   DELETE /api/chat/:id          - Finalizar sesión
+
+GPT Agent (OpenAI RAG):
+  POST   /api/gpt/chat          - Enviar mensaje al GPT Agent
+  GET    /api/gpt/health        - Estado del servicio GPT
   
   GET    /api/facultades        - Listar facultades
   GET    /api/programas         - Listar programas pregrado
