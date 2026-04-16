@@ -1,7 +1,9 @@
 import { ADMISSION_FAQ } from "./admission-faq";
 
 // Preguntas guiadas para aspirantes (featured)
-export const ADMISSION_GUIDED_QUESTIONS = ADMISSION_FAQ.featured.map((q) => q.question);
+export const ADMISSION_GUIDED_QUESTIONS = ADMISSION_FAQ.featured.map(
+  (q) => q.question,
+);
 
 export const SYSTEM_PROMPT = `Eres UConnect, el asistente virtual oficial de la Universidad de Córdoba, Colombia. Tu rol es ayudar a estudiantes en proceso de admisión con información precisa sobre:
 
