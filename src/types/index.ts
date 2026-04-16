@@ -121,10 +121,13 @@ export interface ChatbotResponse {
     materias?: MateriaPensum[];
   };
   sources: string[];
+  suggestedQuestions?: string[];
   tokensUsed?: {
     input: number;
     output: number;
   };
+  engine?: "gpt-rag" | "local-chat";
+  route?: "documents" | "general";
 }
 
 export interface AcademicContext {

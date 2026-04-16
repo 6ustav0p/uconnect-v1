@@ -17,6 +17,7 @@ import {
   ExtractedEntities,
   MateriaPensum,
 } from "./types";
+import { ADMISSION_GUIDED_QUESTIONS } from "./config/prompts";
 
 export class Chatbot {
   private initialized = false;
@@ -682,6 +683,7 @@ export class Chatbot {
       message: greeting,
       sources: [],
       tokensUsed: { input: 0, output: 0 },
+      suggestedQuestions: ADMISSION_GUIDED_QUESTIONS,
     };
   }
 
