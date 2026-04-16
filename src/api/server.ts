@@ -15,12 +15,18 @@ import {
   pepParserService,
   pepUploadService,
   gptAgentService,
+  gptVectorStoreService,
 } from "../services";
-import { logger } from "../utils";
+import { logger, normalizeText } from "../utils";
+import multer from "multer";
+import { ADMISSION_GUIDED_QUESTIONS } from "../config/prompts";
+import { ADMISSION_FAQ, getFAQAnswer } from "../config/admission-faq";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "*";
+
+type ChatRoute = "documents" | "general";
 
 // ============================================
 // MIDDLEWARE
@@ -59,6 +65,12 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
     ip: req.ip,
   });
   next();
+});
+
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB limit
 });
 
 // ============================================
@@ -103,6 +115,52 @@ async function checkOllamaHealth(): Promise<boolean> {
   }
 }
 
+function inferChatRoute(message: string): ChatRoute {
+  const normalized = normalizeText(message);
+
+  // Preguntas de materias/pensum operativo se responden mejor con datos locales.
+  const localDataKeywords = [
+    "materia",
+    "materias",
+    "semestre",
+    "credito",
+    "creditos",
+    "jornada",
+    "programa",
+    "facultad",
+    "pensum",
+  ];
+
+  const documentsKeywords = [
+    "pep",
+    "proyecto educativo",
+    "perfil de egresado",
+    "perfil profesional",
+    "competencias",
+    "requisitos de grado",
+    "mision",
+    "vision",
+    "acuerdo",
+    "resolucion",
+    "lineas de investigacion",
+  ];
+
+  if (documentsKeywords.some((keyword) => normalized.includes(keyword))) {
+    return "documents";
+  }
+
+  if (localDataKeywords.some((keyword) => normalized.includes(keyword))) {
+    return "general";
+  }
+
+  return "general";
+}
+
+function normalizeSources(input: unknown): string[] {
+  if (!Array.isArray(input)) return [];
+  return input.filter((item): item is string => typeof item === "string");
+}
+
 // ============================================
 // ESTADÍSTICAS
 // ============================================
@@ -127,7 +185,10 @@ app.get("/api/stats", async (_req: Request, res: Response) => {
 // Crear nueva sesión
 app.post("/api/chat/session", (_req: Request, res: Response) => {
   const sessionId = chatbot.createSession();
-  res.status(201).json({ sessionId });
+  res.status(201).json({
+    sessionId,
+    suggestedQuestions: ADMISSION_GUIDED_QUESTIONS,
+  });
 });
 
 // Enviar mensaje al chat
@@ -154,17 +215,78 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
 
     // Usar sessionId existente o crear uno nuevo
     const activeSessionId = sessionId || chatbot.createSession();
+    const trimmedMessage = message.trim();
+    const route = inferChatRoute(trimmedMessage);
 
-    // Procesar mensaje
-    const response = await chatbot.processMessage(
+    logger.info("Routing /api/chat", {
+      sessionId: activeSessionId,
+      route,
+    });
+
+    if (route === "documents") {
+      try {
+        const gptResult = await gptAgentService.processQuery(trimmedMessage);
+
+        // Persistencia básica para mantener coherente /api/chat/:sessionId/history
+        await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
+        await chatRepository.addMessage(
+          activeSessionId,
+          "assistant",
+          gptResult.response,
+        );
+
+        return res.json({
+          sessionId: activeSessionId,
+          response: {
+            message: gptResult.response,
+            sources: gptResult.documents.map((doc) => doc.filename),
+            engine: "gpt-rag",
+            route,
+          },
+        });
+      } catch (error) {
+        logger.warn("GPT route failed, fallback to local-chat", {
+          sessionId: activeSessionId,
+          error: (error as Error).message,
+        });
+
+        const localFallback = await chatbot.processMessage(
+          activeSessionId,
+          trimmedMessage,
+          userId,
+        );
+
+        return res.json({
+          sessionId: activeSessionId,
+          response: {
+            message:
+              "No pude consultar documentos institucionales en este momento. " +
+              localFallback.message,
+            sources: normalizeSources(localFallback.sources),
+            tokensUsed: localFallback.tokensUsed,
+            engine: "local-chat",
+            route: "general",
+          },
+        });
+      }
+    }
+
+    // Ruta general con chatbot local
+    const localResponse = await chatbot.processMessage(
       activeSessionId,
-      message.trim(),
+      trimmedMessage,
       userId,
     );
 
     res.json({
       sessionId: activeSessionId,
-      response,
+      response: {
+        message: localResponse.message,
+        sources: normalizeSources(localResponse.sources),
+        tokensUsed: localResponse.tokensUsed,
+        engine: "local-chat",
+        route,
+      },
     });
   } catch (error) {
     logger.error("Error en /api/chat", { error: (error as Error).message });
@@ -226,6 +348,72 @@ app.delete("/api/chat/:sessionId", async (req: Request, res: Response) => {
       error: true,
       code: "INTERNAL_ERROR",
       message: "Error finalizando sesión",
+    });
+  }
+});
+
+// ============================================
+// FAQ ENDPOINTS (Preguntas Frecuentes Cacheadas)
+// ============================================
+
+// Listar preguntas frecuentes disponibles (featured + faq)
+app.get("/api/faq/questions", (_req: Request, res: Response) => {
+  try {
+    res.json({
+      featured: ADMISSION_FAQ.featured.map((q) => ({
+        id: q.id,
+        question: q.question,
+        category: q.category,
+      })),
+      faq: ADMISSION_FAQ.faq.map((q) => ({
+        id: q.id,
+        question: q.question,
+        category: q.category,
+      })),
+      total: ADMISSION_FAQ.featured.length + ADMISSION_FAQ.faq.length,
+    });
+  } catch (error) {
+    logger.error("Error en GET /api/faq/questions", {
+      error: (error as Error).message,
+    });
+    res.status(500).json({
+      error: true,
+      code: "INTERNAL_ERROR",
+      message: "Error obteniendo preguntas frecuentes",
+    });
+  }
+});
+
+// Obtener respuesta en caché de una pregunta FAQ
+app.get("/api/faq/:questionId", (req: Request, res: Response) => {
+  try {
+    const { questionId } = req.params;
+    const id = Array.isArray(questionId) ? questionId[0] : questionId;
+
+    const answer = getFAQAnswer(id);
+
+    if (!answer) {
+      return res.status(404).json({
+        error: true,
+        code: "QUESTION_NOT_FOUND",
+        message: `No se encontró respuesta para la pregunta: ${id}`,
+      });
+    }
+
+    res.json({
+      id,
+      answer,
+      cached: true,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    logger.error("Error en GET /api/faq/:questionId", {
+      error: (error as Error).message,
+    });
+    res.status(500).json({
+      error: true,
+      code: "INTERNAL_ERROR",
+      message: "Error obteniendo respuesta",
     });
   }
 });
@@ -710,6 +898,91 @@ app.get(
 );
 
 // ============================================
+// ADMIN - GPT VECTOR STORE
+// ============================================
+
+// Listar archivos en el Vector Store
+app.get(
+  "/api/admin/vector-store/files",
+  async (_req: Request, res: Response) => {
+    try {
+      const files = await gptVectorStoreService.listFiles();
+      res.json({
+        data: files,
+        total: files.length,
+      });
+    } catch (error) {
+      logger.error("Error en GET /api/admin/vector-store/files", {
+        error: (error as Error).message,
+      });
+      res.status(500).json({
+        error: true,
+        code: "INTERNAL_ERROR",
+        message: "Error listando archivos del Vector Store",
+      });
+    }
+  },
+);
+
+// Subir un archivo al Vector Store
+app.post(
+  "/api/admin/vector-store/files",
+  upload.single("file"),
+  async (req: Request, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          error: true,
+          code: "INVALID_REQUEST",
+          message: "No se ha subido ningún archivo. Asegúrate de usar el campo 'file'."
+        });
+      }
+
+      const fileObject = await gptVectorStoreService.uploadAndPoll(
+        req.file.buffer,
+        req.file.originalname,
+      );
+
+      res.status(201).json({
+        message: "Archivo subido y procesado correctamente.",
+        data: fileObject,
+      });
+    } catch (error) {
+      logger.error("Error en POST /api/admin/vector-store/files", {
+        error: (error as Error).message,
+      });
+      res.status(500).json({
+        error: true,
+        code: "INTERNAL_ERROR",
+        message: "Error subiendo archivo al Vector Store.",
+      });
+    }
+  },
+);
+
+// Eliminar un archivo del Vector Store
+app.delete(
+  "/api/admin/vector-store/files/:fileId",
+  async (req: Request, res: Response) => {
+    try {
+      const { fileId } = req.params;
+      const id = Array.isArray(fileId) ? fileId[0] : fileId;
+      await gptVectorStoreService.deleteFile(id);
+      res.status(204).send();
+    } catch (error) {
+      logger.error("Error en DELETE /api/admin/vector-store/files/:fileId", {
+        error: (error as Error).message,
+      });
+      res.status(500).json({
+        error: true,
+        code: "INTERNAL_ERROR",
+        message: "Error eliminando archivo del Vector Store.",
+      });
+    }
+  },
+);
+
+// ============================================
 // 404 HANDLER
 // ============================================
 
@@ -762,23 +1035,27 @@ Endpoints disponibles:
   GET    /api/chat/:id/history  - Historial de chat
   DELETE /api/chat/:id          - Finalizar sesión
 
+FAQ (Preguntas Frecuentes Cacheadas):
+  GET    /api/faq/questions     - Listar preguntas (featured + selector)
+  GET    /api/faq/:id           - Obtener respuesta cacheada
+
 GPT Agent (OpenAI RAG):
   POST   /api/gpt/chat          - Enviar mensaje al GPT Agent
   GET    /api/gpt/health        - Estado del servicio GPT
   
+Datos Académicos:
   GET    /api/facultades        - Listar facultades
   GET    /api/programas         - Listar programas pregrado
   GET    /api/programas/:n/pensum - Pensum de programa
   GET    /api/materias          - Buscar materias
   
+Admin:
   GET    /api/stats             - Estadísticas
   GET    /api/health            - Health check
-
-Admin PEP:
   POST   /api/admin/pep         - Crear/actualizar PEP
-  GET    /api/admin/pep/:id     - Obtener PEP por programaId
-  GET    /api/admin/peps        - Listar todos los PEPs
-  DELETE /api/admin/pep/:id     - Eliminar PEP
+  POST   /api/admin/vector-store/files - Subir documento
+  GET    /api/admin/vector-store/files - Listar documentos
+  DELETE /api/admin/vector-store/files/:id - Eliminar documento
 
 CORS habilitado para: ${CORS_ORIGIN}
       `);

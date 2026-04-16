@@ -27,7 +27,7 @@ export interface GptAgentConfig {
 
 // Default configuration
 const DEFAULT_CONFIG: GptAgentConfig = {
-  vectorStoreId: "vs_69928e75718081919dfe62e295cf99bf",
+  vectorStoreId: process.env.OPENAI_VECTOR_STORE_ID || "",
   model: "gpt-3.5-turbo",
   temperature: 0.3,
   maxTokens: 2048,
