@@ -41,6 +41,18 @@ export const config = {
     },
   },
 
+  // Academusoft API Configuration
+  academusoft: {
+    baseUrl: "http://api-academusoft.appsprod.unicordoba.edu.co/api",
+    endpoints: {
+      facultades: "/facultades",
+      programas: "/programasacademicos",
+      pensum: "/listarpensumporprograma",
+    },
+    timeout: 10000,
+    retries: 3,
+  },
+
   // Chatbot Configuration
   chatbot: {
     maxHistoryMessages: 10,
