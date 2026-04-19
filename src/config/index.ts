@@ -79,8 +79,8 @@ export const config = {
 
   // OpenAI / GPT Configuration
   openai: {
-    apiKey: getEnvVar("OPENAI_API_KEY"),
-    vectorStoreId: getEnvVar("OPENAI_VECTOR_STORE_ID"),
+    apiKey: getEnvVar("OPENAI_API_KEY", false),
+    vectorStoreId: getEnvVar("OPENAI_VECTOR_STORE_ID", false),
   },
 
   // Environment

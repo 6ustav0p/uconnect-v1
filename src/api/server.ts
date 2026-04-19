@@ -17,11 +17,12 @@ import {
   academusoftService,
   gptAgentService,
   gptVectorStoreService,
+  faqRepository,
+  faqService,
 } from "../services";
 import { logger, normalizeText } from "../utils";
 import multer from "multer";
 import { ADMISSION_GUIDED_QUESTIONS } from "../config/prompts";
-import { ADMISSION_FAQ, getFAQAnswer } from "../config/admission-faq";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -217,6 +218,27 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
     // Usar sessionId existente o crear uno nuevo
     const activeSessionId = sessionId || chatbot.createSession();
     const trimmedMessage = message.trim();
+
+    // Early-exit: banco de preguntas (FAQ)
+    const faqMatch = await faqService.match(trimmedMessage);
+    if (faqMatch) {
+      await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
+      await chatRepository.addMessage(activeSessionId, "assistant", faqMatch.answer, {
+        sources: ["FAQ"],
+      });
+
+      return res.json({
+        sessionId: activeSessionId,
+        response: {
+          message: faqMatch.answer,
+          sources: ["FAQ"],
+          tokensUsed: { input: 0, output: 0 },
+          engine: "local-chat",
+          route: "general",
+        },
+      });
+    }
+
     const route = inferChatRoute(trimmedMessage);
 
     logger.info("Routing /api/chat", {
@@ -354,24 +376,21 @@ app.delete("/api/chat/:sessionId", async (req: Request, res: Response) => {
 });
 
 // ============================================
-// FAQ ENDPOINTS (Preguntas Frecuentes Cacheadas)
+// FAQ ENDPOINTS (Banco de preguntas)
 // ============================================
 
 // Listar preguntas frecuentes disponibles (featured + faq)
-app.get("/api/faq/questions", (_req: Request, res: Response) => {
+app.get("/api/faq/questions", async (_req: Request, res: Response) => {
   try {
+    const [featured, faq] = await Promise.all([
+      faqRepository.listByTier("featured"),
+      faqRepository.listByTier("faq"),
+    ]);
+
     res.json({
-      featured: ADMISSION_FAQ.featured.map((q) => ({
-        id: q.id,
-        question: q.question,
-        category: q.category,
-      })),
-      faq: ADMISSION_FAQ.faq.map((q) => ({
-        id: q.id,
-        question: q.question,
-        category: q.category,
-      })),
-      total: ADMISSION_FAQ.featured.length + ADMISSION_FAQ.faq.length,
+      featured,
+      faq,
+      total: featured.length + faq.length,
     });
   } catch (error) {
     logger.error("Error en GET /api/faq/questions", {
@@ -385,15 +404,59 @@ app.get("/api/faq/questions", (_req: Request, res: Response) => {
   }
 });
 
-// Obtener respuesta en caché de una pregunta FAQ
-app.get("/api/faq/:questionId", (req: Request, res: Response) => {
+// Buscar preguntas frecuentes por texto (retorna top N con score)
+app.get("/api/faq/search", async (req: Request, res: Response) => {
+  try {
+    const q = req.query.q;
+
+    if (!q || typeof q !== "string") {
+      return res.status(400).json({
+        error: true,
+        code: "INVALID_REQUEST",
+        message: "El parámetro 'q' es requerido",
+      });
+    }
+
+    if (q.length > 200) {
+      return res.status(400).json({
+        error: true,
+        code: "QUERY_TOO_LONG",
+        message: "El parámetro 'q' no puede exceder 200 caracteres",
+      });
+    }
+
+    const limitRaw = req.query.limit;
+    const limit = typeof limitRaw === "string" ? parseInt(limitRaw, 10) : 5;
+
+    const results = await faqService.search(q, limit);
+
+    res.json({
+      query: q,
+      results,
+      total: results.length,
+    });
+  } catch (error) {
+    logger.error("Error en GET /api/faq/search", {
+      error: (error as Error).message,
+    });
+
+    res.status(500).json({
+      error: true,
+      code: "INTERNAL_ERROR",
+      message: "Error buscando preguntas frecuentes",
+    });
+  }
+});
+
+// Obtener respuesta de una pregunta FAQ por id
+app.get("/api/faq/:questionId", async (req: Request, res: Response) => {
   try {
     const { questionId } = req.params;
     const id = Array.isArray(questionId) ? questionId[0] : questionId;
 
-    const answer = getFAQAnswer(id);
+    const faq = await faqRepository.findById(id);
 
-    if (!answer) {
+    if (!faq) {
       return res.status(404).json({
         error: true,
         code: "QUESTION_NOT_FOUND",
@@ -403,7 +466,7 @@ app.get("/api/faq/:questionId", (req: Request, res: Response) => {
 
     res.json({
       id,
-      answer,
+      answer: faq.answer,
       cached: true,
       timestamp: new Date().toISOString(),
     });

@@ -8,6 +8,7 @@ import {
   chatRepository,
   pepRepository,
   academusoftService,
+  faqService,
 } from "./services";
 import { localDataService } from "./services/local-data.service";
 import {
@@ -108,6 +109,20 @@ export class Chatbot {
       if (entities.intenciones.includes("DESPEDIDA")) {
         this.sessionContext.delete(sessionId); // Limpiar contexto
         return this.handleFarewell(sessionId, startTime);
+      }
+
+      // Early-exit: banco de preguntas (FAQ)
+      const faqMatch = await faqService.match(userMessage);
+      if (faqMatch) {
+        await chatRepository.addMessage(sessionId, "assistant", faqMatch.answer, {
+          sources: ["FAQ"],
+        });
+
+        return {
+          message: faqMatch.answer,
+          sources: ["FAQ"],
+          tokensUsed: { input: 0, output: 0 },
+        };
       }
 
       // Verificar intención de admisión

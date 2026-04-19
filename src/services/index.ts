@@ -16,3 +16,5 @@ export {
   gptVectorStoreService,
   GptVectorStoreService,
 } from "./gpt-vector-store.service";
+export { faqRepository, FaqRepository } from "./faq.repository";
+export { faqService, FaqService } from "./faq.service";

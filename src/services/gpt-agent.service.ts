@@ -42,7 +42,7 @@ export class GptAgentService {
   constructor(config: Partial<GptAgentConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
     
-    this.client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    this.client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY ?? "" });
     
     this.agent = new Agent({
       name: "uconnect",
