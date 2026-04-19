@@ -223,9 +223,14 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
     const faqMatch = await faqService.match(trimmedMessage);
     if (faqMatch) {
       await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
-      await chatRepository.addMessage(activeSessionId, "assistant", faqMatch.answer, {
-        sources: ["FAQ"],
-      });
+      await chatRepository.addMessage(
+        activeSessionId,
+        "assistant",
+        faqMatch.answer,
+        {
+          sources: ["FAQ"],
+        },
+      );
 
       return res.json({
         sessionId: activeSessionId,
@@ -251,7 +256,11 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
         const gptResult = await gptAgentService.processQuery(trimmedMessage);
 
         // Persistencia básica para mantener coherente /api/chat/:sessionId/history
-        await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
+        await chatRepository.addMessage(
+          activeSessionId,
+          "user",
+          trimmedMessage,
+        );
         await chatRepository.addMessage(
           activeSessionId,
           "assistant",
@@ -380,18 +389,37 @@ app.delete("/api/chat/:sessionId", async (req: Request, res: Response) => {
 // ============================================
 
 // Listar preguntas frecuentes disponibles (featured + faq)
-app.get("/api/faq/questions", async (_req: Request, res: Response) => {
+app.get("/api/faq/questions", async (req: Request, res: Response) => {
   try {
-    const [featured, faq] = await Promise.all([
+    const includeArchiveRaw = req.query.includeArchive;
+    const includeArchiveValue = Array.isArray(includeArchiveRaw)
+      ? includeArchiveRaw[0]
+      : includeArchiveRaw;
+    const includeArchive =
+      includeArchiveValue === "true" || includeArchiveValue === "1";
+
+    const [featured, faq, archive] = await Promise.all([
       faqRepository.listByTier("featured"),
       faqRepository.listByTier("faq"),
+      includeArchive
+        ? faqRepository.listByTier("archive")
+        : Promise.resolve([]),
     ]);
 
-    res.json({
-      featured,
-      faq,
-      total: featured.length + faq.length,
-    });
+    res.json(
+      includeArchive
+        ? {
+            featured,
+            faq,
+            archive,
+            total: featured.length + faq.length + archive.length,
+          }
+        : {
+            featured,
+            faq,
+            total: featured.length + faq.length,
+          },
+    );
   } catch (error) {
     logger.error("Error en GET /api/faq/questions", {
       error: (error as Error).message,
@@ -698,9 +726,7 @@ app.post(
 
       // Verificar que el programa exista (API Academusoft)
       const allProgramas = await academusoftService.getProgramas();
-      const programaExiste = allProgramas.some(
-        (p) => p.prog_id === programaId,
-      );
+      const programaExiste = allProgramas.some((p) => p.prog_id === programaId);
 
       if (!programaExiste) {
         return res.status(400).json({
@@ -999,7 +1025,8 @@ app.post(
         return res.status(400).json({
           error: true,
           code: "INVALID_REQUEST",
-          message: "No se ha subido ningún archivo. Asegúrate de usar el campo 'file'."
+          message:
+            "No se ha subido ningún archivo. Asegúrate de usar el campo 'file'.",
         });
       }
 
@@ -1102,6 +1129,7 @@ Endpoints disponibles:
 
 FAQ (Preguntas Frecuentes Cacheadas):
   GET    /api/faq/questions     - Listar preguntas (featured + selector)
+  GET    /api/faq/search        - Buscar preguntas por texto
   GET    /api/faq/:id           - Obtener respuesta cacheada
 
 GPT Agent (OpenAI RAG):

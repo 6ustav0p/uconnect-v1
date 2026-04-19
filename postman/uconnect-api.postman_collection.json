@@ -100,6 +100,36 @@
           ]
         },
         {
+          "name": "GET /api/faq/questions?includeArchive=true",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/faq/questions?includeArchive=true"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('returns featured+faq+archive arrays', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('featured');",
+                  "  pm.expect(json).to.have.property('faq');",
+                  "  pm.expect(json).to.have.property('archive');",
+                  "  pm.expect(json.featured).to.be.an('array');",
+                  "  pm.expect(json.faq).to.be.an('array');",
+                  "  pm.expect(json.archive).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "GET /api/faq/search?q={{faqSearchQuery}}",
           "request": {
             "method": "GET",

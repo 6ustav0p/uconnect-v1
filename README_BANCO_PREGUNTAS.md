@@ -72,6 +72,7 @@ Si el score supera el umbral, retorna `{ answer, sources: ["FAQ"], score, ... }`
 
 - `GET /api/faq/questions`
   - Retorna `featured` y `faq` (pensado para UI inicial).
+  - Opcional: `GET /api/faq/questions?includeArchive=true` para incluir también `archive` (listar todas).
 - `GET /api/faq/search?q=...&limit=...`
   - Retorna top N resultados con `{ id, question, category, tier, score }` (sin `answer`).
 - `GET /api/faq/:questionId`
@@ -128,12 +129,14 @@ Requests sugeridos:
 
 1. `GET {{baseUrl}}/api/health`
 2. `GET {{baseUrl}}/api/faq/questions`
+
+- (opcional) `GET {{baseUrl}}/api/faq/questions?includeArchive=true` para listar también `archive`
+
 3. `GET {{baseUrl}}/api/faq/search?q={{faqSearchQuery}}&limit=5`
 4. `GET {{baseUrl}}/api/faq/{{faqQuestionId}}`
 5. `POST {{baseUrl}}/api/chat/session`
    - En Postman (tab Tests):
-
-- `pm.collectionVariables.set("chatSessionId", pm.response.json().sessionId);`
+   - `pm.collectionVariables.set("chatSessionId", pm.response.json().sessionId);`
 
 6. `POST {{baseUrl}}/api/chat`
    - Body:
