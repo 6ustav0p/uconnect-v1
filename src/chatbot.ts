@@ -114,9 +114,14 @@ export class Chatbot {
       // Early-exit: banco de preguntas (FAQ)
       const faqMatch = await faqService.match(userMessage);
       if (faqMatch) {
-        await chatRepository.addMessage(sessionId, "assistant", faqMatch.answer, {
-          sources: ["FAQ"],
-        });
+        await chatRepository.addMessage(
+          sessionId,
+          "assistant",
+          faqMatch.answer,
+          {
+            sources: ["FAQ"],
+          },
+        );
 
         return {
           message: faqMatch.answer,
@@ -304,7 +309,8 @@ export class Chatbot {
     if (normalized.includes("distancia")) entities.jornadas.push("DISTANCIA");
 
     // Detectar intención de admisión / puntajes
-    const admisionRegex = /admisi[oó]n|inscripci[oó]n|inscribirme|proceso\s*(de)?\s*(admisi[oó]n|inscripci[oó]n|entrada|ingreso|selecci[oó]n)|requisitos?\s*(de)?\s*ingreso|como\s*(entro|ingreso|me\s*inscribo)|puedo\s*(entrar|ingresar|aspirar)|puntaje|icfes|saber\s*11|aspirante|aspirar|simulador|ponderado|puntaje\s*m[ií]nimo|nota\s*de\s*corte|corte\s*(de)?\s*(admisi[oó]n)?|promedio\s*ponderado|calcular\s*(mi)?\s*puntaje/i;
+    const admisionRegex =
+      /admisi[oó]n|inscripci[oó]n|inscribirme|proceso\s*(de)?\s*(admisi[oó]n|inscripci[oó]n|entrada|ingreso|selecci[oó]n)|requisitos?\s*(de)?\s*ingreso|como\s*(entro|ingreso|me\s*inscribo)|puedo\s*(entrar|ingresar|aspirar)|puntaje|icfes|saber\s*11|aspirante|aspirar|simulador|ponderado|puntaje\s*m[ií]nimo|nota\s*de\s*corte|corte\s*(de)?\s*(admisi[oó]n)?|promedio\s*ponderado|calcular\s*(mi)?\s*puntaje/i;
     if (admisionRegex.test(normalized)) {
       entities.intenciones.push("INFO_ADMISION");
     }
@@ -331,7 +337,11 @@ export class Chatbot {
     if (/programa|carrera/i.test(normalized)) {
       entities.intenciones.push("INFO_PROGRAMA");
     }
-    if (/listar|cuales|todos|que\s+(programas|carreras)\s+(hay|ofrece|tiene)/i.test(normalized)) {
+    if (
+      /listar|cuales|todos|que\s+(programas|carreras)\s+(hay|ofrece|tiene)/i.test(
+        normalized,
+      )
+    ) {
       entities.intenciones.push("LISTAR");
     }
 
@@ -375,7 +385,8 @@ export class Chatbot {
         nombre: "FACULTAD DE CIENCIAS AGRICOLAS",
       },
       {
-        keywords: /ciencias\s*basicas|basicas|fisica|quimica|biologia|estadistica|matematica|geografia/i,
+        keywords:
+          /ciencias\s*basicas|basicas|fisica|quimica|biologia|estadistica|matematica|geografia/i,
         nombre: "FACULTAD DE CIENCIAS BASICAS",
       },
       {
@@ -383,7 +394,8 @@ export class Chatbot {
         nombre: "FACULTAD DE CIENCIAS DE LA SALUD",
       },
       {
-        keywords: /economica|juridica|administrativa|derecho|administracion|finanzas|comercio/i,
+        keywords:
+          /economica|juridica|administrativa|derecho|administracion|finanzas|comercio/i,
         nombre: "FACULTAD DE CIENCIAS ECONOMICAS, JURIDICAS Y ADMINISTRATIVAS",
       },
       {
@@ -558,7 +570,12 @@ export class Chatbot {
 
       // PEP: solo cargar si la consulta amerita perfil del programa
       // (no para consultas simples de materias/pensum/créditos)
-      const pensumOnlyIntents = ["INFO_PENSUM", "CREDITOS", "LISTAR", "INFO_FACULTAD"];
+      const pensumOnlyIntents = [
+        "INFO_PENSUM",
+        "CREDITOS",
+        "LISTAR",
+        "INFO_FACULTAD",
+      ];
       const isPensumOnlyQuery = entities.intenciones.every((i) =>
         pensumOnlyIntents.includes(i),
       );
@@ -752,8 +769,10 @@ export class Chatbot {
       context.summary = `Información de admisión para el programa ${entities.programas[0]}`;
 
       // Inyectar info de admisión en el contexto para que la IA la use
-      const admisionContext = ADMISION_CONTEXT
-        .replace("{simuladorUrl}", simuladorUrl)
+      const admisionContext = ADMISION_CONTEXT.replace(
+        "{simuladorUrl}",
+        simuladorUrl,
+      )
         .replace("{puntajesUrl}", puntajesUrl)
         .replace("{programa}", entities.programas[0]);
 

@@ -284,7 +284,14 @@ También puedes enviar `questions: string[]` en vez de `question`.
 {
   "message": "FAQ creada correctamente",
   "file": { "vectorStoreFileId": "file-...", "createdAt": 1234567890 },
-  "entry": { "id": "q_...", "tier": "faq", "category": "...", "questions": ["..."], "answer": "...", "isActive": true }
+  "entry": {
+    "id": "q_...",
+    "tier": "faq",
+    "category": "...",
+    "questions": ["..."],
+    "answer": "...",
+    "isActive": true
+  }
 }
 ```
 
@@ -307,7 +314,14 @@ Body (patch parcial):
 {
   "message": "FAQ actualizada correctamente",
   "file": { "vectorStoreFileId": "file-...", "createdAt": 1234567890 },
-  "entry": { "id": "q3", "tier": "archive", "category": "...", "questions": ["..."], "answer": "...", "isActive": true }
+  "entry": {
+    "id": "q3",
+    "tier": "archive",
+    "category": "...",
+    "questions": ["..."],
+    "answer": "...",
+    "isActive": true
+  }
 }
 ```
 
@@ -323,7 +337,7 @@ Errores:
 
 Nota:
 
-- Es un *soft delete*: la entry queda con `isActive=false`.
+- Es un _soft delete_: la entry queda con `isActive=false`.
 - Para “restaurar”, usar `PATCH` con `{ "isActive": true }`.
 
 **204 No Content**

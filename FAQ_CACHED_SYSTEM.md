@@ -5,6 +5,7 @@
 > **Estado actual:** el banco de preguntas (FAQ) es un **KB JSON** alojado en **OpenAI Vector Store** (fuente de verdad) con snapshot/cache en backend.
 >
 > Ver documentación vigente:
+>
 > - `README_BANCO_PREGUNTAS.md` (arquitectura + flujo KB)
 > - `README_FRONTEND_FAQ.md` (contrato de API para frontend, incluyendo CRUD admin)
 
@@ -36,11 +37,13 @@ Se implementó un sistema eficiente de preguntas frecuentes (FAQ) con respuestas
 ## APIs Disponibles
 
 ### 1. Obtener Lista de Preguntas
+
 ```http
 GET /api/faq/questions
 ```
 
 **Respuesta:**
+
 ```json
 {
   "featured": [
@@ -66,16 +69,19 @@ GET /api/faq/questions
 ---
 
 ### 2. Obtener Respuesta Cacheada
+
 ```http
 GET /api/faq/:questionId
 ```
 
 **Ejemplo:**
+
 ```http
 GET /api/faq/q1
 ```
 
 **Respuesta:**
+
 ```json
 {
   "id": "q1",
@@ -94,22 +100,26 @@ GET /api/faq/q1
 ### Flujo Recomendado
 
 1. **Al iniciar sesión:**
+
    ```javascript
    // Obtener preguntas disponibles
-   const { featured, faq } = await fetch('/api/faq/questions').then(r => r.json());
-   
+   const { featured, faq } = await fetch("/api/faq/questions").then((r) =>
+     r.json(),
+   );
+
    // Mostrar 3 botones con featured
    renderFeaturedButtons(featured);
-   
+
    // Mostrar dropdown/selector con FAQ
    renderFAQSelector(faq);
    ```
 
 2. **Cuando el usuario hace clic en una pregunta:**
+
    ```javascript
    // Obtener respuesta cacheada (muy rápido)
-   const answer = await fetch(`/api/faq/${questionId}`).then(r => r.json());
-   
+   const answer = await fetch(`/api/faq/${questionId}`).then((r) => r.json());
+
    // Mostrar respuesta al usuario
    displayMessage(answer.answer);
    ```
@@ -118,22 +128,22 @@ GET /api/faq/q1
 
 ## Preguntas FEATURED (Siempre Visibles)
 
-| ID  | Pregunta | Categoría |
-|-----|----------|-----------|
-| q1  | ¿Cuándo se abren las inscripciones para los programas de pregrado? | Inscripciones |
+| ID  | Pregunta                                                                     | Categoría     |
+| --- | ---------------------------------------------------------------------------- | ------------- |
+| q1  | ¿Cuándo se abren las inscripciones para los programas de pregrado?           | Inscripciones |
 | q2  | ¿Dónde puedo realizar el proceso de inscripción a la Universidad de Córdoba? | Inscripciones |
-| q3  | ¿Cuál es el valor del PIN o derecho de inscripción? | Inscripciones |
+| q3  | ¿Cuál es el valor del PIN o derecho de inscripción?                          | Inscripciones |
 
 ---
 
 ## Preguntas FAQ Selector (5 seleccionables)
 
-| ID  | Pregunta | Categoría |
-|-----|----------|-----------|
-| q4  | ¿Qué documentos necesito para realizar la inscripción? | Inscripciones |
-| q5  | ¿Cómo sé si mi inscripción quedó correctamente registrada? | Inscripciones |
-| q9  | ¿Cuál es el puntaje mínimo del examen Saber 11 para ingresar? | Requisitos de Admisión |
-| q14 | ¿Dónde puedo consultar los resultados de admisión? | Resultados y Matrícula |
+| ID  | Pregunta                                                                 | Categoría              |
+| --- | ------------------------------------------------------------------------ | ---------------------- |
+| q4  | ¿Qué documentos necesito para realizar la inscripción?                   | Inscripciones          |
+| q5  | ¿Cómo sé si mi inscripción quedó correctamente registrada?               | Inscripciones          |
+| q9  | ¿Cuál es el puntaje mínimo del examen Saber 11 para ingresar?            | Requisitos de Admisión |
+| q14 | ¿Dónde puedo consultar los resultados de admisión?                       | Resultados y Matrícula |
 | q16 | ¿Cuáles son los pasos para realizar la matrícula académica y financiera? | Resultados y Matrícula |
 
 ---
@@ -145,7 +155,7 @@ GET /api/faq/q1
 ✅ **UX Mejorada** - Información officialés verificada  
 ✅ **Escalable** - Añade nuevas preguntas sin código  
 ✅ **Consistente** - Respuestas siempre iguales  
-✅ **Offline-friendly** - Se puede cachear en frontend  
+✅ **Offline-friendly** - Se puede cachear en frontend
 
 ---
 

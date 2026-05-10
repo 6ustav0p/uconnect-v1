@@ -4,9 +4,9 @@
 
 Este archivo está pensado para **copiarse al repo del frontend** para que el equipo (y Copilot) tenga contexto claro de:
 
-1) Qué cambió en el backend.
-2) Qué tiene que implementar el frontend para que funcione correctamente.
-3) Cómo probarlo (smoke tests).
+1. Qué cambió en el backend.
+2. Qué tiene que implementar el frontend para que funcione correctamente.
+3. Cómo probarlo (smoke tests).
 
 ---
 
@@ -49,17 +49,17 @@ Define una variable con la URL base del backend, por ejemplo:
 
 ### 3.1 FAQ (público)
 
-1) **Listar preguntas**
+1. **Listar preguntas**
 
 - `GET /api/faq/questions`
 - Opcional: `GET /api/faq/questions?includeArchive=false` (para lista corta, sin archive)
 
-2) **Buscar**
+2. **Buscar**
 
 - `GET /api/faq/search?q=<texto>&limit=<n>`
 - IMPORTANTE: el query param es **`q`** (no `query`).
 
-3) **Obtener respuesta por id**
+3. **Obtener respuesta por id**
 
 - `GET /api/faq/:id`
 
@@ -67,12 +67,12 @@ Define una variable con la URL base del backend, por ejemplo:
 
 ### 3.2 Chat (público)
 
-1) **Crear sesión**
+1. **Crear sesión**
 
 - `POST /api/chat/session`
 - Respuesta incluye `suggestedQuestions: string[]`.
 
-2) **Enviar mensaje**
+2. **Enviar mensaje**
 
 - `POST /api/chat`
 - Body: `{ sessionId, message, userId? }`
@@ -82,22 +82,22 @@ Define una variable con la URL base del backend, por ejemplo:
 
 Estos endpoints son para una pantalla de administración.
 
-1) Ver KB actual (incluye inactivos)
+1. Ver KB actual (incluye inactivos)
 
 - `GET /api/admin/faq-kb`
 - Opcional: `GET /api/admin/faq-kb?forceRefresh=true`
 
-2) Crear FAQ
+2. Crear FAQ
 
 - `POST /api/admin/faq-kb/entries`
 - Body: `{ tier, category, question|questions, answer, id?, source? }`
 
-3) Editar FAQ (patch parcial)
+3. Editar FAQ (patch parcial)
 
 - `PATCH /api/admin/faq-kb/entries/:id`
 - Body: `{ tier?, category?, question?|questions?, answer?, source?, isActive? }`
 
-4) Eliminar FAQ (soft delete)
+4. Eliminar FAQ (soft delete)
 
 - `DELETE /api/admin/faq-kb/entries/:id`
 - Esto NO borra; deja `isActive=false`.
@@ -169,16 +169,19 @@ UX obligatoria por cómo persiste:
 
 Con backend corriendo en `http://localhost:3000`:
 
-1) **Suggested questions dinámicas**
+1. **Suggested questions dinámicas**
+
 - `POST /api/chat/session`
 - Ver que `suggestedQuestions` coincide con las 3 primeras `featured`.
 
-2) **CRUD admin refleja en público**
+2. **CRUD admin refleja en público**
+
 - Crear una FAQ en tier `featured`.
 - Volver a llamar `POST /api/chat/session` => debe aparecer en `suggestedQuestions`.
 - Desactivar (DELETE) una featured => dejará de aparecer.
 
-3) **Búsqueda**
+3. **Búsqueda**
+
 - `GET /api/faq/search?q=pin&limit=5`
 
 ---

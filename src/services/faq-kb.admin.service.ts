@@ -93,7 +93,9 @@ function compactEntry(entry: any): FaqKbEntry {
                 ? entry.source.title
                 : undefined,
             url:
-              typeof entry.source.url === "string" ? entry.source.url : undefined,
+              typeof entry.source.url === "string"
+                ? entry.source.url
+                : undefined,
           }
         : undefined,
   };
@@ -112,7 +114,9 @@ function serializeKb(entries: FaqKbEntry[]): Buffer {
 
 export class FaqKbAdminService {
   private isEnabled(): boolean {
-    return Boolean(config.openai.apiKey) && Boolean(config.openai.vectorStoreId);
+    return (
+      Boolean(config.openai.apiKey) && Boolean(config.openai.vectorStoreId)
+    );
   }
 
   private async selectKbVectorStoreFileId(): Promise<{
@@ -180,7 +184,9 @@ export class FaqKbAdminService {
     };
   }
 
-  async getKb(options?: { forceRefresh?: boolean }): Promise<FaqKbAdminSnapshot> {
+  async getKb(options?: {
+    forceRefresh?: boolean;
+  }): Promise<FaqKbAdminSnapshot> {
     // Para admin, siempre leemos el KB crudo (incluye isActive=false).
     // Igual permitimos forceRefresh para que el runtime recargue su snapshot si se requiere.
     const { file, entries } = await this.loadRawKb();
@@ -244,7 +250,9 @@ export class FaqKbAdminService {
       throw new Error("El campo 'category' es requerido");
     }
 
-    const questions = (entry.questions || []).map((q) => q.trim()).filter(Boolean);
+    const questions = (entry.questions || [])
+      .map((q) => q.trim())
+      .filter(Boolean);
     if (questions.length === 0) {
       throw new Error("Debes proveer 'question' o 'questions' (al menos 1)");
     }
@@ -261,9 +269,10 @@ export class FaqKbAdminService {
     const kb = await this.loadRawKb();
     const entries = kb.entries.slice();
 
-    const id = typeof input.id === "string" && input.id.trim()
-      ? input.id.trim()
-      : `q_${uuidv4()}`;
+    const id =
+      typeof input.id === "string" && input.id.trim()
+        ? input.id.trim()
+        : `q_${uuidv4()}`;
 
     if (entries.some((e) => e.id === id)) {
       throw new Error(`Ya existe una FAQ con id='${id}'`);
@@ -318,13 +327,13 @@ export class FaqKbAdminService {
 
     const next: FaqKbEntry = {
       ...current,
-      tier:
-        patch.tier !== undefined
-          ? (patch.tier as any)
-          : current.tier,
+      tier: patch.tier !== undefined ? (patch.tier as any) : current.tier,
       category:
-        typeof patch.category === "string" ? patch.category.trim() : current.category,
-      answer: typeof patch.answer === "string" ? patch.answer.trim() : current.answer,
+        typeof patch.category === "string"
+          ? patch.category.trim()
+          : current.category,
+      answer:
+        typeof patch.answer === "string" ? patch.answer.trim() : current.answer,
       isActive:
         typeof patch.isActive === "boolean" ? patch.isActive : current.isActive,
       source: patch.source !== undefined ? patch.source : current.source,
@@ -348,7 +357,9 @@ export class FaqKbAdminService {
     return { file, entry: next };
   }
 
-  async deleteEntry(id: string): Promise<{ file: { vectorStoreFileId: string; createdAt: number } }> {
+  async deleteEntry(
+    id: string,
+  ): Promise<{ file: { vectorStoreFileId: string; createdAt: number } }> {
     const safeId = id.trim();
     if (!safeId) throw new Error("El parámetro ':id' es requerido");
 
