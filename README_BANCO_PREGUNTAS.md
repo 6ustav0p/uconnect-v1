@@ -1,147 +1,153 @@
-# Banco de Preguntas (FAQ) — UConnect
+# Banco de Preguntas (FAQ) — UConnect (Vector Store)
 
-Este documento describe la implementación del **banco de preguntas (FAQ)** en el backend de UConnect: persistencia en MongoDB, endpoints REST y el “early-exit” en el chat para responder FAQs sin invocar IA.
+Este documento describe la implementación del **banco de preguntas (FAQ)** en el backend de UConnect usando **OpenAI Vector Store** como fuente de verdad (KB), más el “early-exit” en el chat para responder FAQs sin invocar IA.
 
-## 1) ¿Qué resuelve?
+## 1) Fuente de verdad: FAQ KB en Vector Store
 
-- Centraliza las preguntas/respuestas frecuentes en **MongoDB** (fuente de verdad).
-- Permite:
-  - Listar preguntas frecuentes para UI.
-  - Buscar preguntas por texto.
-  - Resolver automáticamente una pregunta del usuario usando **matching tolerante**.
-- Integra el matching en el flujo de chat para responder **antes** del enrutamiento (incluye la ruta de documentos/GPT).
+- Fuente: un archivo **JSON** adjunto al Vector Store configurado en `OPENAI_VECTOR_STORE_ID`.
+- Recomendación: subir el archivo con `attributes.kind = "faq_kb"`.
+- Selección: el backend usa el archivo más reciente con `kind=faq_kb` y `status=completed`.
+- Caché: snapshot en memoria con TTL (~5 minutos) y refresh automático.
 
-## 2) Persistencia (MongoDB)
+### Formato soportado
 
-- Colección: `faqs`
-- Modelo principal: `FaqEntry`
-- Campos relevantes:
-  - `id`: identificador estable (ej: `q3`).
-  - `questions`: variantes humanas de la pregunta (array).
-  - `questionsNormalized`: variantes normalizadas (array) para match exacto.
-  - `answer`: respuesta.
-  - `category`: categoría (ej: “Inscripciones”).
-  - `tier`: `featured | faq | archive`.
-  - `keywords`: palabras clave para pre-filtrar candidatos.
-  - `isActive`: habilita/deshabilita.
-  - `hitCount`: contador de uso (se incrementa cuando hay match).
+Se aceptan dos formas (para facilitar migración):
 
-Notas:
+**A) Preferida**
 
-- El esquema genera `questionsNormalized` y `keywords` en `pre('validate')`.
-- En upserts, también se calculan `questionsNormalized/keywords` a mano para evitar depender de hooks en operaciones `updateOne`.
+```json
+{
+  "version": 1,
+  "entries": [
+    {
+      "id": "q1",
+      "tier": "featured",
+      "category": "Inscripciones",
+      "questions": ["...", "..."],
+      "answer": "..."
+    }
+  ]
+}
+```
 
-## 3) Seed inicial
+**B) Compatibilidad (legacy)**
 
-Por ahora no hay CRUD admin; se carga un seed inicial desde la FAQ estática.
+```json
+{
+  "featured": [
+    { "id": "q1", "question": "...", "answer": "...", "category": "..." }
+  ],
+  "faq": [
+    { "id": "q4", "question": "...", "answer": "...", "category": "..." }
+  ],
+  "archive": [
+    { "id": "q6", "question": "...", "answer": "...", "category": "..." }
+  ]
+}
+```
 
-- Fuente: `src/config/admission-faq.ts`
-- Script: `npm run faqs:seed`
-- Qué hace:
-  - Conecta a Mongo.
-  - Upsertea por `id`.
-  - Carga tiers `featured`, `faq` y `archive`.
+## 2) Cargar / actualizar el KB
 
-Requisito:
+### Opción 1 — CLI (recomendado)
 
-- `MONGODB_URI` debe apuntar a tu Mongo (en `.env`).
+- `npm run faqs:upload-kb`
 
-## 4) Matching (cómo decide una respuesta)
+Sube un archivo `uconnect-faq-kb.json` generado desde `src/config/admission-faq.ts` y lo etiqueta con `kind=faq_kb`.
 
-Servicio: `FaqService` (`faqService.match(message)`)
+### Opción 2 — API (admin)
+
+- `POST /api/admin/vector-store/files?kind=faq_kb`
+  - `multipart/form-data`
+  - campo: `file`
+
+Para inspeccionar IDs y atributos:
+
+- `GET /api/admin/vector-store/vector-files`
+
+### Override (opcional)
+
+Si necesitas forzar un archivo específico:
+
+- `FAQ_KB_VECTOR_STORE_FILE_ID=<vector_store_file_id>`
+
+## 2.1) Editar FAQs (Admin CRUD)
+
+Además de “subir un archivo”, el backend expone endpoints **admin** para **crear/editar/eliminar** preguntas.
+
+Importante:
+
+- Estos endpoints **no modifican el archivo existente** en el Vector Store (OpenAI no permite editar contenido in-place).
+- Cada operación genera y sube un **nuevo** `FAQ KB` (JSON) etiquetado con `attributes.kind="faq_kb"`.
+- El runtime refresca el snapshot automáticamente después de guardar.
+
+Endpoints:
+
+- `GET /api/admin/faq-kb`
+  - Retorna el KB actual: metadata del archivo + `entries`.
+  - Query opcional: `forceRefresh=true`.
+- `POST /api/admin/faq-kb/entries`
+  - Crea una FAQ.
+  - Body: `{ tier, category, question|questions, answer, id?, source? }`.
+- `PATCH /api/admin/faq-kb/entries/:id`
+  - Edita una FAQ existente.
+  - Body: patch parcial `{ tier?, category?, question?|questions?, answer?, source?, isActive? }`.
+- `DELETE /api/admin/faq-kb/entries/:id`
+  - Desactiva una FAQ (`isActive=false`) y sube un KB nuevo.
+  - Para reactivar: `PATCH` con `{ "isActive": true }`.
+
+Nota sobre `FAQ_KB_VECTOR_STORE_FILE_ID`:
+
+- Si defines este override en `.env`, el runtime usará **siempre** ese archivo fijo.
+- Para usar CRUD admin sin confusiones, se recomienda **no** usar el override (o actualizarlo al nuevo ID).
+
+## 3) Matching (cómo decide una respuesta)
+
+Servicio: `FaqService` (`faqService.match(message)`).
 
 Estrategia:
 
-1. Normaliza el mensaje del usuario (`normalizeText`).
-2. Intenta match exacto por `questionsNormalized`.
+1. Normaliza el mensaje (`normalizeText`).
+2. Match exacto por pregunta normalizada.
 3. Si no hay exacto:
-   - Extrae keywords (`extractKeywords`).
-   - Busca candidatos por `$in` sobre `keywords`.
-   - Si no encuentra candidatos, cae a lista completa activa (para no devolver siempre vacío).
-4. Score por candidato:
-   - Similaridad por Levenshtein (`calculateSimilarity`).
-   - Señal adicional si hay “contains” (query contiene variante o viceversa).
-   - Bonus por overlap de keywords.
-5. Umbrales:
-   - Query corta: exige score más alto.
-   - Query normal: umbral base.
+   - extrae keywords (`extractKeywords`)
+   - prefiltra candidatos por overlap de keywords
+4. Score:
+   - similitud por Levenshtein (`calculateSimilarity`)
+   - señal extra por “contains”
+   - bonus por overlap de keywords
+5. Umbrales por longitud/query corta.
 
-Si el score supera el umbral, retorna `{ answer, sources: ["FAQ"], score, ... }` e incrementa `hitCount` (no bloqueante).
-
-## 5) Endpoints REST de FAQ
+## 4) Endpoints REST de FAQ
 
 - `GET /api/faq/questions`
-  - Retorna `featured` y `faq` (pensado para UI inicial).
-  - Opcional: `GET /api/faq/questions?includeArchive=true` para incluir también `archive` (listar todas).
+  - Por defecto retorna `featured`, `faq` y `archive`.
+  - `includeArchive=false` para excluir `archive`.
+  - `503 FAQ_KB_UNAVAILABLE` si el KB no está disponible.
 - `GET /api/faq/search?q=...&limit=...`
-  - Retorna top N resultados con `{ id, question, category, tier, score }` (sin `answer`).
+  - Retorna top N con `{ id, question, category, tier, score }` (sin `answer`).
+  - `503 FAQ_KB_UNAVAILABLE` si el KB no está disponible.
 - `GET /api/faq/:questionId`
-  - Retorna `{ id, answer, ... }` para un `id` específico.
+  - Retorna `{ id, answer, cached: true, timestamp }`.
+  - `404 QUESTION_NOT_FOUND`.
+  - `503 FAQ_KB_UNAVAILABLE` si el KB no está disponible.
 
-## 6) Integración con el chat (early-exit)
+## 5) Integración con el chat (early-exit)
 
-### a) API unificada: `POST /api/chat`
+- `POST /api/chat` y `Chatbot.processMessage()` consultan `faqService.match()` antes del enrutamiento.
+- Si hay match: responde con `sources: ["FAQ"]` y evita invocar GPT.
 
-- Antes de inferir ruta (`documents/general`), se intenta `faqService.match()`.
-- Si hay match:
-  - Se guarda el mensaje del usuario y la respuesta en el historial.
-  - Se responde inmediatamente con:
-    - `sources: ["FAQ"]`
-    - `engine: "local-chat"`
+Nota: si el KB no está disponible, el match falla silenciosamente y el chat continúa (no rompe la conversación).
 
-Esto asegura que incluso si la consulta caería en “documents/GPT”, primero se resuelva con FAQ si aplica.
+## 6) Variables de entorno
 
-### b) Orquestador: `Chatbot.processMessage()`
-
-- También tiene early-exit de FAQ para cubrir usos fuera del endpoint.
-
-## 7) Variables de entorno
-
-Mínimas para FAQ + chat local:
-
-- `MONGODB_URI`
-- (opcional) `OLLAMA_HOST`, `OLLAMA_MODEL`
-
-Para GPT/RAG:
+Para FAQ KB:
 
 - `OPENAI_API_KEY`
 - `OPENAI_VECTOR_STORE_ID`
+- (opcional) `FAQ_KB_VECTOR_STORE_FILE_ID`
 
-Nota: si OpenAI no está configurado, el servidor puede iniciar y la ruta `documents` hará fallback si falla GPT.
+Mongo sigue siendo requerido para historial de chat (`MONGODB_URI`), pero **FAQ ya no depende de Mongo**.
 
-## 8) Probar con Postman
-
-Archivo listo para importar (todo-en-uno):
+## 7) Probar con Postman
 
 - `postman/uconnect-api.postman_collection.json`
-
-Esta colección incluye variables internas (collection variables) como `baseUrl`, `chatSessionId`, etc., para que puedas probar sin importar un environment separado.
-
-Variables incluidas:
-
-- `baseUrl` (por defecto `http://localhost:3005`)
-- `chatSessionId` (se llena al crear sesión)
-- `faqQuestionId` (por defecto `q3`)
-- `faqSearchQuery` (por defecto `pin`)
-- `chatMessageFaq`
-
-Requests sugeridos:
-
-1. `GET {{baseUrl}}/api/health`
-2. `GET {{baseUrl}}/api/faq/questions`
-
-- (opcional) `GET {{baseUrl}}/api/faq/questions?includeArchive=true` para listar también `archive`
-
-3. `GET {{baseUrl}}/api/faq/search?q={{faqSearchQuery}}&limit=5`
-4. `GET {{baseUrl}}/api/faq/{{faqQuestionId}}`
-5. `POST {{baseUrl}}/api/chat/session`
-   - En Postman (tab Tests):
-   - `pm.collectionVariables.set("chatSessionId", pm.response.json().sessionId);`
-
-6. `POST {{baseUrl}}/api/chat`
-   - Body:
-     - `{ "sessionId": "{{chatSessionId}}", "message": "{{chatMessageFaq}}", "userId": "postman" }`
-
----
-
-La colección ya trae requests y tests listos (incluye auto-set de `chatSessionId`).

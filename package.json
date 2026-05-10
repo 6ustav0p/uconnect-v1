@@ -16,6 +16,7 @@
     "mcp:dev": "ts-node src/mcp/server.ts",
     "peps:ingest": "ts-node src/peps/ingest.ts",
     "faqs:seed": "ts-node src/faqs/seed.ts",
+    "faqs:upload-kb": "ts-node src/faqs/upload-kb.ts",
     "gpt": "ts-node src/gpt-agent.ts",
     "clean": "rimraf dist",
     "test": "echo \"No tests yet\" && exit 0"

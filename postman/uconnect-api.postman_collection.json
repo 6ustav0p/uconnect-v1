@@ -39,6 +39,11 @@
       "key": "chatMessageGeneral",
       "value": "¿Qué programas de pregrado ofrece la Universidad de Córdoba?",
       "type": "string"
+    },
+    {
+      "key": "faqAdminEntryId",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -87,12 +92,14 @@
                   "pm.test('status 200', function () {",
                   "  pm.response.to.have.status(200);",
                   "});",
-                  "pm.test('returns featured+faq arrays', function () {",
+                  "pm.test('returns featured+faq+archive arrays', function () {",
                   "  const json = pm.response.json();",
                   "  pm.expect(json).to.have.property('featured');",
                   "  pm.expect(json).to.have.property('faq');",
+                  "  pm.expect(json).to.have.property('archive');",
                   "  pm.expect(json.featured).to.be.an('array');",
                   "  pm.expect(json.faq).to.be.an('array');",
+                  "  pm.expect(json.archive).to.be.an('array');",
                   "});"
                 ]
               }
@@ -100,11 +107,11 @@
           ]
         },
         {
-          "name": "GET /api/faq/questions?includeArchive=true",
+          "name": "GET /api/faq/questions?includeArchive=false",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/faq/questions?includeArchive=true"
+            "url": "{{baseUrl}}/api/faq/questions?includeArchive=false"
           },
           "event": [
             {
@@ -115,14 +122,13 @@
                   "pm.test('status 200', function () {",
                   "  pm.response.to.have.status(200);",
                   "});",
-                  "pm.test('returns featured+faq+archive arrays', function () {",
+                  "pm.test('returns featured+faq arrays (no archive)', function () {",
                   "  const json = pm.response.json();",
                   "  pm.expect(json).to.have.property('featured');",
                   "  pm.expect(json).to.have.property('faq');",
-                  "  pm.expect(json).to.have.property('archive');",
+                  "  pm.expect(json).to.not.have.property('archive');",
                   "  pm.expect(json.featured).to.be.an('array');",
                   "  pm.expect(json.faq).to.be.an('array');",
-                  "  pm.expect(json.archive).to.be.an('array');",
                   "});"
                 ]
               }
@@ -175,6 +181,161 @@
                   "  const json = pm.response.json();",
                   "  pm.expect(json).to.have.property('answer');",
                   "  pm.expect(json.answer).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin - Vector Store",
+      "item": [
+        {
+          "name": "GET /api/admin/vector-store/vector-files",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/admin/vector-store/vector-files"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('returns data array', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('data');",
+                  "  pm.expect(json.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin - FAQ KB",
+      "item": [
+        {
+          "name": "GET /api/admin/faq-kb",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/admin/faq-kb"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('returns entries array', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('entries');",
+                  "  pm.expect(json.entries).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/admin/faq-kb/entries (sets faqAdminEntryId)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tier\": \"faq\",\n  \"category\": \"Admin\",\n  \"question\": \"¿Cómo edito una FAQ desde el admin?\",\n  \"answer\": \"Esta es una FAQ creada desde Postman para probar el CRUD.\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/faq-kb/entries"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "pm.test('returns entry with id', function () {",
+                  "  pm.expect(json).to.have.property('entry');",
+                  "  pm.expect(json.entry).to.have.property('id');",
+                  "  pm.expect(json.entry.id).to.be.a('string').and.not.empty;",
+                  "});",
+                  "pm.collectionVariables.set('faqAdminEntryId', json.entry.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /api/admin/faq-kb/entries/{{faqAdminEntryId}}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answer\": \"Respuesta actualizada desde Postman (admin).\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/faq-kb/entries/{{faqAdminEntryId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "pm.test('returns updated entry', function () {",
+                  "  pm.expect(json).to.have.property('entry');",
+                  "  pm.expect(json.entry).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /api/admin/faq-kb/entries/{{faqAdminEntryId}}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/admin/faq-kb/entries/{{faqAdminEntryId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 204', function () {",
+                  "  pm.response.to.have.status(204);",
                   "});"
                 ]
               }

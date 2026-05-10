@@ -1,6 +1,6 @@
 # Frontend — Implementación Banco de Preguntas (FAQ) + Chat (UConnect)
 
-Este archivo está pensado para **copiarse al repo del frontend**. Es una guía autocontenida para implementar el módulo de FAQ y su integración con el chat, usando el backend ya existente (Node/Express + Mongo).
+Este archivo está pensado para **copiarse al repo del frontend**. Es una guía autocontenida para implementar el módulo de FAQ y su integración con el chat, usando el backend ya existente (Node/Express + OpenAI Vector Store para FAQ KB).
 
 > Objetivo: implementar el frontend sin necesitar acceso al código del backend.
 
@@ -11,7 +11,7 @@ Este archivo está pensado para **copiarse al repo del frontend**. Es una guía 
 ### Alcance
 
 - **FAQ (banco de preguntas):**
-  - Listar preguntas `featured` y `faq` para UI inicial.
+  - Listar preguntas disponibles (`featured`, `faq`, `archive`) para UI.
   - Buscar por texto (top N resultados con score).
   - Ver la respuesta de una pregunta por `id`.
 - **Chat unificado:**
@@ -22,7 +22,6 @@ Este archivo está pensado para **copiarse al repo del frontend**. Es una guía 
 
 ### Fuera de alcance (por ahora)
 
-- CRUD admin de FAQs (crear/editar/eliminar).
 - Autenticación/roles.
 - Mostrar `sources` por mensaje en historial (el endpoint de historial no lo trae).
 
@@ -42,7 +41,7 @@ Nombre sugerido (ajústalo al framework):
 
 Valor típico en local:
 
-- `http://localhost:3005`
+- `http://localhost:3000` (default) o el que tengas en `PORT`
 
 ### Recomendación de dev proxy (si aplica)
 
@@ -66,19 +65,9 @@ Todos los errores del backend siguen este patrón:
 
 Opcional:
 
-- `GET /api/faq/questions?includeArchive=true` para incluir también `archive` (listar todas).
+- `GET /api/faq/questions?includeArchive=false` para excluir `archive` (UI inicial corta).
 
 **200 OK**
-
-```json
-{
-  "featured": [{ "id": "q1", "question": "...", "category": "..." }],
-  "faq": [{ "id": "q4", "question": "...", "category": "..." }],
-  "total": 8
-}
-```
-
-**200 OK (con `includeArchive=true`)**
 
 ```json
 {
@@ -89,12 +78,12 @@ Opcional:
 }
 ```
 
-**500** `INTERNAL_ERROR`
+**503** `FAQ_KB_UNAVAILABLE`
 
 Notas:
 
-- Por defecto este endpoint **no retorna** `archive`. (Archive se usa principalmente para búsqueda.)
-- Si la UI necesita listar todo, usar `includeArchive=true`.
+- Por defecto este endpoint **sí retorna** `archive`.
+- Si la UI necesita una lista corta (solo `featured` + `faq`), usar `includeArchive=false`.
 
 #### B) Buscar preguntas por texto
 
@@ -128,7 +117,7 @@ Query params:
 - `INVALID_REQUEST` si falta `q`
 - `QUERY_TOO_LONG` si `q.length > 200`
 
-**500** `INTERNAL_ERROR`
+**503** `FAQ_KB_UNAVAILABLE`
 
 Notas importantes:
 
@@ -151,7 +140,7 @@ Notas importantes:
 
 **404** `QUESTION_NOT_FOUND`
 
-**500** `INTERNAL_ERROR`
+**503** `FAQ_KB_UNAVAILABLE`
 
 Notas importantes:
 
@@ -178,6 +167,8 @@ Notas importantes:
 Notas:
 
 - `suggestedQuestions` son strings (preguntas guiadas), útiles para botones rápidos.
+- Fuente principal: tier `featured` del KB (Vector Store) — toma las primeras 3.
+- Fallback: si el KB no está disponible, devuelve el listado estático `ADMISSION_GUIDED_QUESTIONS`.
 
 #### B) Enviar mensaje
 
@@ -229,6 +220,114 @@ Notas:
 - `INVALID_REQUEST` (si falta `message`)
 - `MESSAGE_TOO_LONG`
 
+---
+
+## 3) Admin — CRUD de FAQs (edición)
+
+Estos endpoints permiten crear/editar/eliminar preguntas del banco.
+
+Notas importantes:
+
+- Cada operación **sube un nuevo KB** al Vector Store (no hay edición in-place del archivo).
+- Puede tardar algunos segundos (polling hasta `completed`).
+- Actualmente el backend **no tiene autenticación**; en producción, proteger con un admin token/JWT.
+
+### 3.1 Obtener KB actual
+
+`GET /api/admin/faq-kb`
+
+Opcional:
+
+- `GET /api/admin/faq-kb?forceRefresh=true`
+
+**200 OK**
+
+```json
+{
+  "file": { "vectorStoreFileId": "file-...", "createdAt": 1234567890 },
+  "loadedAt": "2026-05-10T12:34:56.000Z",
+  "entries": [
+    {
+      "id": "q3",
+      "tier": "featured",
+      "category": "Inscripciones",
+      "questions": ["¿Cuál es el valor del PIN o derecho de inscripción?"],
+      "answer": "...",
+      "isActive": true,
+      "source": { "title": "...", "url": "..." }
+    }
+  ],
+  "total": 21
+}
+```
+
+### 3.2 Crear FAQ
+
+`POST /api/admin/faq-kb/entries`
+
+Body:
+
+```json
+{
+  "tier": "faq",
+  "category": "Inscripciones",
+  "question": "¿Cómo edito una FAQ desde el admin?",
+  "answer": "..."
+}
+```
+
+También puedes enviar `questions: string[]` en vez de `question`.
+
+**201 Created**
+
+```json
+{
+  "message": "FAQ creada correctamente",
+  "file": { "vectorStoreFileId": "file-...", "createdAt": 1234567890 },
+  "entry": { "id": "q_...", "tier": "faq", "category": "...", "questions": ["..."], "answer": "...", "isActive": true }
+}
+```
+
+### 3.3 Editar FAQ
+
+`PATCH /api/admin/faq-kb/entries/:id`
+
+Body (patch parcial):
+
+```json
+{
+  "answer": "Respuesta actualizada...",
+  "tier": "archive"
+}
+```
+
+**200 OK**
+
+```json
+{
+  "message": "FAQ actualizada correctamente",
+  "file": { "vectorStoreFileId": "file-...", "createdAt": 1234567890 },
+  "entry": { "id": "q3", "tier": "archive", "category": "...", "questions": ["..."], "answer": "...", "isActive": true }
+}
+```
+
+Errores:
+
+- `404 QUESTION_NOT_FOUND`
+- `400 INVALID_REQUEST`
+- `503 FAQ_KB_UNAVAILABLE`
+
+### 3.4 Eliminar FAQ
+
+`DELETE /api/admin/faq-kb/entries/:id`
+
+Nota:
+
+- Es un *soft delete*: la entry queda con `isActive=false`.
+- Para “restaurar”, usar `PATCH` con `{ "isActive": true }`.
+
+**204 No Content**
+
 **500** `INTERNAL_ERROR`
 
 #### C) Historial
@@ -276,7 +375,7 @@ export type FaqListItem = {
 export type FaqQuestionsResponse = {
   featured: FaqListItem[];
   faq: FaqListItem[];
-  archive?: FaqListItem[]; // solo viene cuando includeArchive=true
+  archive?: FaqListItem[]; // puede omitirse cuando includeArchive=false
   total: number;
 };
 
@@ -346,8 +445,8 @@ export type ChatHistoryResponse = {
    - Guardar `sessionId` en estado (y opcionalmente en `localStorage`).
 3. Cargar FAQ inicial:
 
-- `GET /api/faq/questions` (UI inicial corta)
-- o `GET /api/faq/questions?includeArchive=true` (si quieres listar todas)
+- `GET /api/faq/questions` (lista completa)
+- o `GET /api/faq/questions?includeArchive=false` (lista corta)
 
 Estados a manejar:
 
@@ -440,7 +539,7 @@ Historial:
 8. **Smoke tests manuales (sin Postman)**
 
 - `GET {baseUrl}/api/faq/questions`
-- `GET {baseUrl}/api/faq/questions?includeArchive=true`
+- `GET {baseUrl}/api/faq/questions?includeArchive=false`
 - `GET {baseUrl}/api/faq/search?q=pin&limit=5`
 - `GET {baseUrl}/api/faq/q3`
 - `POST {baseUrl}/api/chat/session`
@@ -450,8 +549,8 @@ Historial:
 
 ## 6) Riesgos / gotchas
 
-- Si el backend no ha corrido seed, `GET /api/faq/questions` puede venir vacío.
-- Por defecto `GET /api/faq/questions` retorna solo `featured` + `faq`; para listar todo usar `includeArchive=true`.
+- Si el FAQ KB no está cargado/configurado, los endpoints de FAQ pueden responder `503 FAQ_KB_UNAVAILABLE`.
+- Por defecto `GET /api/faq/questions` retorna también `archive`; para una lista corta usar `includeArchive=false`.
 - `GET /api/faq/:id` no retorna el texto de la pregunta.
 - El historial de chat no incluye fuentes por mensaje.
 - `tokensUsed` puede faltar cuando la respuesta viene de GPT/RAG.
@@ -461,7 +560,7 @@ Historial:
 ## 7) Definición de “listo” (DoD)
 
 - FAQ:
-  - Lista carga y renderiza `featured` + `faq` (y soporta `includeArchive=true` si se requiere listar todo).
+  - Lista carga y renderiza `featured` + `faq` (+ `archive` por defecto, o lista corta con `includeArchive=false`).
   - Search muestra resultados relevantes y permite ver respuesta.
   - Detalle muestra `answer` (y el título desde estado local).
 - Chat:

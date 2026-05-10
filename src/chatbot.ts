@@ -679,6 +679,20 @@ export class Chatbot {
   // RESPUESTAS ESPECIALES
   // ============================================
 
+  private async getSuggestedQuestionsSafe(): Promise<string[]> {
+    try {
+      const featured = await faqService.listByTier("featured");
+      const questions = featured
+        .map((q) => q.question)
+        .filter(Boolean)
+        .slice(0, 3);
+
+      return questions.length > 0 ? questions : ADMISSION_GUIDED_QUESTIONS;
+    } catch {
+      return ADMISSION_GUIDED_QUESTIONS;
+    }
+  }
+
   private async handleGreeting(
     sessionId: string,
     startTime: number,
@@ -694,11 +708,13 @@ export class Chatbot {
 
     await chatRepository.addMessage(sessionId, "assistant", greeting);
 
+    const suggestedQuestions = await this.getSuggestedQuestionsSafe();
+
     return {
       message: greeting,
       sources: [],
       tokensUsed: { input: 0, output: 0 },
-      suggestedQuestions: ADMISSION_GUIDED_QUESTIONS,
+      suggestedQuestions,
     };
   }
 

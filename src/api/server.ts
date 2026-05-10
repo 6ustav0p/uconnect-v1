@@ -17,8 +17,8 @@ import {
   academusoftService,
   gptAgentService,
   gptVectorStoreService,
-  faqRepository,
   faqService,
+  faqKbAdminService,
 } from "../services";
 import { logger, normalizeText } from "../utils";
 import multer from "multer";
@@ -41,7 +41,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: CORS_ORIGIN,
-    methods: ["GET", "POST", "DELETE"],
+    methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
@@ -185,11 +185,26 @@ app.get("/api/stats", async (_req: Request, res: Response) => {
 // ============================================
 
 // Crear nueva sesión
-app.post("/api/chat/session", (_req: Request, res: Response) => {
+async function getSuggestedQuestionsSafe(): Promise<string[]> {
+  try {
+    const featured = await faqService.listByTier("featured");
+    const questions = featured
+      .map((q) => q.question)
+      .filter(Boolean)
+      .slice(0, 3);
+
+    return questions.length > 0 ? questions : ADMISSION_GUIDED_QUESTIONS;
+  } catch {
+    return ADMISSION_GUIDED_QUESTIONS;
+  }
+}
+
+app.post("/api/chat/session", async (_req: Request, res: Response) => {
   const sessionId = chatbot.createSession();
+  const suggestedQuestions = await getSuggestedQuestionsSafe();
   res.status(201).json({
     sessionId,
-    suggestedQuestions: ADMISSION_GUIDED_QUESTIONS,
+    suggestedQuestions,
   });
 });
 
@@ -396,14 +411,14 @@ app.get("/api/faq/questions", async (req: Request, res: Response) => {
       ? includeArchiveRaw[0]
       : includeArchiveRaw;
     const includeArchive =
-      includeArchiveValue === "true" || includeArchiveValue === "1";
+      includeArchiveValue === undefined
+        ? true
+        : includeArchiveValue === "true" || includeArchiveValue === "1";
 
     const [featured, faq, archive] = await Promise.all([
-      faqRepository.listByTier("featured"),
-      faqRepository.listByTier("faq"),
-      includeArchive
-        ? faqRepository.listByTier("archive")
-        : Promise.resolve([]),
+      faqService.listByTier("featured"),
+      faqService.listByTier("faq"),
+      includeArchive ? faqService.listByTier("archive") : Promise.resolve([]),
     ]);
 
     res.json(
@@ -424,10 +439,11 @@ app.get("/api/faq/questions", async (req: Request, res: Response) => {
     logger.error("Error en GET /api/faq/questions", {
       error: (error as Error).message,
     });
-    res.status(500).json({
+    res.status(503).json({
       error: true,
-      code: "INTERNAL_ERROR",
-      message: "Error obteniendo preguntas frecuentes",
+      code: "FAQ_KB_UNAVAILABLE",
+      message:
+        "Banco de preguntas no disponible. Verifica configuración de OpenAI y el archivo FAQ KB en el Vector Store.",
     });
   }
 });
@@ -468,10 +484,11 @@ app.get("/api/faq/search", async (req: Request, res: Response) => {
       error: (error as Error).message,
     });
 
-    res.status(500).json({
+    res.status(503).json({
       error: true,
-      code: "INTERNAL_ERROR",
-      message: "Error buscando preguntas frecuentes",
+      code: "FAQ_KB_UNAVAILABLE",
+      message:
+        "Banco de preguntas no disponible. Verifica configuración de OpenAI y el archivo FAQ KB en el Vector Store.",
     });
   }
 });
@@ -482,7 +499,7 @@ app.get("/api/faq/:questionId", async (req: Request, res: Response) => {
     const { questionId } = req.params;
     const id = Array.isArray(questionId) ? questionId[0] : questionId;
 
-    const faq = await faqRepository.findById(id);
+    const faq = await faqService.findById(id);
 
     if (!faq) {
       return res.status(404).json({
@@ -502,10 +519,11 @@ app.get("/api/faq/:questionId", async (req: Request, res: Response) => {
     logger.error("Error en GET /api/faq/:questionId", {
       error: (error as Error).message,
     });
-    res.status(500).json({
+    res.status(503).json({
       error: true,
-      code: "INTERNAL_ERROR",
-      message: "Error obteniendo respuesta",
+      code: "FAQ_KB_UNAVAILABLE",
+      message:
+        "Banco de preguntas no disponible. Verifica configuración de OpenAI y el archivo FAQ KB en el Vector Store.",
     });
   }
 });
@@ -690,6 +708,9 @@ app.get("/api/programas-con-pensum", (_req: Request, res: Response) => {
 
 // Parser JSON más grande solo para admin
 const adminJsonParser = express.json({ limit: "500kb" });
+
+// Parser para FAQ admin (respuestas pueden ser largas)
+const adminFaqJsonParser = express.json({ limit: "200kb" });
 
 // Crear o actualizar PEP (texto plano -> parseado a JSON)
 app.post(
@@ -992,6 +1013,202 @@ app.get(
 // ADMIN - GPT VECTOR STORE
 // ============================================
 
+// ============================================
+// ADMIN - FAQ KB (CRUD)
+// ============================================
+
+// Obtener el KB actual (entries) + metadata del archivo seleccionado
+app.get("/api/admin/faq-kb", async (req: Request, res: Response) => {
+  try {
+    const forceRefreshRaw = req.query.forceRefresh;
+    const forceRefreshValue = Array.isArray(forceRefreshRaw)
+      ? forceRefreshRaw[0]
+      : forceRefreshRaw;
+    const forceRefresh =
+      forceRefreshValue === "true" || forceRefreshValue === "1";
+
+    const kb = await faqKbAdminService.getKb({ forceRefresh });
+    res.json(kb);
+  } catch (error) {
+    logger.error("Error en GET /api/admin/faq-kb", {
+      error: (error as Error).message,
+    });
+
+    res.status(503).json({
+      error: true,
+      code: "FAQ_KB_UNAVAILABLE",
+      message:
+        "Banco de preguntas no disponible. Verifica configuración de OpenAI y el archivo FAQ KB en el Vector Store.",
+    });
+  }
+});
+
+// Crear una nueva FAQ entry (sube un KB nuevo)
+app.post(
+  "/api/admin/faq-kb/entries",
+  adminFaqJsonParser,
+  async (req: Request, res: Response) => {
+    try {
+      const { tier, category, question, questions, answer, id, source } =
+        req.body || {};
+
+      const created = await faqKbAdminService.createEntry({
+        id,
+        tier,
+        category,
+        question,
+        questions,
+        answer,
+        source,
+      });
+
+      res.status(201).json({
+        message: "FAQ creada correctamente",
+        file: created.file,
+        entry: created.entry,
+      });
+    } catch (error) {
+      const message = (error as Error).message;
+      logger.error("Error en POST /api/admin/faq-kb/entries", {
+        error: message,
+      });
+
+      // Errores de validación/negocio -> 400
+      const isValidation =
+        message.includes("requerido") ||
+        message.includes("Debe") ||
+        message.includes("debe") ||
+        message.includes("Ya existe") ||
+        message.includes("tier");
+
+      res.status(isValidation ? 400 : 503).json({
+        error: true,
+        code: isValidation ? "INVALID_REQUEST" : "FAQ_KB_UNAVAILABLE",
+        message: isValidation
+          ? message
+          : "Banco de preguntas no disponible. Verifica configuración de OpenAI y el archivo FAQ KB en el Vector Store.",
+      });
+    }
+  },
+);
+
+// Actualizar una FAQ entry por id (sube un KB nuevo)
+app.patch(
+  "/api/admin/faq-kb/entries/:id",
+  adminFaqJsonParser,
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const safeId = Array.isArray(id) ? id[0] : id;
+
+      const { tier, category, question, questions, answer, source, isActive } =
+        req.body || {};
+
+      const updated = await faqKbAdminService.updateEntry(safeId, {
+        tier,
+        category,
+        question,
+        questions,
+        answer,
+        source,
+        isActive,
+      });
+
+      res.json({
+        message: "FAQ actualizada correctamente",
+        file: updated.file,
+        entry: updated.entry,
+      });
+    } catch (error) {
+      const message = (error as Error).message;
+      logger.error("Error en PATCH /api/admin/faq-kb/entries/:id", {
+        error: message,
+      });
+
+      const isNotFound = message.includes("No existe una FAQ");
+      const isValidation =
+        isNotFound ||
+        message.includes("requerido") ||
+        message.includes("Debe") ||
+        message.includes("debe") ||
+        message.includes("tier");
+
+      if (isNotFound) {
+        return res.status(404).json({
+          error: true,
+          code: "QUESTION_NOT_FOUND",
+          message,
+        });
+      }
+
+      res.status(isValidation ? 400 : 503).json({
+        error: true,
+        code: isValidation ? "INVALID_REQUEST" : "FAQ_KB_UNAVAILABLE",
+        message: isValidation
+          ? message
+          : "Banco de preguntas no disponible. Verifica configuración de OpenAI y el archivo FAQ KB en el Vector Store.",
+      });
+    }
+  },
+);
+
+// Eliminar una FAQ entry por id (soft delete: isActive=false; sube un KB nuevo)
+app.delete(
+  "/api/admin/faq-kb/entries/:id",
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const safeId = Array.isArray(id) ? id[0] : id;
+      await faqKbAdminService.deleteEntry(safeId);
+      res.status(204).send();
+    } catch (error) {
+      const message = (error as Error).message;
+      logger.error("Error en DELETE /api/admin/faq-kb/entries/:id", {
+        error: message,
+      });
+
+      const isNotFound = message.includes("No existe una FAQ");
+      if (isNotFound) {
+        return res.status(404).json({
+          error: true,
+          code: "QUESTION_NOT_FOUND",
+          message,
+        });
+      }
+
+      res.status(503).json({
+        error: true,
+        code: "FAQ_KB_UNAVAILABLE",
+        message:
+          "Banco de preguntas no disponible. Verifica configuración de OpenAI y el archivo FAQ KB en el Vector Store.",
+      });
+    }
+  },
+);
+
+// Listar vector store files (incluye status + attributes)
+app.get(
+  "/api/admin/vector-store/vector-files",
+  async (_req: Request, res: Response) => {
+    try {
+      const files = await gptVectorStoreService.listVectorStoreFiles();
+      res.json({
+        data: files,
+        total: files.length,
+      });
+    } catch (error) {
+      logger.error("Error en GET /api/admin/vector-store/vector-files", {
+        error: (error as Error).message,
+      });
+      res.status(500).json({
+        error: true,
+        code: "INTERNAL_ERROR",
+        message: "Error listando vector store files",
+      });
+    }
+  },
+);
+
 // Listar archivos en el Vector Store
 app.get(
   "/api/admin/vector-store/files",
@@ -1030,13 +1247,19 @@ app.post(
         });
       }
 
+      const kindRaw = req.query.kind ?? req.body.kind;
+      const kindValue = Array.isArray(kindRaw) ? kindRaw[0] : kindRaw;
+      const kind = typeof kindValue === "string" ? kindValue.trim() : "";
+
       const fileObject = await gptVectorStoreService.uploadAndPoll(
         req.file.buffer,
         req.file.originalname,
+        kind ? { attributes: { kind } } : undefined,
       );
 
       res.status(201).json({
         message: "Archivo subido y procesado correctamente.",
+        kind: kind || undefined,
         data: fileObject,
       });
     } catch (error) {
@@ -1146,6 +1369,10 @@ Admin:
   GET    /api/stats             - Estadísticas
   GET    /api/health            - Health check
   POST   /api/admin/pep         - Crear/actualizar PEP
+  GET    /api/admin/faq-kb       - Ver KB (admin)
+  POST   /api/admin/faq-kb/entries - Crear FAQ (admin)
+  PATCH  /api/admin/faq-kb/entries/:id - Editar FAQ (admin)
+  DELETE /api/admin/faq-kb/entries/:id - Eliminar FAQ (admin)
   POST   /api/admin/vector-store/files - Subir documento
   GET    /api/admin/vector-store/files - Listar documentos
   DELETE /api/admin/vector-store/files/:id - Eliminar documento

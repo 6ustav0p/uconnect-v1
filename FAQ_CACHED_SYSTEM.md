@@ -1,5 +1,13 @@
 # FAQ Sistema de Preguntas Frecuentes Cacheadas
 
+> ⚠️ **DEPRECADO (documento histórico):** esta guía describe una versión antigua donde el FAQ vivía en código (`admission-faq.ts`).
+>
+> **Estado actual:** el banco de preguntas (FAQ) es un **KB JSON** alojado en **OpenAI Vector Store** (fuente de verdad) con snapshot/cache en backend.
+>
+> Ver documentación vigente:
+> - `README_BANCO_PREGUNTAS.md` (arquitectura + flujo KB)
+> - `README_FRONTEND_FAQ.md` (contrato de API para frontend, incluyendo CRUD admin)
+
 ## Descripción
 
 Se implementó un sistema eficiente de preguntas frecuentes (FAQ) con respuestas **pre-cacheadas** para evitar latencia en las respuestas. El sistema se divide en tres niveles:

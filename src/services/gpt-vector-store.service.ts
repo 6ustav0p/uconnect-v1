@@ -5,6 +5,18 @@ import { logger } from "../utils";
 
 type FileObject = OpenAI.FileObject;
 
+export type VectorStoreFileInfo = {
+  id: string;
+  createdAt: number;
+  status: string;
+  usageBytes: number;
+  attributes?: Record<string, string | number | boolean> | null;
+  lastError?: {
+    code: string;
+    message: string;
+  } | null;
+};
+
 const VECTOR_STORE_ID = config.openai.vectorStoreId;
 
 export class GptVectorStoreService {
@@ -18,21 +30,34 @@ export class GptVectorStoreService {
    * Uploads a file to OpenAI, adds it to the vector store, and polls until processing is complete.
    * @param fileBuffer The file content as a Buffer.
    * @param fileName The name of the file.
+   * @param options Optional attributes to set on the vector store file.
    * @returns The completed FileObject.
    */
-  async uploadAndPoll(fileBuffer: Buffer, fileName: string): Promise<FileObject> {
+  async uploadAndPoll(
+    fileBuffer: Buffer,
+    fileName: string,
+    options?: { attributes?: Record<string, string | number | boolean> },
+  ): Promise<FileObject> {
     logger.info(`[VectorStore] Uploading file "${fileName}" to OpenAI.`);
     const uploadFile = await toFile(fileBuffer, fileName);
     const file = await this.client.files.create({
       file: uploadFile,
       purpose: "assistants",
     });
-    logger.info(`[VectorStore] File uploaded with ID: ${file.id}. Adding to vector store.`);
+    logger.info(
+      `[VectorStore] File uploaded with ID: ${file.id}. Adding to vector store.`,
+    );
 
-    const vectorStoreFile = await this.client.vectorStores.files.create(VECTOR_STORE_ID, {
-      file_id: file.id,
-    });
-    logger.info(`[VectorStore] File ${file.id} added to store. Polling for completion...`);
+    const vectorStoreFile = await this.client.vectorStores.files.create(
+      VECTOR_STORE_ID,
+      {
+        file_id: file.id,
+        attributes: options?.attributes ?? undefined,
+      },
+    );
+    logger.info(
+      `[VectorStore] File ${file.id} added to store. Polling for completion...`,
+    );
 
     // Poll for completion
     const pollInterval = 5000; // 5 seconds
@@ -42,7 +67,7 @@ export class GptVectorStoreService {
     while (attempts < maxAttempts) {
       const updatedFile = await this.client.vectorStores.files.retrieve(
         VECTOR_STORE_ID,
-        vectorStoreFile.id
+        vectorStoreFile.id,
       );
 
       if (updatedFile.status === "completed") {
@@ -53,7 +78,9 @@ export class GptVectorStoreService {
 
       if (updatedFile.status === "failed") {
         const errorMessage = updatedFile.last_error?.message || "Unknown error";
-        logger.error(`[VectorStore] File ${file.id} processing failed.`, { error: errorMessage });
+        logger.error(`[VectorStore] File ${file.id} processing failed.`, {
+          error: errorMessage,
+        });
         throw new Error(`File processing failed: ${errorMessage}`);
       }
 
@@ -70,19 +97,63 @@ export class GptVectorStoreService {
    */
   async listFiles(): Promise<FileObject[]> {
     logger.info(`[VectorStore] Listing files for store ID: ${VECTOR_STORE_ID}`);
-    const vectorStoreFiles = await this.client.vectorStores.files.list(VECTOR_STORE_ID);
-    
+    const vectorStoreFiles =
+      await this.client.vectorStores.files.list(VECTOR_STORE_ID);
+
     // The list only contains minimal info, so we need to retrieve each file individually
     // to get full details like filename.
-    const filePromises = vectorStoreFiles.data.map(vsFile => 
-      this.client.files.retrieve(vsFile.id).catch(err => {
-        logger.warn(`[VectorStore] Could not retrieve file ${vsFile.id}, it might have been deleted from OpenAI but not the store.`, err);
+    const filePromises = vectorStoreFiles.data.map((vsFile) =>
+      this.client.files.retrieve(vsFile.id).catch((err) => {
+        logger.warn(
+          `[VectorStore] Could not retrieve file ${vsFile.id}, it might have been deleted from OpenAI but not the store.`,
+          err,
+        );
         return null;
-      })
+      }),
     );
 
     const files = await Promise.all(filePromises);
-    return files.filter(file => file !== null) as FileObject[];
+    return files.filter((file) => file !== null) as FileObject[];
+  }
+
+  /**
+   * Lists vector store file objects (includes status + attributes).
+   */
+  async listVectorStoreFiles(): Promise<VectorStoreFileInfo[]> {
+    logger.info(
+      `[VectorStore] Listing vector store files for store ID: ${VECTOR_STORE_ID}`,
+    );
+    const vectorStoreFiles =
+      await this.client.vectorStores.files.list(VECTOR_STORE_ID);
+    return (vectorStoreFiles.data || []).map((file: any) => ({
+      id: file.id,
+      createdAt: file.created_at,
+      status: file.status,
+      usageBytes: file.usage_bytes,
+      attributes: file.attributes ?? null,
+      lastError: file.last_error
+        ? {
+            code: file.last_error.code,
+            message: file.last_error.message,
+          }
+        : null,
+    }));
+  }
+
+  /**
+   * Retrieves the parsed text contents of a vector store file.
+   */
+  async getVectorStoreFileText(vectorStoreFileId: string): Promise<string> {
+    const page = await this.client.vectorStores.files.content(
+      VECTOR_STORE_ID,
+      vectorStoreFileId,
+    );
+
+    const parts = (page.data || [])
+      .map((item: any) => (typeof item.text === "string" ? item.text : ""))
+      .filter(Boolean);
+
+    return parts.join("\n").trim();
   }
 
   /**
@@ -90,17 +161,23 @@ export class GptVectorStoreService {
    * @param fileId The ID of the file to delete.
    */
   async deleteFile(fileId: string): Promise<void> {
-    logger.info(`[VectorStore] Deleting file ${fileId} from store ${VECTOR_STORE_ID}.`);
+    logger.info(
+      `[VectorStore] Deleting file ${fileId} from store ${VECTOR_STORE_ID}.`,
+    );
     try {
       await this.client.vectorStores.files.del(VECTOR_STORE_ID, fileId);
-      logger.info(`[VectorStore] File ${fileId} detached from store. Deleting from OpenAI.`);
+      logger.info(
+        `[VectorStore] File ${fileId} detached from store. Deleting from OpenAI.`,
+      );
       await this.client.files.del(fileId);
       logger.info(`[VectorStore] File ${fileId} deleted successfully.`);
     } catch (error: any) {
       // If the file is already deleted from the store, it might throw an error.
       // We can still try to delete it from OpenAI files.
       if (error.status === 404) {
-        logger.warn(`[VectorStore] File ${fileId} was not found in the vector store, attempting to delete from OpenAI files anyway.`);
+        logger.warn(
+          `[VectorStore] File ${fileId} was not found in the vector store, attempting to delete from OpenAI files anyway.`,
+        );
         await this.client.files.del(fileId);
         logger.info(`[VectorStore] File ${fileId} deleted from OpenAI files.`);
         return;

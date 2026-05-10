@@ -18,3 +18,10 @@ export {
 } from "./gpt-vector-store.service";
 export { faqRepository, FaqRepository } from "./faq.repository";
 export { faqService, FaqService } from "./faq.service";
+export {
+  faqKbAdminService,
+  FaqKbAdminService,
+  type FaqKbAdminSnapshot,
+  type FaqKbEntryCreateInput,
+  type FaqKbEntryUpdateInput,
+} from "./faq-kb.admin.service";
