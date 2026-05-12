@@ -163,6 +163,12 @@ function normalizeSources(input: unknown): string[] {
   return input.filter((item): item is string => typeof item === "string");
 }
 
+function normalizeOptionalId(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
 // ============================================
 // ESTADÍSTICAS
 // ============================================
@@ -201,9 +207,11 @@ async function getSuggestedQuestionsSafe(): Promise<string[]> {
 
 app.post("/api/chat/session", async (_req: Request, res: Response) => {
   const sessionId = chatbot.createSession();
+  const userId = sessionId;
   const suggestedQuestions = await getSuggestedQuestionsSafe();
   res.status(201).json({
     sessionId,
+    userId,
     suggestedQuestions,
   });
 });
@@ -230,8 +238,18 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
       });
     }
 
-    // Usar sessionId existente o crear uno nuevo
-    const activeSessionId = sessionId || chatbot.createSession();
+    const requestedSessionId = normalizeOptionalId(sessionId);
+    const requestedUserId = normalizeOptionalId(userId);
+
+    // Usar sessionId existente, o userId como fallback, o crear uno nuevo.
+    // Nota: por defecto, usamos el mismo id como sessionId y userId para
+    // que el frontend solo deba persistir 1 valor por 24h.
+    const activeSessionId =
+      requestedSessionId || requestedUserId || chatbot.createSession();
+    const activeUserId = requestedUserId || activeSessionId;
+
+    // Asegurar que el chat exista con userId asociado (para consultas/TTL)
+    await chatRepository.getOrCreateChat(activeSessionId, activeUserId);
     const trimmedMessage = message.trim();
 
     // Early-exit: banco de preguntas (FAQ)
@@ -249,6 +267,7 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
 
       return res.json({
         sessionId: activeSessionId,
+        userId: activeUserId,
         response: {
           message: faqMatch.answer,
           sources: ["FAQ"],
@@ -284,6 +303,7 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
 
         return res.json({
           sessionId: activeSessionId,
+          userId: activeUserId,
           response: {
             message: gptResult.response,
             sources: gptResult.documents.map((doc) => doc.filename),
@@ -305,6 +325,7 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
 
         return res.json({
           sessionId: activeSessionId,
+          userId: activeUserId,
           response: {
             message:
               "No pude consultar documentos institucionales en este momento. " +
@@ -327,6 +348,7 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
 
     res.json({
       sessionId: activeSessionId,
+      userId: activeUserId,
       response: {
         message: localResponse.message,
         sources: normalizeSources(localResponse.sources),

@@ -28,6 +28,9 @@ export class ChatRepository {
       });
       await chat.save();
       logger.debug("Nuevo chat creado", { sessionId });
+    } else if (userId && !chat.userId) {
+      chat.userId = userId;
+      await chat.save();
     }
 
     return chat;

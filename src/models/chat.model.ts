@@ -107,7 +107,11 @@ const ChatSchema = new Schema<IChat>(
 );
 
 // Índices para búsquedas eficientes
-ChatSchema.index({ "metadata.lastActivity": -1 });
+// TTL: auto-elimina chats 24h después de la última actividad.
+ChatSchema.index(
+  { "metadata.lastActivity": 1 },
+  { expireAfterSeconds: 60 * 60 * 24 },
+);
 ChatSchema.index({ createdAt: -1 });
 ChatSchema.index({ userId: 1, createdAt: -1 });
 
