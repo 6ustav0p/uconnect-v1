@@ -9,6 +9,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { randomUUID } from "crypto";
 import {
+  database,
   chatRepository,
   pepRepository,
   pepParserService,
@@ -77,14 +78,15 @@ const upload = multer({
 // ============================================
 
 app.get("/api/health", async (_req: Request, res: Response) => {
+  const dbConnected = database.getConnectionStatus();
   try {
     const gptAvailable = await gptAgentService.isAvailable();
 
     res.json({
-      status: "ok",
+      status: dbConnected ? "ok" : "degraded",
       timestamp: new Date().toISOString(),
       services: {
-        database: "connected",
+        database: dbConnected ? "connected" : "disconnected",
         gpt: gptAvailable ? "available" : "unavailable",
       },
     });
@@ -1106,6 +1108,9 @@ async function startServer() {
   try {
     console.log("\n🚀 Iniciando UConnect API Server...\n");
 
+    // Inicializar conexión a MongoDB para repositorios de chat/FAQ.
+    await database.connect();
+
     // Iniciar servidor HTTP
     app.listen(PORT, () => {
       console.log(`
@@ -1150,10 +1155,12 @@ CORS habilitado para: ${CORS_ORIGIN}
     // Graceful shutdown
     process.on("SIGINT", async () => {
       console.log("\n\n⏳ Cerrando servidor...");
+      await database.disconnect();
       process.exit(0);
     });
 
     process.on("SIGTERM", async () => {
+      await database.disconnect();
       process.exit(0);
     });
   } catch (error) {

@@ -191,15 +191,24 @@ export class LocalDataService {
       // (cuando preguntan por "ingeniero" en vez de "ingeniería")
       // ============================================
       ["ingeniero\\s+industrial", "INGENIERIA INDUSTRIAL"],
-      ["ingeniero\\s+de\\s+sistemas|ingeniero\\s+en\\s+sistemas", "INGENIERIA DE SISTEMAS"],
+      [
+        "ingeniero\\s+de\\s+sistemas|ingeniero\\s+en\\s+sistemas",
+        "INGENIERIA DE SISTEMAS",
+      ],
       ["ingeniero\\s+mecanico", "INGENIERIA MECANICA"],
       ["ingeniero\\s+ambiental", "INGENIERIA AMBIENTAL"],
       ["ingeniero\\s+de\\s+alimentos", "INGENIERIA DE ALIMENTOS"],
       ["ingeniero\\s+agronomo|agronomo", "INGENIERIA AGRONOMICA"],
-      ["medico\\s+veterinario|veterinario|zootecnista", "MEDICINA VETERINARIA Y ZOOTECNIA"],
+      [
+        "medico\\s+veterinario|veterinario|zootecnista",
+        "MEDICINA VETERINARIA Y ZOOTECNIA",
+      ],
       ["enfermero|enfermera", "ENFERMERIA"],
       ["abogado|abogada", "DERECHO"],
-      ["administrador.*finanzas|financiero", "ADMINISTRACION EN FINANZAS Y NEGOCIOS INTERNACIONALES"],
+      [
+        "administrador.*finanzas|financiero",
+        "ADMINISTRACION EN FINANZAS Y NEGOCIOS INTERNACIONALES",
+      ],
       ["administrador.*salud", "ADMINISTRACION EN SALUD"],
       ["biologo|biologa", "BIOLOGIA"],
       ["quimico(?!.*farmacia)", "QUIMICA"],
@@ -209,8 +218,11 @@ export class LocalDataService {
       ["matematico", "MATEMATICAS"],
       ["bacteriologo|bacteriologa", "BACTERIOLOGIA"],
       ["regente.*farmacia|farmaceutico", "TECNOLOGIA EN REGENCIA DE FARMACIA"],
-      ["desarrollador.*software|programador", "TECNOLOGIA EN DESARROLLO DE SOFTWARE"],
-      
+      [
+        "desarrollador.*software|programador",
+        "TECNOLOGIA EN DESARROLLO DE SOFTWARE",
+      ],
+
       // ============================================
       // INGENIERÍAS - frases completas primero
       // ============================================
@@ -231,7 +243,7 @@ export class LocalDataService {
       ["ing\\.?\\s+agronom", "INGENIERIA AGRONOMICA"],
       // Solo keyword (palabras sueltas) - industrial/industria va antes
       ["industri(a|al)", "INGENIERIA INDUSTRIAL"],
-      ["\\bsistemas\\b", "INGENIERIA DE SISTEMAS"],
+      ["\\bsistemas?\\b", "INGENIERIA DE SISTEMAS"], // singular y plural
       ["\\bmecanica\\b", "INGENIERIA MECANICA"],
       ["\\bambiental\\b", "INGENIERIA AMBIENTAL"],
       ["\\balimentos\\b", "INGENIERIA DE ALIMENTOS"],
