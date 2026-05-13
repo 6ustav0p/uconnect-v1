@@ -213,7 +213,14 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
       });
     }
 
-    const gptResult = await gptAgentService.processQuery(trimmedMessage);
+    const history = await chatRepository.getHistory(
+      activeSessionId,
+      10,
+    );
+    const gptResult = await gptAgentService.processQuery(trimmedMessage, {
+      sessionId: activeSessionId,
+      history,
+    });
 
     await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
     await chatRepository.addMessage(
@@ -435,7 +442,7 @@ app.get("/api/faq/:questionId", async (req: Request, res: Response) => {
 // Enviar mensaje al GPT Agent
 app.post("/api/gpt/chat", chatLimiter, async (req: Request, res: Response) => {
   try {
-    const { message } = req.body;
+    const { message, sessionId, userId } = req.body;
 
     // Validaciones
     if (!message || typeof message !== "string") {
@@ -454,10 +461,35 @@ app.post("/api/gpt/chat", chatLimiter, async (req: Request, res: Response) => {
       });
     }
 
+    const requestedSessionId = normalizeOptionalId(sessionId);
+    const requestedUserId = normalizeOptionalId(userId);
+    const activeSessionId =
+      requestedSessionId || requestedUserId || randomUUID();
+    const activeUserId = requestedUserId || activeSessionId;
+    const trimmedMessage = message.trim();
+
+    await chatRepository.getOrCreateChat(activeSessionId, activeUserId);
+    const history = await chatRepository.getHistory(activeSessionId, 10);
+
     // Procesar con GPT Agent
-    const result = await gptAgentService.processQuery(message.trim());
+    const result = await gptAgentService.processQuery(trimmedMessage, {
+      sessionId: activeSessionId,
+      history,
+    });
+
+    await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
+    await chatRepository.addMessage(
+      activeSessionId,
+      "assistant",
+      result.response,
+      {
+        sources: result.documents.map((doc) => doc.filename),
+      },
+    );
 
     res.json({
+      sessionId: activeSessionId,
+      userId: activeUserId,
       response: result.response,
       documents: result.documents,
     });

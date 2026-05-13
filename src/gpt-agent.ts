@@ -1,10 +1,14 @@
 import "dotenv/config";
 import * as readline from "readline";
 import { gptAgentService } from "./services";
+import { ChatMessage } from "./types";
 
 // Re-export for backward compatibility
-export const runWorkflow = async (workflow: { input_as_text: string }) => {
-  return gptAgentService.processQuery(workflow.input_as_text);
+export const runWorkflow = async (
+  workflow: { input_as_text: string },
+  options: { sessionId?: string; history?: ChatMessage[] } = {},
+) => {
+  return gptAgentService.processQuery(workflow.input_as_text, options);
 };
 
 // CLI entrypoint
@@ -42,6 +46,8 @@ async function main() {
   console.log("Escribe 'salir' o 'exit' para terminar.");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
   console.log("");
+  const sessionId = `cli-${Date.now()}`;
+  const history: ChatMessage[] = [];
   
   const rl = readline.createInterface({
     input: process.stdin,
@@ -69,7 +75,16 @@ async function main() {
       console.log("");
       console.log("⏳ Procesando...");
       
-      const result = await runWorkflow({ input_as_text: query });
+      const result = await runWorkflow(
+        { input_as_text: query },
+        { sessionId, history },
+      );
+      history.push({ role: "user", content: query, timestamp: new Date() });
+      history.push({
+        role: "assistant",
+        content: result.response,
+        timestamp: new Date(),
+      });
       
       console.log("");
       console.log("💬 Respuesta:");

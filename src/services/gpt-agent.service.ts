@@ -7,6 +7,7 @@ import { OpenAI } from "openai";
 import { Agent, AgentInputItem, Runner, withTrace } from "@openai/agents";
 import { logger, normalizeText } from "../utils";
 import { LocalDataService } from "./local-data.service";
+import { ChatMessage } from "../types";
 
 // Types
 export interface GptQueryResult {
@@ -24,6 +25,11 @@ export interface GptAgentConfig {
   temperature: number;
   maxTokens: number;
   maxResults: number;
+}
+
+export interface GptQueryOptions {
+  sessionId?: string;
+  history?: ChatMessage[];
 }
 
 // Default configuration
@@ -121,6 +127,32 @@ function buildPensumContext(query: string): string | null {
   return lines.join("\n");
 }
 
+function formatHistoryForPrompt(history: ChatMessage[] = []): string {
+  const recent = history.slice(-8);
+  if (recent.length === 0) return "Sin historial previo.";
+
+  return recent
+    .map((message) => {
+      const role = message.role === "assistant" ? "Asistente" : "Usuario";
+      return `${role}: ${message.content}`;
+    })
+    .join("\n");
+}
+
+function buildContextualSearchQuery(
+  message: string,
+  history: ChatMessage[] = [],
+): string {
+  const recentUserMessages = history
+    .filter((item) => item.role === "user")
+    .slice(-3)
+    .map((item) => item.content);
+
+  if (recentUserMessages.length === 0) return message;
+
+  return [...recentUserMessages, message].join("\n");
+}
+
 export class GptAgentService {
   private client: OpenAI;
   private agent: Agent;
@@ -133,16 +165,16 @@ export class GptAgentService {
 
     this.agent = new Agent({
       name: "uconnect",
-      instructions: `Eres un asistente universitario que SOLO responde basándose en el contenido de los documentos proporcionados.
+      instructions: `Eres un asistente universitario amable, claro y orientado a estudiantes de la Universidad de Córdoba.
 
-REGLAS ESTRICTAS:
-1. Solo usa información que esté explícitamente en el contexto de los documentos proporcionados
-2. NO inventes, supongas o generalices información que no esté en los documentos
-3. Si la información no está en los documentos, responde: "No encuentro esa información en los documentos disponibles"
-4. Cita el documento cuando sea relevante
-5. Sé preciso y específico con la información del documento
+REGLAS:
+1. Cuando recibas contexto de documentos, usa esa información como fuente principal y no inventes datos específicos que no estén allí.
+2. Si el estudiante hace una pregunta general de orientación, responde de forma útil y amigable con recomendaciones generales, sin presentar datos institucionales no verificados como hechos.
+3. Si falta información específica, dilo claramente y ofrece una forma de continuar, por ejemplo pedir el programa, semestre, jornada o tema de interés.
+4. Cita el documento cuando sea relevante.
+5. Sé preciso cuando uses documentos y cercano cuando orientes de forma general.
 
-Tu objetivo es ayudar a estudiantes con información verificable de los documentos institucionales.`,
+Tu objetivo es ayudar a estudiantes con información verificable de los documentos institucionales y orientación general responsable cuando no haya datos específicos disponibles.`,
       model: this.config.model,
       modelSettings: {
         temperature: this.config.temperature,
@@ -159,14 +191,19 @@ Tu objetivo es ayudar a estudiantes con información verificable de los document
   private async processWithLocalPensum(
     message: string,
     pensumContext: string,
+    history: ChatMessage[] = [],
   ): Promise<GptQueryResult> {
+    const formattedHistory = formatHistoryForPrompt(history);
     const prompt = `Tienes los siguientes datos académicos de la Universidad de Córdoba:
 
 ${pensumContext}
 
+Historial reciente de la conversación:
+${formattedHistory}
+
 Pregunta del estudiante: ${message}
 
-Responde de forma clara y amigable usando ÚNICAMENTE los datos anteriores. Lista las materias con su nombre y créditos.`;
+Responde de forma clara y amigable usando ÚNICAMENTE los datos académicos anteriores y el historial solo para entender referencias de seguimiento. Lista las materias con su nombre y créditos.`;
 
     const conversationHistory: AgentInputItem[] = [
       { role: "user", content: [{ type: "input_text", text: prompt }] },
@@ -190,16 +227,62 @@ Responde de forma clara y amigable usando ÚNICAMENTE los datos anteriores. List
   }
 
   /**
+   * Procesa preguntas generales sin documentos relevantes.
+   */
+  private async processGeneralQuery(
+    message: string,
+    history: ChatMessage[] = [],
+  ): Promise<GptQueryResult> {
+    const prompt = `No se encontraron documentos institucionales relevantes para esta consulta.
+
+Historial reciente de la conversación:
+${formatHistoryForPrompt(history)}
+
+Pregunta del estudiante: ${message}
+
+Responde de forma amable, breve y útil. Puedes dar orientación general para ayudar al estudiante a avanzar, pero NO inventes datos específicos de la Universidad de Córdoba, como fechas, costos, requisitos exactos, puntajes, enlaces, materias o nombres de programas si no están en el contexto. Si necesitas más información, pide un dato concreto para continuar.`;
+
+    const conversationHistory: AgentInputItem[] = [
+      { role: "user", content: [{ type: "input_text", text: prompt }] },
+    ];
+
+    const runner = new Runner();
+    const agentResult = await runner.run(this.agent, conversationHistory);
+
+    if (!agentResult.finalOutput) {
+      throw new Error("El agente no generó una respuesta");
+    }
+
+    return {
+      response: agentResult.finalOutput,
+      documents: [],
+    };
+  }
+
+  /**
    * Procesa una consulta usando GPT con RAG (vector store)
    */
-  async processQuery(message: string): Promise<GptQueryResult> {
+  async processQuery(
+    message: string,
+    options: GptQueryOptions = {},
+  ): Promise<GptQueryResult> {
     return await withTrace("uconnect-api", async () => {
       try {
+        const history = options.history || [];
+        const contextualSearchQuery = buildContextualSearchQuery(
+          message,
+          history,
+        );
+
         // Ruta 1: preguntas de pensum/materias → usar JSON local directamente
-        if (PENSUM_KEYWORDS.test(message)) {
-          const pensumContext = buildPensumContext(message);
+        if (PENSUM_KEYWORDS.test(contextualSearchQuery)) {
+          const pensumContext = buildPensumContext(contextualSearchQuery);
           if (pensumContext) {
-            return await this.processWithLocalPensum(message, pensumContext);
+            return await this.processWithLocalPensum(
+              message,
+              pensumContext,
+              history,
+            );
           }
         }
 
@@ -207,7 +290,7 @@ Responde de forma clara y amigable usando ÚNICAMENTE los datos anteriores. List
         const searchResult = await this.client.vectorStores.search(
           this.config.vectorStoreId,
           {
-            query: message,
+            query: contextualSearchQuery,
             max_num_results: this.config.maxResults,
           },
         );
@@ -216,11 +299,9 @@ Responde de forma clara y amigable usando ÚNICAMENTE los datos anteriores. List
         if (searchResult.data.length === 0) {
           logger.info("GPT Agent: No se encontraron documentos relevantes", {
             query: message,
+            sessionId: options.sessionId,
           });
-          return {
-            response: "No encontré documentos relevantes para tu consulta.",
-            documents: [],
-          };
+          return await this.processGeneralQuery(message, history);
         }
 
         // Extraer contenido de los documentos
@@ -237,9 +318,12 @@ ${relevantDocs}
 
 ---
 
+Historial reciente de la conversación:
+${formatHistoryForPrompt(history)}
+
 Pregunta del estudiante: ${message}
 
-Responde SOLO basándote en la información del contexto anterior. Si la información no está en el contexto, dilo claramente.`;
+Responde de forma clara y amigable. Para datos específicos, básate SOLO en la información de los documentos anteriores. Usa el historial únicamente para entender referencias de seguimiento del estudiante. Si la información específica no está en el contexto, dilo claramente y ofrece una siguiente pregunta concreta para continuar.`;
 
         const conversationHistory: AgentInputItem[] = [
           {
@@ -269,6 +353,8 @@ Responde SOLO basándote en la información del contexto anterior. Si la informa
 
         logger.info("GPT Agent: Consulta procesada", {
           query: message.substring(0, 50),
+          sessionId: options.sessionId,
+          historyMessages: history.length,
           documentsFound: documents.length,
         });
 
