@@ -21,6 +21,7 @@ import {
 import { logger } from "../utils";
 import multer from "multer";
 import { ADMISSION_GUIDED_QUESTIONS } from "../config/prompts";
+import { createAdminAuthMiddleware } from "./admin-auth";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -488,6 +489,9 @@ app.get("/api/gpt/health", async (_req: Request, res: Response) => {
 // ============================================
 // ADMIN - PEP (Perfil de Programa)
 // ============================================
+
+// Proteger todo /api/admin/* (auth + rol admin)
+app.use("/api/admin", createAdminAuthMiddleware());
 
 // Parser JSON más grande solo para admin
 const adminJsonParser = express.json({ limit: "500kb" });

@@ -2,6 +2,7 @@ node_modules/
 dist/
 *.log
 .env
+FIREBASE_SERVICE_ACCOUNT_BASE64
 .DS_Store
 coverage/
 .vscode/
