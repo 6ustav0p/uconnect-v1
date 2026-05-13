@@ -7,28 +7,24 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import { chatbot } from "../chatbot";
-import { localDataService } from "../services/local-data.service";
+import { randomUUID } from "crypto";
 import {
   chatRepository,
   pepRepository,
   pepParserService,
   pepUploadService,
-  academusoftService,
   gptAgentService,
   gptVectorStoreService,
   faqService,
   faqKbAdminService,
 } from "../services";
-import { logger, normalizeText } from "../utils";
+import { logger } from "../utils";
 import multer from "multer";
 import { ADMISSION_GUIDED_QUESTIONS } from "../config/prompts";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "*";
-
-type ChatRoute = "documents" | "general";
 
 // ============================================
 // MIDDLEWARE
@@ -81,7 +77,6 @@ const upload = multer({
 
 app.get("/api/health", async (_req: Request, res: Response) => {
   try {
-    const ollamaAvailable = await checkOllamaHealth();
     const gptAvailable = await gptAgentService.isAvailable();
 
     res.json({
@@ -89,7 +84,6 @@ app.get("/api/health", async (_req: Request, res: Response) => {
       timestamp: new Date().toISOString(),
       services: {
         database: "connected",
-        ollama: ollamaAvailable ? "available" : "unavailable",
         gpt: gptAvailable ? "available" : "unavailable",
       },
     });
@@ -99,69 +93,11 @@ app.get("/api/health", async (_req: Request, res: Response) => {
       timestamp: new Date().toISOString(),
       services: {
         database: "unknown",
-        ollama: "unknown",
         gpt: "unknown",
       },
     });
   }
 });
-
-async function checkOllamaHealth(): Promise<boolean> {
-  try {
-    const response = await fetch(
-      `${process.env.OLLAMA_HOST || "http://localhost:11434"}/api/tags`,
-    );
-    return response.ok;
-  } catch {
-    return false;
-  }
-}
-
-function inferChatRoute(message: string): ChatRoute {
-  const normalized = normalizeText(message);
-
-  // Preguntas de materias/pensum operativo se responden mejor con datos locales.
-  const localDataKeywords = [
-    "materia",
-    "materias",
-    "semestre",
-    "credito",
-    "creditos",
-    "jornada",
-    "programa",
-    "facultad",
-    "pensum",
-  ];
-
-  const documentsKeywords = [
-    "pep",
-    "proyecto educativo",
-    "perfil de egresado",
-    "perfil profesional",
-    "competencias",
-    "requisitos de grado",
-    "mision",
-    "vision",
-    "acuerdo",
-    "resolucion",
-    "lineas de investigacion",
-  ];
-
-  if (documentsKeywords.some((keyword) => normalized.includes(keyword))) {
-    return "documents";
-  }
-
-  if (localDataKeywords.some((keyword) => normalized.includes(keyword))) {
-    return "general";
-  }
-
-  return "general";
-}
-
-function normalizeSources(input: unknown): string[] {
-  if (!Array.isArray(input)) return [];
-  return input.filter((item): item is string => typeof item === "string");
-}
 
 function normalizeOptionalId(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
@@ -175,7 +111,7 @@ function normalizeOptionalId(value: unknown): string | undefined {
 
 app.get("/api/stats", async (_req: Request, res: Response) => {
   try {
-    const stats = await chatbot.getStats();
+    const stats = await chatRepository.getStats();
     res.json(stats);
   } catch (error) {
     res.status(500).json({
@@ -206,8 +142,9 @@ async function getSuggestedQuestionsSafe(): Promise<string[]> {
 }
 
 app.post("/api/chat/session", async (_req: Request, res: Response) => {
-  const sessionId = chatbot.createSession();
+  const sessionId = randomUUID();
   const userId = sessionId;
+  await chatRepository.getOrCreateChat(sessionId, userId);
   const suggestedQuestions = await getSuggestedQuestionsSafe();
   res.status(201).json({
     sessionId,
@@ -241,18 +178,13 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
     const requestedSessionId = normalizeOptionalId(sessionId);
     const requestedUserId = normalizeOptionalId(userId);
 
-    // Usar sessionId existente, o userId como fallback, o crear uno nuevo.
-    // Nota: por defecto, usamos el mismo id como sessionId y userId para
-    // que el frontend solo deba persistir 1 valor por 24h.
     const activeSessionId =
-      requestedSessionId || requestedUserId || chatbot.createSession();
+      requestedSessionId || requestedUserId || randomUUID();
     const activeUserId = requestedUserId || activeSessionId;
 
-    // Asegurar que el chat exista con userId asociado (para consultas/TTL)
     await chatRepository.getOrCreateChat(activeSessionId, activeUserId);
     const trimmedMessage = message.trim();
 
-    // Early-exit: banco de preguntas (FAQ)
     const faqMatch = await faqService.match(trimmedMessage);
     if (faqMatch) {
       await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
@@ -278,83 +210,26 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
       });
     }
 
-    const route = inferChatRoute(trimmedMessage);
+    const gptResult = await gptAgentService.processQuery(trimmedMessage);
 
-    logger.info("Routing /api/chat", {
-      sessionId: activeSessionId,
-      route,
-    });
-
-    if (route === "documents") {
-      try {
-        const gptResult = await gptAgentService.processQuery(trimmedMessage);
-
-        // Persistencia básica para mantener coherente /api/chat/:sessionId/history
-        await chatRepository.addMessage(
-          activeSessionId,
-          "user",
-          trimmedMessage,
-        );
-        await chatRepository.addMessage(
-          activeSessionId,
-          "assistant",
-          gptResult.response,
-        );
-
-        return res.json({
-          sessionId: activeSessionId,
-          userId: activeUserId,
-          response: {
-            message: gptResult.response,
-            sources: gptResult.documents.map((doc) => doc.filename),
-            engine: "gpt-rag",
-            route,
-          },
-        });
-      } catch (error) {
-        logger.warn("GPT route failed, fallback to local-chat", {
-          sessionId: activeSessionId,
-          error: (error as Error).message,
-        });
-
-        const localFallback = await chatbot.processMessage(
-          activeSessionId,
-          trimmedMessage,
-          userId,
-        );
-
-        return res.json({
-          sessionId: activeSessionId,
-          userId: activeUserId,
-          response: {
-            message:
-              "No pude consultar documentos institucionales en este momento. " +
-              localFallback.message,
-            sources: normalizeSources(localFallback.sources),
-            tokensUsed: localFallback.tokensUsed,
-            engine: "local-chat",
-            route: "general",
-          },
-        });
-      }
-    }
-
-    // Ruta general con chatbot local
-    const localResponse = await chatbot.processMessage(
+    await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
+    await chatRepository.addMessage(
       activeSessionId,
-      trimmedMessage,
-      userId,
+      "assistant",
+      gptResult.response,
+      {
+        sources: gptResult.documents.map((doc) => doc.filename),
+      },
     );
 
     res.json({
       sessionId: activeSessionId,
       userId: activeUserId,
       response: {
-        message: localResponse.message,
-        sources: normalizeSources(localResponse.sources),
-        tokensUsed: localResponse.tokensUsed,
-        engine: "local-chat",
-        route,
+        message: gptResult.response,
+        sources: gptResult.documents.map((doc) => doc.filename),
+        engine: "gpt-rag",
+        route: "documents",
       },
     });
   } catch (error) {
@@ -611,120 +486,6 @@ app.get("/api/gpt/health", async (_req: Request, res: Response) => {
 });
 
 // ============================================
-// DATOS ACADÉMICOS
-// ============================================
-
-// Listar facultades (API Academusoft)
-app.get("/api/facultades", async (_req: Request, res: Response) => {
-  try {
-    const facultades = await academusoftService.getFacultades();
-
-    res.json({
-      data: facultades,
-      total: facultades.length,
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: true,
-      code: "INTERNAL_ERROR",
-      message: "Error obteniendo facultades",
-    });
-  }
-});
-
-// Listar programas (API Academusoft)
-app.get("/api/programas", async (req: Request, res: Response) => {
-  try {
-    const { nombre, facultad } = req.query;
-
-    const programas = await academusoftService.getProgramas({
-      programa_nombre: nombre as string | undefined,
-      facultad_nombre: facultad as string | undefined,
-    });
-
-    res.json({
-      data: programas,
-      total: programas.length,
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: true,
-      code: "INTERNAL_ERROR",
-      message: "Error obteniendo programas",
-    });
-  }
-});
-
-// Obtener pensum de un programa
-app.get("/api/programas/:nombre/pensum", (req: Request, res: Response) => {
-  try {
-    const nombre = req.params.nombre as string;
-    const pensum = localDataService.getPensumCompleto(
-      decodeURIComponent(nombre),
-    );
-
-    if (!pensum) {
-      return res.status(404).json({
-        error: true,
-        code: "PROGRAMA_NOT_FOUND",
-        message: "Programa no encontrado o sin pensum disponible",
-      });
-    }
-
-    res.json(pensum);
-  } catch (error) {
-    res.status(500).json({
-      error: true,
-      code: "INTERNAL_ERROR",
-      message: "Error obteniendo pensum",
-    });
-  }
-});
-
-// Buscar materias
-app.get("/api/materias", (req: Request, res: Response) => {
-  try {
-    const { programa, semestre, nombre, jornada } = req.query;
-
-    const materias = localDataService.getMaterias(
-      programa as string | undefined,
-      semestre as string | undefined,
-      nombre as string | undefined,
-      jornada as string | undefined,
-    );
-
-    res.json({
-      data: materias,
-      total: materias.length,
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: true,
-      code: "INTERNAL_ERROR",
-      message: "Error obteniendo materias",
-    });
-  }
-});
-
-// Listar programas con pensum disponible
-app.get("/api/programas-con-pensum", (_req: Request, res: Response) => {
-  try {
-    const programas = localDataService.getProgramasConPensum();
-
-    res.json({
-      data: programas,
-      total: programas.length,
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: true,
-      code: "INTERNAL_ERROR",
-      message: "Error obteniendo programas con pensum",
-    });
-  }
-});
-
-// ============================================
 // ADMIN - PEP (Perfil de Programa)
 // ============================================
 
@@ -764,18 +525,6 @@ app.post(
           error: true,
           code: "INVALID_REQUEST",
           message: "El campo 'contenido' (texto plano del PEP) es requerido",
-        });
-      }
-
-      // Verificar que el programa exista (API Academusoft)
-      const allProgramas = await academusoftService.getProgramas();
-      const programaExiste = allProgramas.some((p) => p.prog_id === programaId);
-
-      if (!programaExiste) {
-        return res.status(400).json({
-          error: true,
-          code: "PROGRAMA_NOT_FOUND",
-          message: `No existe un programa con ID: ${programaId}`,
         });
       }
 
@@ -1353,9 +1102,6 @@ async function startServer() {
   try {
     console.log("\n🚀 Iniciando UConnect API Server...\n");
 
-    // Inicializar chatbot (conecta a MongoDB)
-    await chatbot.initialize();
-
     // Iniciar servidor HTTP
     app.listen(PORT, () => {
       console.log(`
@@ -1364,10 +1110,10 @@ async function startServer() {
 ========================================
 
 ✅ Servidor corriendo en: http://localhost:${PORT}
-📚 Documentación: API_DOCS.md
+📚 Chat y FAQ: vector store + GPT
 
 Endpoints disponibles:
-  POST   /api/chat              - Enviar mensaje al chatbot (Ollama)
+  POST   /api/chat              - Enviar mensaje al chat GPT + vector store
   POST   /api/chat/session      - Crear nueva sesión
   GET    /api/chat/:id/history  - Historial de chat
   DELETE /api/chat/:id          - Finalizar sesión
@@ -1380,12 +1126,6 @@ FAQ (Preguntas Frecuentes Cacheadas):
 GPT Agent (OpenAI RAG):
   POST   /api/gpt/chat          - Enviar mensaje al GPT Agent
   GET    /api/gpt/health        - Estado del servicio GPT
-  
-Datos Académicos:
-  GET    /api/facultades        - Listar facultades
-  GET    /api/programas         - Listar programas pregrado
-  GET    /api/programas/:n/pensum - Pensum de programa
-  GET    /api/materias          - Buscar materias
   
 Admin:
   GET    /api/stats             - Estadísticas
@@ -1406,12 +1146,10 @@ CORS habilitado para: ${CORS_ORIGIN}
     // Graceful shutdown
     process.on("SIGINT", async () => {
       console.log("\n\n⏳ Cerrando servidor...");
-      await chatbot.shutdown();
       process.exit(0);
     });
 
     process.on("SIGTERM", async () => {
-      await chatbot.shutdown();
       process.exit(0);
     });
   } catch (error) {
