@@ -21,14 +21,16 @@ export const ADMISSION_FAQ: {
     {
       id: "q1",
       category: "Inscripciones",
-      question: "¿Cuándo se abren las inscripciones para los programas de pregrado?",
+      question:
+        "¿Cuándo se abren las inscripciones para los programas de pregrado?",
       answer:
         "Las inscripciones para los programas de pregrado están sujetas al inicio de la respectiva convocatoria. Para el periodo académico 2026-1, el inicio del proceso de inscripción es del 27 de octubre de 2025 al 28 de diciembre de 2025, según el Acuerdo N°035 que aprueba el calendario académico de pregrado.",
     },
     {
       id: "q2",
       category: "Inscripciones",
-      question: "¿Dónde puedo realizar el proceso de inscripción a la Universidad de Córdoba?",
+      question:
+        "¿Dónde puedo realizar el proceso de inscripción a la Universidad de Córdoba?",
       answer:
         "El proceso de inscripción lo realizas a través de la página web institucional en el apartado de admisiones e inscripciones: https://www.unicordoba.edu.co/index.php/admisiones-y-registro/inscripciones/. El proceso es 100% virtual y no requiere de intermediarios.",
     },
@@ -73,9 +75,18 @@ export const ADMISSION_FAQ: {
     {
       id: "q16",
       category: "Resultados y Matrícula",
-      question: "¿Cuáles son los pasos para realizar la matrícula académica y financiera?",
+      question:
+        "¿Cuáles son los pasos para realizar la matrícula académica y financiera?",
       answer:
         "Los estudiantes de primer semestre pueden descargar el volante de liquidación en la plataforma académica academusoft (usando tipo y número de documento). La matrícula académica la realiza la oficina de admisiones y registro en primer semestre; en segundo semestre el estudiante la realiza de forma autónoma. Usuario y contraseña: https://hermesoft.unicordoba.edu.co/unicordoba/hermesoft/vortal/general/paswords/apl_gen.jsp",
+    },
+    {
+      id: "q26",
+      category: "Puntajes y Ponderación",
+      question:
+        "¿Dónde encuentro los puntajes de referencia y el simulador de ponderado de la Universidad de Córdoba?",
+      answer:
+        "Puedes consultar y descargar las herramientas oficiales para calcular tu puntaje ponderado y observar los históricos mediante los siguientes enlaces:\n- Simulador de promedio ponderado / Puntajes Históricos (Archivo 1): https://drive.google.com/uc?export=download&id=1gGAAJJyBuJ8qjbkOOppEh0wBlOfRyyue\n- Simulador de promedio ponderado / Puntajes Históricos (Archivo 2): https://drive.google.com/uc?export=download&id=19qet5I99Jb4Ljs3XuujKvJByFiV5Lbqk\nDescárgalos y ábrelos con Excel para usar su funcionalidad completa.",
     },
   ],
 
@@ -90,21 +101,24 @@ export const ADMISSION_FAQ: {
     {
       id: "q7",
       category: "Inscripciones",
-      question: "¿Qué debo hacer si cometí un error al diligenciar el formulario de inscripción?",
+      question:
+        "¿Qué debo hacer si cometí un error al diligenciar el formulario de inscripción?",
       answer:
         "Si cometiste un error al momento de realizar la inscripción, puedes modificar esa información con el token en el ítem 'modificar datos de inscripción'. Si no recibiste el token, debes enviar una solicitud de token al correo de admisiones y registro: admisiones@unicordoba.edu.co",
     },
     {
       id: "q8",
       category: "Inscripciones",
-      question: "¿Qué sucede si no puedo finalizar mi inscripción dentro de las fechas establecidas?",
+      question:
+        "¿Qué sucede si no puedo finalizar mi inscripción dentro de las fechas establecidas?",
       answer:
         "Si no finalizas el proceso de inscripción dentro de las fechas establecidas, no se tendrá en cuenta para el proceso de admisión.",
     },
     {
       id: "q10",
       category: "Requisitos de Admisión",
-      question: "¿Se tienen en cuenta otras pruebas o criterios además del Saber 11?",
+      question:
+        "¿Se tienen en cuenta otras pruebas o criterios además del Saber 11?",
       answer:
         "El programa en Licenciatura en Educación Artística es el único que realiza una prueba de admisión que vale el 60% del promedio y las pruebas ICFES el 40% para escoger a los estudiantes.",
     },
@@ -118,7 +132,8 @@ export const ADMISSION_FAQ: {
     {
       id: "q12",
       category: "Requisitos de Admisión",
-      question: "¿Existen cupos especiales para comunidades indígenas, afrodescendientes o víctimas del conflicto?",
+      question:
+        "¿Existen cupos especiales para comunidades indígenas, afrodescendientes o víctimas del conflicto?",
       answer:
         "Sí, existe el Acuerdo 062 de 2020 que reglamenta un cupo especial para cada comunidad en los diferentes programas ofertados durante cada periodo académico.",
     },
@@ -132,7 +147,8 @@ export const ADMISSION_FAQ: {
     {
       id: "q17",
       category: "Resultados y Matrícula",
-      question: "¿Qué ocurre si no realizo la matrícula dentro de las fechas establecidas?",
+      question:
+        "¿Qué ocurre si no realizo la matrícula dentro de las fechas establecidas?",
       answer:
         "Si no realizas el pago de la matrícula dentro del tiempo requerido, pierdes el cupo y este se asigna al segundo llamado.",
     },
@@ -153,7 +169,8 @@ export const ADMISSION_FAQ: {
     {
       id: "q21",
       category: "Costos y Financiación",
-      question: "¿Existen becas o programas de apoyo económico para estudiantes?",
+      question:
+        "¿Existen becas o programas de apoyo económico para estudiantes?",
       answer:
         "La universidad cuenta con 'matrícula 0', una política pública de gratuidad que cubre hasta el 100% del valor de la matrícula neta para estudiantes que cumplen ciertos requisitos. Los estudiantes pagan solo los derechos pecuniarios.",
     },
