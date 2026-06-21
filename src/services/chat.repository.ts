@@ -2,6 +2,7 @@ import { Chat, IChat, IChatMessage, CacheEntry, ICacheEntry } from "../models";
 import { config } from "../config";
 import { logger, generateCacheKey } from "../utils";
 import { ChatMessage, ChatbotResponse } from "../types";
+import { metricsRepository } from "./metrics.repository";
 
 export class ChatRepository {
   // ============================================
@@ -77,7 +78,7 @@ export class ChatRepository {
     }
 
     const chat = await Chat.findOneAndUpdate({ sessionId }, updateData, {
-      new: true,
+      returnDocument: "after",
       upsert: true,
     });
 
@@ -146,7 +147,7 @@ export class ChatRepository {
     const entry = await CacheEntry.findOneAndUpdate(
       { key, expiresAt: { $gt: new Date() } },
       { $inc: { hitCount: 1 } },
-      { new: true },
+      { returnDocument: "after" },
     );
 
     if (entry) {
@@ -223,8 +224,12 @@ export class ChatRepository {
     totalTokensUsed: number;
     cacheEntries: number;
     cacheHits: number;
+    metrics: {
+      usage: Awaited<ReturnType<typeof metricsRepository.getUsageSummary>>;
+      feedback: Awaited<ReturnType<typeof metricsRepository.getFeedbackSummary>>;
+    };
   }> {
-    const [chatStats, cacheStats] = await Promise.all([
+    const [chatStats, cacheStats, usage, feedback] = await Promise.all([
       Chat.aggregate([
         {
           $group: {
@@ -245,6 +250,8 @@ export class ChatRepository {
           },
         },
       ]),
+      metricsRepository.getUsageSummary(),
+      metricsRepository.getFeedbackSummary(),
     ]);
 
     const chat = chatStats[0] || {
@@ -261,6 +268,10 @@ export class ChatRepository {
       totalTokensUsed: chat.totalTokensInput + chat.totalTokensOutput,
       cacheEntries: cache.count,
       cacheHits: cache.totalHits,
+      metrics: {
+        usage,
+        feedback,
+      },
     };
   }
 

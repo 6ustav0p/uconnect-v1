@@ -15,7 +15,7 @@ export class PepRepository {
           actualizadoEn: profile.actualizadoEn || new Date(),
         },
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true },
+      { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
     ).lean<IPepProfile>();
 
     return this.toType(doc);

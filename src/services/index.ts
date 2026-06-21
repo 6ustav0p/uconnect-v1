@@ -3,6 +3,12 @@ export { academusoftService, AcademusoftService } from "./academusoft.service";
 export { ollamaService, OllamaService } from "./ollama.service";
 export { database } from "./database.service";
 export { chatRepository, ChatRepository } from "./chat.repository";
+export {
+  metricsRepository,
+  MetricsRepository,
+  type FeedbackSummary,
+  type UsageSummary,
+} from "./metrics.repository";
 export { pepRepository, PepRepository } from "./pep.repository";
 export { pepParserService, PepParserService } from "./pep-parser.service";
 export { s3Service, S3Service } from "./s3.service";

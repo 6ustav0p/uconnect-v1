@@ -11,6 +11,7 @@ import { randomUUID } from "crypto";
 import {
   database,
   chatRepository,
+  metricsRepository,
   pepRepository,
   pepParserService,
   pepUploadService,
@@ -108,6 +109,76 @@ function normalizeOptionalId(value: unknown): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
+function normalizeMetricsDays(value: unknown, fallback = 30): number {
+  if (typeof value !== "string" && typeof value !== "number") {
+    return fallback;
+  }
+
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return fallback;
+
+  return Math.min(Math.max(Math.trunc(parsed), 1), 365);
+}
+
+function normalizeFeedbackCategory(
+  value: unknown,
+): import("../models").FeedbackCategory {
+  const allowed = new Set([
+    "accuracy",
+    "clarity",
+    "speed",
+    "completeness",
+    "tone",
+    "other",
+  ]);
+
+  if (typeof value !== "string") return "other";
+
+  const normalized = value.trim().toLowerCase();
+  return allowed.has(normalized) ? (normalized as import("../models").FeedbackCategory) : "other";
+}
+
+function parseBooleanLike(value: unknown): boolean | undefined {
+  if (typeof value === "boolean") return value;
+  if (typeof value !== "string") return undefined;
+
+  const normalized = value.trim().toLowerCase();
+  if (["true", "1", "yes", "si", "sí"].includes(normalized)) return true;
+  if (["false", "0", "no"].includes(normalized)) return false;
+  return undefined;
+}
+
+async function trackConversationTurnSafe(input: {
+  sessionId: string;
+  userId?: string;
+  route: "faq" | "documents" | "general";
+  tokensUsed?: { input: number; output: number };
+  responseTimeMs?: number;
+}) {
+  try {
+    await metricsRepository.trackConversationTurn(input);
+  } catch (error) {
+    logger.warn("No se pudieron registrar métricas de conversación", {
+      error: (error as Error).message,
+      sessionId: input.sessionId,
+    });
+  }
+}
+
+async function ensureSessionMetricsSafe(
+  sessionId: string,
+  userId?: string,
+) {
+  try {
+    await metricsRepository.ensureSession(sessionId, userId);
+  } catch (error) {
+    logger.warn("No se pudieron inicializar métricas de sesión", {
+      error: (error as Error).message,
+      sessionId,
+    });
+  }
+}
+
 // ============================================
 // ESTADÍSTICAS
 // ============================================
@@ -148,6 +219,7 @@ app.post("/api/chat/session", async (_req: Request, res: Response) => {
   const sessionId = randomUUID();
   const userId = sessionId;
   await chatRepository.getOrCreateChat(sessionId, userId);
+  await ensureSessionMetricsSafe(sessionId, userId);
   const suggestedQuestions = await getSuggestedQuestionsSafe();
   res.status(201).json({
     sessionId,
@@ -186,7 +258,9 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
     const activeUserId = requestedUserId || activeSessionId;
 
     await chatRepository.getOrCreateChat(activeSessionId, activeUserId);
+    await ensureSessionMetricsSafe(activeSessionId, activeUserId);
     const trimmedMessage = message.trim();
+    const startedAt = Date.now();
 
     const faqMatch = await faqService.match(trimmedMessage);
     if (faqMatch) {
@@ -199,6 +273,14 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
           sources: ["FAQ"],
         },
       );
+
+      await trackConversationTurnSafe({
+        sessionId: activeSessionId,
+        userId: activeUserId,
+        route: "faq",
+        responseTimeMs: Date.now() - startedAt,
+        tokensUsed: { input: 0, output: 0 },
+      });
 
       return res.json({
         sessionId: activeSessionId,
@@ -232,6 +314,14 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
       },
     );
 
+    await trackConversationTurnSafe({
+      sessionId: activeSessionId,
+      userId: activeUserId,
+      route: "documents",
+      responseTimeMs: Date.now() - startedAt,
+      tokensUsed: { input: 0, output: 0 },
+    });
+
     res.json({
       sessionId: activeSessionId,
       userId: activeUserId,
@@ -257,7 +347,10 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
 app.get("/api/chat/:sessionId/history", async (req: Request, res: Response) => {
   try {
     const sessionId = req.params.sessionId as string;
-    const limit = parseInt(req.query.limit as string) || 50;
+    const limitRaw = Array.isArray(req.query.limit)
+      ? req.query.limit[0]
+      : req.query.limit;
+    const limit = parseInt(limitRaw as string) || 50;
 
     const messages = await chatRepository.getHistory(sessionId, limit);
 
@@ -289,10 +382,11 @@ app.get("/api/chat/:sessionId/history", async (req: Request, res: Response) => {
 // Finalizar sesión
 app.delete("/api/chat/:sessionId", async (req: Request, res: Response) => {
   try {
-    const { sessionId } = req.params;
+    const sessionId = Array.isArray(req.params.sessionId)
+      ? req.params.sessionId[0]
+      : req.params.sessionId;
 
-    // Aquí podrías limpiar la sesión del contexto si lo necesitas
-    // Por ahora solo respondemos OK
+    await metricsRepository.closeSession(sessionId);
 
     res.json({
       message: "Sesión finalizada correctamente",
@@ -305,6 +399,111 @@ app.delete("/api/chat/:sessionId", async (req: Request, res: Response) => {
     });
   }
 });
+
+app.post(
+  "/api/chat/:sessionId/feedback",
+  async (req: Request, res: Response) => {
+    try {
+      const sessionParam = Array.isArray(req.params.sessionId)
+        ? req.params.sessionId[0]
+        : req.params.sessionId;
+      const sessionId = String(sessionParam || "").trim();
+      if (!sessionId) {
+        return res.status(400).json({
+          error: true,
+          code: "INVALID_REQUEST",
+          message: "El parámetro 'sessionId' es requerido",
+        });
+      }
+
+      const userId = normalizeOptionalId(req.body?.userId);
+      const scoreRaw = req.body?.score ?? req.body?.rating;
+      const score =
+        typeof scoreRaw === "number"
+          ? scoreRaw
+          : typeof scoreRaw === "string"
+            ? Number(scoreRaw)
+            : undefined;
+      const helpful = parseBooleanLike(req.body?.helpful);
+      const resolved = parseBooleanLike(req.body?.resolved) ?? false;
+      const comment =
+        typeof req.body?.comment === "string"
+          ? req.body.comment.trim()
+          : undefined;
+      const category = normalizeFeedbackCategory(req.body?.category);
+      const tags = Array.isArray(req.body?.tags)
+        ? req.body.tags.map((tag: unknown) => String(tag).trim()).filter(Boolean)
+        : [];
+      const routeRaw = req.body?.route;
+      const providedRoute =
+        typeof routeRaw === "string" &&
+        ["faq", "documents", "general"].includes(routeRaw.trim().toLowerCase())
+          ? (routeRaw.trim().toLowerCase() as "faq" | "documents" | "general")
+          : undefined;
+      const sessionMetric = await metricsRepository.findSessionMetric(sessionId);
+      const route = providedRoute ?? sessionMetric?.lastRoute ?? "general";
+      const effectiveUserId = userId || sessionMetric?.userId;
+
+      const hasCommentSignal = typeof comment === "string" && comment.length > 0;
+      if (
+        typeof score !== "number" &&
+        typeof helpful !== "boolean" &&
+        !hasCommentSignal &&
+        typeof req.body?.resolved !== "boolean" &&
+        typeof req.body?.resolved !== "string"
+      ) {
+        return res.status(400).json({
+          error: true,
+          code: "INVALID_REQUEST",
+          message:
+            "Debes enviar al menos una señal de feedback: 'score', 'helpful', 'resolved' o 'comment'",
+        });
+      }
+
+      if (typeof score === "number" && (score < 1 || score > 5)) {
+        return res.status(400).json({
+          error: true,
+          code: "INVALID_REQUEST",
+          message: "El campo 'score' debe estar entre 1 y 5",
+        });
+      }
+
+      if (comment && comment.length > 1000) {
+        return res.status(400).json({
+          error: true,
+          code: "COMMENT_TOO_LONG",
+          message: "El comentario no puede exceder 1000 caracteres",
+        });
+      }
+
+      const feedback = await metricsRepository.recordFeedback({
+        sessionId,
+        userId: effectiveUserId,
+        route,
+        score,
+        helpful,
+        resolved,
+        category,
+        comment,
+        tags,
+      });
+
+      res.status(201).json({
+        message: "Feedback registrado correctamente",
+        data: feedback,
+      });
+    } catch (error) {
+      logger.error("Error en POST /api/chat/:sessionId/feedback", {
+        error: (error as Error).message,
+      });
+      res.status(500).json({
+        error: true,
+        code: "INTERNAL_ERROR",
+        message: "Error registrando feedback",
+      });
+    }
+  },
+);
 
 // ============================================
 // FAQ ENDPOINTS (Banco de preguntas)
@@ -469,7 +668,9 @@ app.post("/api/gpt/chat", chatLimiter, async (req: Request, res: Response) => {
     const trimmedMessage = message.trim();
 
     await chatRepository.getOrCreateChat(activeSessionId, activeUserId);
+    await ensureSessionMetricsSafe(activeSessionId, activeUserId);
     const history = await chatRepository.getHistory(activeSessionId, 10);
+    const startedAt = Date.now();
 
     // Procesar con GPT Agent
     const result = await gptAgentService.processQuery(trimmedMessage, {
@@ -486,6 +687,14 @@ app.post("/api/gpt/chat", chatLimiter, async (req: Request, res: Response) => {
         sources: result.documents.map((doc) => doc.filename),
       },
     );
+
+    await trackConversationTurnSafe({
+      sessionId: activeSessionId,
+      userId: activeUserId,
+      route: "documents",
+      responseTimeMs: Date.now() - startedAt,
+      tokensUsed: { input: 0, output: 0 },
+    });
 
     res.json({
       sessionId: activeSessionId,
@@ -526,6 +735,57 @@ app.get("/api/gpt/health", async (_req: Request, res: Response) => {
 
 // Proteger todo /api/admin/* (auth + rol admin)
 app.use("/api/admin", createAdminAuthMiddleware());
+
+app.get("/api/admin/metrics/usage", async (req: Request, res: Response) => {
+  try {
+    const days = normalizeMetricsDays(req.query.days, 30);
+    const usage = await metricsRepository.getUsageSummary({ days });
+    res.json(usage);
+  } catch (error) {
+    logger.error("Error en GET /api/admin/metrics/usage", {
+      error: (error as Error).message,
+    });
+    res.status(500).json({
+      error: true,
+      code: "INTERNAL_ERROR",
+      message: "Error obteniendo métricas de uso",
+    });
+  }
+});
+
+app.get("/api/admin/metrics/feedback", async (req: Request, res: Response) => {
+  try {
+    const days = normalizeMetricsDays(req.query.days, 30);
+    const feedback = await metricsRepository.getFeedbackSummary({ days });
+    res.json(feedback);
+  } catch (error) {
+    logger.error("Error en GET /api/admin/metrics/feedback", {
+      error: (error as Error).message,
+    });
+    res.status(500).json({
+      error: true,
+      code: "INTERNAL_ERROR",
+      message: "Error obteniendo métricas de feedback",
+    });
+  }
+});
+
+app.get("/api/admin/metrics", async (req: Request, res: Response) => {
+  try {
+    const days = normalizeMetricsDays(req.query.days, 30);
+    const overview = await metricsRepository.getOverview({ days });
+    res.json(overview);
+  } catch (error) {
+    logger.error("Error en GET /api/admin/metrics", {
+      error: (error as Error).message,
+    });
+    res.status(500).json({
+      error: true,
+      code: "INTERNAL_ERROR",
+      message: "Error obteniendo métricas",
+    });
+  }
+});
 
 // Parser JSON más grande solo para admin
 const adminJsonParser = express.json({ limit: "500kb" });
