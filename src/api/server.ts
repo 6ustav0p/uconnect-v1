@@ -287,7 +287,6 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
         userId: activeUserId,
         response: {
           message: faqMatch.answer,
-          sources: ["FAQ"],
           tokensUsed: { input: 0, output: 0 },
           engine: "local-chat",
           route: "general",
@@ -327,7 +326,6 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
       userId: activeUserId,
       response: {
         message: gptResult.response,
-        sources: gptResult.documents.map((doc) => doc.filename),
         engine: "gpt-rag",
         route: "documents",
       },
@@ -700,7 +698,6 @@ app.post("/api/gpt/chat", chatLimiter, async (req: Request, res: Response) => {
       sessionId: activeSessionId,
       userId: activeUserId,
       response: result.response,
-      documents: result.documents,
     });
   } catch (error) {
     logger.error("Error en /api/gpt/chat", { error: (error as Error).message });
