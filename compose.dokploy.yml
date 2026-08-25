@@ -1,0 +1,37 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - uconnect-internal
+
+  api:
+    build:
+      context: .
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://mongo:27017/uconnect
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - uconnect-internal
+      - dokploy-network
+
+volumes:
+  mongo-data:
+
+networks:
+  uconnect-internal:
+    driver: bridge
+  dokploy-network:
+    external: true
