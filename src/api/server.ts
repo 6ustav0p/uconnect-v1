@@ -26,6 +26,7 @@ import { ADMISSION_GUIDED_QUESTIONS } from "../config/prompts";
 import { createAdminAuthMiddleware } from "./admin-auth";
 
 const app = express();
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 3000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "*";
 
