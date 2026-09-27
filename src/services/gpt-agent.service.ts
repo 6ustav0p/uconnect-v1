@@ -49,6 +49,47 @@ const localData = new LocalDataService();
 const PENSUM_KEYWORDS =
   /pensum|materias|asignaturas|semestre|plan de estudio|plan\s+de\s+estudio/i;
 
+// Preguntas genéricas por la oferta académica ("¿qué programas/carreras hay?").
+// La palabra "programa" tiene alta similitud semántica con el Acuerdo 062
+// (que también habla de "programas especiales de admisión"), así que estas
+// preguntas se resuelven con los datos locales de facultades/programas en
+// vez de la búsqueda vectorial, para no confundir oferta académica con
+// cupos especiales de admisión.
+const OFFERING_KEYWORDS =
+  /qu[eé] (programas|carreras|opciones)\s+(hay|ofrece|tiene)|oferta (acad[eé]mica|de programas|educativa)|qu[eé] se puede estudiar|programas de (pregrado|posgrado)|carreras de pregrado|maestr[ií]as|especializaciones|doctorados/i;
+
+const POSGRADO_KEYWORDS = /posgrado|postgrado|maestr[ií]a|doctorado|especializaci[oó]n/i;
+
+/**
+ * Arma un listado de la oferta académica real (facultades + programas) a
+ * partir de los datos locales. Si la pregunta es sobre posgrado, devuelve
+ * una advertencia en vez de inventar programas: esta plataforma solo tiene
+ * indexado el pregrado.
+ */
+function buildOfferingContext(contextQuery: string): string {
+  if (POSGRADO_KEYWORDS.test(contextQuery)) {
+    return `ADVERTENCIA: Esta plataforma actualmente NO tiene indexada la oferta de posgrados (maestrías, especializaciones, doctorados) de la Universidad de Córdoba, solo la oferta de pregrado. No inventes ni supongas nombres de programas de posgrado.`;
+  }
+
+  // getProgramas() sin filtros ya excluye postgrado (maestría, doctorado,
+  // especialización) — no usar getProgramasPorFacultad aquí, que sí los
+  // incluye y rompería la garantía de "solo pregrado".
+  const programas = localData.getProgramas();
+  const porFacultad = new Map<string, string[]>();
+  for (const p of programas) {
+    const grupo = porFacultad.get(p.facultad_nombre) ?? [];
+    grupo.push(p.prog_nombre);
+    porFacultad.set(p.facultad_nombre, grupo);
+  }
+
+  const lines = ["OFERTA ACADÉMICA DE PREGRADO - Universidad de Córdoba:"];
+  for (const [facultad, nombres] of porFacultad) {
+    lines.push(`\n${facultad}:`);
+    for (const nombre of nombres) lines.push(`  - ${nombre}`);
+  }
+  return lines.join("\n");
+}
+
 // Keywords that indicate the student is asking about a program's PEP
 // (Proyecto Educativo del Programa: perfil profesional, misión, objetivos,
 // etc.), as opposed to a general question (reglamentos, admisión, etc).
@@ -207,7 +248,7 @@ export class GptAgentService {
 REGLAS:
 1. Cuando recibas contexto de documentos, usa esa información como fuente principal y no inventes datos específicos que no estén allí.
 2. Si el estudiante hace una pregunta general de orientación, responde de forma útil y amigable con recomendaciones generales, sin presentar datos institucionales no verificados como hechos.
-3. Si falta información específica, dilo claramente y ofrece una forma de continuar, por ejemplo pedir el programa, semestre, jornada o tema de interés. No remitas genéricamente a la página web como si fuera la respuesta.
+3. Si el contexto no trae la información que te piden (sea cual sea el tema: un programa, un beneficio, una fecha, un requisito, lo que sea), NO inventes ni completes con supuestos. Dilo de forma directa y honesta, por ejemplo: "No tengo esa información en mis documentos actuales." y, solo si aplica, sugiere a quién preguntarle en la Universidad (ej. la División de Admisiones, Registro y Control Académico, o la coordinación del programa). No remitas genéricamente a "la página web" como si fuera la respuesta cuando en realidad simplemente no tienes el dato.
 4. Cita el documento cuando sea relevante.
 5. Sé preciso cuando uses documentos y cercano cuando orientes de forma general.
 6. Nunca asumas por tu cuenta un programa, carrera, sede o tema del que el estudiante no haya hablado en su mensaje actual (ni lo infieras de preguntas anteriores sobre un tema distinto). Si el mensaje es ambiguo o genérico, pide que aclare a qué programa o tema se refiere en vez de adivinar.
@@ -215,12 +256,13 @@ REGLAS:
 8. Ve directo al dato. No empieces la respuesta con frases de relleno como "Según el documento/Acuerdo/los documentos proporcionados..." — cita la fuente de forma breve solo si aporta algo (ej. "(Art. 5)"), no como preámbulo.
 9. No cierres cada respuesta con frases genéricas de relleno como "¿Hay algo más en lo que pueda ayudarte?", "no dudes en preguntar" o "si necesitas más información, dime". Solo ofrece seguir la conversación cuando de verdad haga falta una aclaración puntual (por ejemplo, pedir el programa o semestre).
 10. Apunta a respuestas cortas: normalmente 2-5 frases, o una lista breve con viñetas si son varios puntos. Da más extensión solo si el estudiante lo pide o el tema realmente lo requiere.
-11. Mantén un tono natural y cercano, no telegráfico ni robótico — la meta es cortar el relleno, no sonar cortante.
+11. Escribe con buena oratoria: frases completas, bien hilvanadas y naturales, como las diría una persona que domina el tema — no una lista telegráfica de fragmentos ni un tono robótico. El objetivo es sonar claro y fluido, no acumular relleno ni sonar cortante.
 12. El contexto de documentos puede traer fragmentos de varios documentos o capítulos distintos a la vez (por ejemplo, el PEP de otra carrera, o un capítulo del Acuerdo 062 sobre un grupo poblacional distinto al que preguntó el estudiante). Antes de responder, identifica primero qué grupo, programa o tema específico preguntó el estudiante, usa SOLO los fragmentos que hablan de exactamente eso, e ignora por completo (sin mencionarlos) los fragmentos de otro programa, grupo poblacional o capítulo que no fue lo preguntado.
 13. No concluyas que un beneficio "no aplica" o "no se menciona" para el grupo/programa preguntado solo porque no lo vuelve a nombrar textualmente en cada fragmento — si el capítulo o sección donde aparece ese grupo describe un beneficio general para "el aspirante" de ese mismo capítulo, entiende que aplica a ese grupo salvo que el documento diga explícitamente una excepción.
 14. Cuando el estudiante haga una pregunta corta que depende del contexto (ej. "¿qué requisitos piden?", "¿y eso qué implica?", "¿cuánto dura?"), resuelve a qué se refiere usando el ÚLTIMO tema, grupo o programa que el ESTUDIANTE mismo nombró explícitamente en sus propios mensajes — nunca uses como referencia algo que solo tú mencionaste de más en un turno anterior (por ejemplo, un tema relacionado que agregaste sin que te lo pidieran). Si tu propia respuesta anterior mezcló un tema que el estudiante no pidió, ignóralo al resolver el follow-up: el tema válido sigue siendo el que el estudiante planteó originalmente.
 
 15. DATO OBLIGATORIO — Capítulo III del Acuerdo 062 (indígenas, afrodescendientes, pueblo Rrom, raizales, palenqueros): si te preguntan por los requisitos de CUALQUIERA de estos cinco grupos, SIEMPRE debes incluir este requisito: "aval del Cabildo, o de su equivalente, o de una asociación de autoridades tradicionales" (Artículo 13). Aunque el Artículo 13 empiece mencionando solo a "comunidad indígena", aplica por igual a los cinco grupos del capítulo — es una redacción ambigua del documento, no una limitación real. No omitas este requisito para afrodescendientes, Rrom, raizales o palenqueros.
+16. La palabra "programa" es ambigua en los documentos: puede referirse a un PROGRAMA ACADÉMICO (una carrera) o a un PROGRAMA DE ADMISIÓN ESPECIAL del Acuerdo 062 (cupos para víctimas, comunidades étnicas, discapacidad, deportistas, artistas, veteranos, etc.). Si el estudiante pregunta de forma genérica por "programas", "carreras" u "oferta académica" sin mencionar beneficios, cupos, exoneraciones o un grupo poblacional, asume que pregunta por programas académicos — NO por los cupos especiales del Acuerdo 062.
 
 Tu objetivo es ayudar a estudiantes con información verificable de los documentos institucionales y orientación general responsable cuando no haya datos específicos disponibles.`,
       model: this.config.model,
@@ -295,7 +337,7 @@ ${formattedHistory}
 
 Pregunta del estudiante: ${message}
 
-Responde de forma clara y amigable usando ÚNICAMENTE los datos académicos anteriores y el historial solo para entender referencias de seguimiento. Lista las materias con su nombre y créditos.`;
+Responde de forma clara y amigable usando ÚNICAMENTE los datos académicos anteriores y el historial solo para entender referencias de seguimiento. Lista TODAS las materias del semestre o pensum solicitado con su nombre y créditos — no recortes, resumas ni omitas ninguna materia.`;
 
     const conversationHistory: AgentInputItem[] = [
       { role: "user", content: [{ type: "input_text", text: prompt }] },
@@ -315,6 +357,51 @@ Responde de forma clara y amigable usando ÚNICAMENTE los datos académicos ante
     return {
       response: agentResult.finalOutput,
       documents: [{ id: "local", filename: "pensum_programa.json", score: 1 }],
+    };
+  }
+
+  /**
+   * Procesa preguntas por la oferta académica general (facultades/programas)
+   * usando datos locales, para no confundir "programas académicos" con los
+   * "programas de admisión especial" del Acuerdo 062.
+   */
+  private async processWithLocalOffering(
+    message: string,
+    offeringContext: string,
+    history: ChatMessage[] = [],
+  ): Promise<GptQueryResult> {
+    const formattedHistory = formatHistoryForPrompt(history);
+    const prompt = `Tienes los siguientes datos de oferta académica de la Universidad de Córdoba:
+
+${offeringContext}
+
+Historial reciente de la conversación:
+${formattedHistory}
+
+Pregunta del estudiante: ${message}
+
+Responde de forma clara y amigable usando ÚNICAMENTE los datos anteriores. Estos son programas académicos (carreras), NO programas de admisión especial ni beneficios del Acuerdo 062 — no menciones cupos especiales, exoneraciones ni comunidades beneficiarias aquí, eso es un tema aparte. Si la pregunta es sobre posgrado y arriba dice que no está indexado, dilo tal cual de forma transparente y directa (sin inventar programas), y sugiere contactar a la oficina de posgrados de la Universidad de Córdoba. Si la lista es larga, organízala por facultad con viñetas.`;
+
+    const conversationHistory: AgentInputItem[] = [
+      { role: "user", content: [{ type: "input_text", text: prompt }] },
+    ];
+
+    const runner = new Runner();
+    const agentResult = await runner.run(this.agent, conversationHistory);
+
+    if (!agentResult.finalOutput) {
+      throw new Error("El agente no generó una respuesta");
+    }
+
+    logger.info("GPT Agent: Consulta de oferta académica procesada con datos locales", {
+      query: message.substring(0, 50),
+    });
+
+    return {
+      response: agentResult.finalOutput,
+      documents: [
+        { id: "local", filename: "programas_academicos_api.json", score: 1 },
+      ],
     };
   }
 
@@ -365,6 +452,20 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
           message,
           history,
         );
+
+        // Ruta 0: preguntas genéricas de oferta académica ("¿qué programas
+        // hay?") → datos locales, para no confundir con los "programas" de
+        // admisión especial del Acuerdo 062. Se prueba contra el query con
+        // contexto para que un "me refiero a posgrado" como aclaración corta
+        // siga heredando el tema de la pregunta anterior.
+        if (OFFERING_KEYWORDS.test(contextualSearchQuery)) {
+          const offeringContext = buildOfferingContext(contextualSearchQuery);
+          return await this.processWithLocalOffering(
+            message,
+            offeringContext,
+            history,
+          );
+        }
 
         // Ruta 1: preguntas de pensum/materias → usar JSON local directamente
         // (se prueba solo el mensaje actual, no el query con contexto, para
