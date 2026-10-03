@@ -45,18 +45,45 @@ const DETAIL_QUERY_MAX_RESULTS = 14;
 
 const localData = new LocalDataService();
 
+/**
+ * Distancia de edición (Levenshtein) entre dos strings, para tolerar
+ * errores de tipeo en nombres propios (ej. sedes regionales) sin tener
+ * que mantener una lista de variantes mal escritas a mano.
+ */
+function levenshteinDistance(a: string, b: string): number {
+  const dp: number[][] = Array.from({ length: a.length + 1 }, () =>
+    new Array(b.length + 1).fill(0),
+  );
+  for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+  for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      dp[i][j] =
+        a[i - 1] === b[j - 1]
+          ? dp[i - 1][j - 1]
+          : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[a.length][b.length];
+}
+
 // Keywords that indicate a pensum/academic plan query
 const PENSUM_KEYWORDS =
   /pensum|materias|asignaturas|semestre|plan de estudio|plan\s+de\s+estudio/i;
 
-// Preguntas genéricas por la oferta académica ("¿qué programas/carreras hay?").
-// La palabra "programa" tiene alta similitud semántica con el Acuerdo 062
-// (que también habla de "programas especiales de admisión"), así que estas
-// preguntas se resuelven con los datos locales de facultades/programas en
-// vez de la búsqueda vectorial, para no confundir oferta académica con
-// cupos especiales de admisión.
-const OFFERING_KEYWORDS =
-  /qu[eé] (programas|carreras|opciones)\s+(hay|ofrece|tiene)|oferta (acad[eé]mica|de programas|educativa)|qu[eé] se puede estudiar|programas de (pregrado|posgrado)|carreras de pregrado|maestr[ií]as|especializaciones|doctorados/i;
+// Preguntas por la oferta académica ("¿qué programas/carreras hay?", "dime
+// las carreras de Lorica", "programas que hay en Sahagún"...). En vez de
+// mantener una lista de frases exactas (frágil ante variaciones de orden de
+// palabras), se dispara con CUALQUIER mención de "programa/carrera/opciones"
+// salvo que la pregunta ya sea claramente de pensum, de perfil de programa
+// (PEP), o de beneficios de admisión especial del Acuerdo 062 — la palabra
+// "programa" tiene alta similitud semántica con ese documento, así que se
+// excluye explícitamente para no confundir oferta académica con cupos de
+// admisión especial.
+const PROGRAM_OR_CAREER_WORD = /\bprogramas?\b|\bcarreras?\b|\bopciones\b/i;
+
+const ADMISSION_BENEFIT_SIGNAL =
+  /beneficio|exoneraci[oó]n|cupos? especial(es)?|admisi[oó]n especial|acuerdo\s*062|comunidad(es)?|discapacidad|v[íi]ctima|veterano|desmovilizado|requisito/i;
 
 const POSGRADO_KEYWORDS = /posgrado|postgrado|maestr[ií]a|doctorado|especializaci[oó]n/i;
 
@@ -71,6 +98,35 @@ function buildOfferingContext(contextQuery: string): string {
     return `ADVERTENCIA: Esta plataforma actualmente NO tiene indexada la oferta de posgrados (maestrías, especializaciones, doctorados) de la Universidad de Córdoba, solo la oferta de pregrado. No inventes ni supongas nombres de programas de posgrado.`;
   }
 
+  // El pensum sí distingue sede (unid_nombre); programas_academicos_api.json
+  // no. Si la pregunta nombra una sede regional, se usa esa fuente para no
+  // responder con la oferta genérica (centrada en Montería) cuando
+  // preguntan específicamente por Lorica, Sahagún, etc. Se compara con
+  // distancia de edición (no substring exacto) porque los nombres de sede
+  // se escriben mal seguido (ej. "sahgun", "lorca").
+  const queryWords = normalizeText(contextQuery).split(/\s+/);
+  const sedeMencionada = localData.getSedes().find((sede) => {
+    const normSede = normalizeText(sede);
+    return queryWords.some(
+      (word) =>
+        word.length >= 4 &&
+        levenshteinDistance(word, normSede) <= (normSede.length >= 7 ? 2 : 1),
+    );
+  });
+
+  if (sedeMencionada) {
+    const programas = localData.getProgramasPorSede(sedeMencionada);
+    const lines = [`OFERTA ACADÉMICA DE PREGRADO EN LA SEDE ${sedeMencionada.toUpperCase()}:`];
+    if (programas.length === 0) {
+      lines.push(
+        "(No se encontraron programas de pregrado registrados para esta sede en los datos disponibles.)",
+      );
+    } else {
+      for (const nombre of programas) lines.push(`  - ${nombre}`);
+    }
+    return lines.join("\n");
+  }
+
   // getProgramas() sin filtros ya excluye postgrado (maestría, doctorado,
   // especialización) — no usar getProgramasPorFacultad aquí, que sí los
   // incluye y rompería la garantía de "solo pregrado".
@@ -82,7 +138,9 @@ function buildOfferingContext(contextQuery: string): string {
     porFacultad.set(p.facultad_nombre, grupo);
   }
 
-  const lines = ["OFERTA ACADÉMICA DE PREGRADO - Universidad de Córdoba:"];
+  const lines = [
+    "OFERTA ACADÉMICA DE PREGRADO - Universidad de Córdoba (sede Montería; otras sedes regionales ofrecen un subconjunto, pregunta por una sede específica para verla):",
+  ];
   for (const [facultad, nombres] of porFacultad) {
     lines.push(`\n${facultad}:`);
     for (const nombre of nombres) lines.push(`  - ${nombre}`);
@@ -453,12 +511,24 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
           history,
         );
 
-        // Ruta 0: preguntas genéricas de oferta académica ("¿qué programas
-        // hay?") → datos locales, para no confundir con los "programas" de
-        // admisión especial del Acuerdo 062. Se prueba contra el query con
-        // contexto para que un "me refiero a posgrado" como aclaración corta
-        // siga heredando el tema de la pregunta anterior.
-        if (OFFERING_KEYWORDS.test(contextualSearchQuery)) {
+        // Ruta 0: preguntas de oferta académica ("¿qué programas hay?",
+        // "carreras de Lorica", "programas que hay en Sahagún"...) → datos
+        // locales, para no confundir con los "programas" de admisión
+        // especial del Acuerdo 062 ni robarle la pregunta a pensum/PEP. Se
+        // prueba contra el query con contexto para que un "me refiero a
+        // posgrado" como aclaración corta siga heredando el tema anterior.
+        const mentionsProgramOrCareer =
+          PROGRAM_OR_CAREER_WORD.test(contextualSearchQuery);
+        const mentionsAdmissionBenefit = ADMISSION_BENEFIT_SIGNAL.test(
+          contextualSearchQuery,
+        );
+        const isOfferingQuery =
+          !PENSUM_KEYWORDS.test(message) &&
+          !PEP_PROFILE_KEYWORDS.test(message) &&
+          ((mentionsProgramOrCareer && !mentionsAdmissionBenefit) ||
+            POSGRADO_KEYWORDS.test(contextualSearchQuery));
+
+        if (isOfferingQuery) {
           const offeringContext = buildOfferingContext(contextualSearchQuery);
           return await this.processWithLocalOffering(
             message,

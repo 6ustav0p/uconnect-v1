@@ -356,6 +356,38 @@ export class LocalDataService {
       .filter((p) => !this.esPostgrado(p))
       .sort();
   }
+
+  /**
+   * Lista las sedes/municipios donde la universidad ofrece programas
+   * (según el dato "unid_nombre" del pensum, que sí distingue sede —
+   * a diferencia de programas_academicos_api.json, que es genérico).
+   */
+  getSedes(): string[] {
+    return [...new Set(this.pensum.map((m) => m.unid_nombre))].sort();
+  }
+
+  /**
+   * Lista los programas de pregrado ofertados en una sede/municipio
+   * específico (ej. "Lorica", "Sahagún"). Sin sede, devuelve los de
+   * Montería (sede principal) por defecto.
+   */
+  getProgramasPorSede(sede?: string): string[] {
+    const normalizedSede = normalizeText(sede ?? "monteria");
+    const enSede = this.pensum.filter((m) =>
+      normalizeText(m.unid_nombre).includes(normalizedSede),
+    );
+
+    // Los nombres de programa incluyen un sufijo de jornada (ej. "-TN",
+    // "-MJD"); se agrupan por el nombre base para no listar la misma
+    // carrera varias veces por tener varias jornadas.
+    const nombresBase = enSede.map((m) =>
+      m.programa.replace(/\s*-\s*[A-ZÑ]{1,4}$/, "").trim(),
+    );
+
+    return [...new Set(nombresBase)]
+      .filter((p) => !this.esPostgrado(p))
+      .sort();
+  }
 }
 
 // Singleton
