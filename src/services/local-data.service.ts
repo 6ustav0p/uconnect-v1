@@ -1,15 +1,15 @@
 /**
  * Servicio de datos académicos locales
- * Lee directamente de los archivos JSON sin depender de APIs externas
+ * Lee los pensum desde sus fuentes Markdown locales sin depender de APIs externas.
  */
 
 import { logger, normalizeText } from "../utils";
 import { Facultad, ProgramaAcademico, MateriaPensum } from "../types";
+import { loadPensumFromMarkdown } from "./pensum-markdown.service";
 
 // Importar datos locales
 import facultadesData from "../facultades_api.json";
 import programasData from "../programas_academicos_api.json";
-import pensumData from "../pensum_programa.json";
 
 export class LocalDataService {
   private facultades: Facultad[];
@@ -19,7 +19,7 @@ export class LocalDataService {
   constructor() {
     this.facultades = facultadesData as Facultad[];
     this.programas = programasData as ProgramaAcademico[];
-    this.pensum = pensumData as MateriaPensum[];
+    this.pensum = loadPensumFromMarkdown();
 
     logger.info("LocalDataService inicializado", {
       facultades: this.facultades.length,
@@ -102,9 +102,13 @@ export class LocalDataService {
 
     if (programaNombre) {
       const normalized = normalizeText(programaNombre);
-      results = results.filter((m) =>
-        normalizeText(m.programa).includes(normalized),
+      const exactMatches = results.filter(
+        (m) => normalizeText(m.programa) === normalized,
       );
+      results =
+        exactMatches.length > 0
+          ? exactMatches
+          : results.filter((m) => normalizeText(m.programa).includes(normalized));
     }
 
     if (semestre) {
@@ -203,6 +207,7 @@ export class LocalDataService {
         "medico\\s+veterinario|veterinario|zootecnista",
         "MEDICINA VETERINARIA Y ZOOTECNIA",
       ],
+      ["\\bmedicina\\b(?!\\s+veterinaria)", "MEDICINA"],
       ["enfermero|enfermera", "ENFERMERIA"],
       ["abogado|abogada", "DERECHO"],
       [
@@ -234,9 +239,15 @@ export class LocalDataService {
       ["ingenieria\\s+agronomica", "INGENIERIA AGRONOMICA"],
       // Combinaciones parciales (variantes con "ing" abreviado o sin "de")
       ["ingenieria\\s+industri", "INGENIERIA INDUSTRIAL"], // Para "ingenieria industria"
-      ["ingenieria\\s+sistem", "INGENIERIA DE SISTEMAS"],
+      [
+        "ingenieria\\s+(?:de\\s+)?sistem|ingenieria\\s+(?:de\\s+)?sisten",
+        "INGENIERIA DE SISTEMAS",
+      ],
       ["ing\\.?\\s+industri", "INGENIERIA INDUSTRIAL"],
-      ["ing\\.?\\s+sistem", "INGENIERIA DE SISTEMAS"],
+      [
+        "ing\\.?\\s+(?:de\\s+)?sistem|ing\\.?\\s+(?:de\\s+)?sisten",
+        "INGENIERIA DE SISTEMAS",
+      ],
       ["ing\\.?\\s+mecanic", "INGENIERIA MECANICA"],
       ["ing\\.?\\s+ambient", "INGENIERIA AMBIENTAL"],
       ["ing\\.?\\s+alimento", "INGENIERIA DE ALIMENTOS"],
@@ -249,6 +260,7 @@ export class LocalDataService {
       ["\\balimentos\\b", "INGENIERIA DE ALIMENTOS"],
       ["agronomica|agronomia", "INGENIERIA AGRONOMICA"],
       // Otros programas
+      ["\\bmedicina\\b(?!\\s+veterinaria)", "MEDICINA"],
       ["veterinaria|zootecnia", "MEDICINA VETERINARIA Y ZOOTECNIA"],
       ["enfermeria", "ENFERMERIA"],
       ["\\bderecho\\b", "DERECHO"],
@@ -353,6 +365,38 @@ export class LocalDataService {
    */
   getProgramasConPensum(): string[] {
     return [...new Set(this.pensum.map((m) => m.programa))]
+      .filter((p) => !this.esPostgrado(p))
+      .sort();
+  }
+
+  /**
+   * Lista las sedes/municipios donde la universidad ofrece programas
+   * (según el dato "unid_nombre" del pensum, que sí distingue sede —
+   * a diferencia de programas_academicos_api.json, que es genérico).
+   */
+  getSedes(): string[] {
+    return [...new Set(this.pensum.map((m) => m.unid_nombre))].sort();
+  }
+
+  /**
+   * Lista los programas de pregrado ofertados en una sede/municipio
+   * específico (ej. "Lorica", "Sahagún"). Sin sede, devuelve los de
+   * Montería (sede principal) por defecto.
+   */
+  getProgramasPorSede(sede?: string): string[] {
+    const normalizedSede = normalizeText(sede ?? "monteria");
+    const enSede = this.pensum.filter((m) =>
+      normalizeText(m.unid_nombre).includes(normalizedSede),
+    );
+
+    // Los nombres de programa incluyen un sufijo de jornada (ej. "-TN",
+    // "-MJD"); se agrupan por el nombre base para no listar la misma
+    // carrera varias veces por tener varias jornadas.
+    const nombresBase = enSede.map((m) =>
+      m.programa.replace(/\s*-\s*[A-ZÑ]{1,4}$/, "").trim(),
+    );
+
+    return [...new Set(nombresBase)]
       .filter((p) => !this.esPostgrado(p))
       .sort();
   }

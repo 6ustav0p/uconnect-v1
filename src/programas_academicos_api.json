@@ -114,6 +114,12 @@
     "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
   },
   {
+    "prog_id": "504",
+    "prog_nombre": "MEDICINA",
+    "facultad_id": "37",
+    "facultad_nombre": "FACULTAD DE CIENCIAS DE LA SALUD"
+  },
+  {
     "prog_id": "47",
     "prog_nombre": "ESPECIALIZACIÓN EN AUDITORIA DE LA CALIDAD EN SALUD",
     "facultad_id": "37",

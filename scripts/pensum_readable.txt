@@ -199,6 +199,108 @@ TOTAL CRÉDITOS DEL PENSUM: 160
     Total créditos del semestre 10: 12
 
 
+PROGRAMA: MEDICINA
+SEDE: MONTERIA
+JORNADA: DIURNA
+PENSUM: NO ESPECIFICADO
+TOTAL CRÉDITOS DEL PENSUM: 265
+--------------------------------------------------
+  Semestre 1:
+    - COMPETENCIAS COMUNICATIVAS
+    - HABILIDADES COGNITIVAS Y EMOCIONALES
+    - BIOLOGÍA CELULAR
+    - HISTORIA DE LA MEDICINA
+    - ANATOMÍA
+    - ELECTIVA LIBRE I
+    - INGLÉS I
+    Total créditos del semestre 1: NO ESPECIFICADO
+
+  Semestre 2:
+    - BIOLOGÍA MOLECULAR Y GENÉTICA
+    - HISTOEMBRIOLOGÍA
+    - PSICOLOGÍA EVOLUTIVA Y DEL DESARROLLO HUMANO
+    - SALUD FAMILIAR Y COMUNITARIA I
+    - BIOESTADÍSTICA
+    - BIOÉTICA I
+    - INGLÉS II
+    Total créditos del semestre 2: NO ESPECIFICADO
+
+  Semestre 3:
+    - FISIOLOGÍA
+    - BIOQUÍMICA
+    - METODOLOGÍA DE LA INVESTIGACIÓN I
+    - ELECTIVA LIBRE II
+    - SALUD FAMILIAR Y COMUNITARIA II
+    - INGLÉS III
+    Total créditos del semestre 3: NO ESPECIFICADO
+
+  Semestre 4:
+    - PATOLOGÍA
+    - INMUNOLOGÍA
+    - MICROBIOLOGÍA
+    - INTRODUCCIÓN A LA PRÁCTICA MÉDICA
+    - SALUD FAMILIAR Y COMUNITARIA III
+    - ELECTIVA DE CARRERA I
+    - INGLÉS IV
+    Total créditos del semestre 4: NO ESPECIFICADO
+
+  Semestre 5:
+    - SEMIOLOGÍA
+    - FARMACOLOGÍA
+    - BIOÉTICA II
+    - METODOLOGÍA DE LA INVESTIGACIÓN II
+    - ENFERMEDADES INFECCIOSAS I
+    - INGLÉS V
+    Total créditos del semestre 5: NO ESPECIFICADO
+
+  Semestre 6:
+    - MEDICINA INTERNA
+    - EPIDEMIOLOGÍA
+    - FARMACOTOXICOLOGÍA
+    - RADIOLOGÍA E IMÁGENES
+    - ENFERMEDADES INFECCIOSAS II
+    Total créditos del semestre 6: NO ESPECIFICADO
+
+  Semestre 7:
+    - QUIRÚRGICAS I (CIRUGÍA GENERAL, ORL Y ANESTESIA)
+    - ELECTIVA DE CARRERA II
+    - ATENCIÓN PRIMARIA EN SALUD
+    - BIOÉTICA III
+    Total créditos del semestre 7: NO ESPECIFICADO
+
+  Semestre 8:
+    - QUIRÚRGICAS II (ORTOPEDIA, UROLOGÍA, NEUROCIRUGÍA Y OFTALMOLOGÍA)
+    - ADMINISTRACIÓN EN SALUD
+    - SALUD PÚBLICA
+    - ELECTIVA DE PROFUNDIZACIÓN I
+    - PSICOPATOLOGÍA
+    Total créditos del semestre 8: NO ESPECIFICADO
+
+  Semestre 9:
+    - PEDIATRÍA
+    - PSIQUIATRÍA
+    - ELECTIVA DE PROFUNDIZACIÓN II
+    - MEDICINA LEGAL Y FORENSE
+    Total créditos del semestre 9: NO ESPECIFICADO
+
+  Semestre 10:
+    - GINECOLOGÍA Y OBSTETRICIA
+    - ONCOLOGÍA
+    - URGENCIAS
+    Total créditos del semestre 10: NO ESPECIFICADO
+
+  Semestre 11:
+    - MEDICINA INTERNA
+    - PEDIATRÍA
+    - GINECOLOGÍA Y OBSTETRICIA
+    Total créditos del semestre 11: NO ESPECIFICADO
+
+  Semestre 12:
+    - CIRUGÍA
+    - INTERNADO REGIONAL
+    Total créditos del semestre 12: NO ESPECIFICADO
+
+
 PROGRAMA: ADMINISTRACIÓN EN FINANZAS Y NEGOCIOS INTERNACIONALES-MJD
 SEDE: MONTERIA
 JORNADA: MARTES-JUEVES DIURNA
@@ -4791,305 +4893,6 @@ TOTAL CRÉDITOS DEL PENSUM: 143
     Total créditos del semestre 8: 14
 
 
-PROGRAMA: DOCTORADO EN CIENCIA Y TECNOLOGÍA DE ALIMENTOS
-SEDE: BERASTEGUI
-JORNADA: LUNES- SABADO
-PENSUM: 2019-1
-TOTAL CRÉDITOS DEL PENSUM: 106
---------------------------------------------------
-  Semestre 1:
-    - CIENCIA Y TECNOLOGÍA DE ALIMENTOS (código: 305000, créditos: 3)
-    - DISEÑO EXPERIMENTAL (código: 305001, créditos: 3)
-    - ELECTIVA I (código: 305027, créditos: 3)
-    - SEMINARIO I (código: 305002, créditos: 2)
-    Total créditos del semestre 1: 11
-
-  Semestre 2:
-    - BIOÉTICA Y LEGISLACIÓN (código: 305003, créditos: 2)
-    - ELECTIVA II (código: 305028, créditos: 3)
-    - ELECTIVA III (código: 305029, créditos: 3)
-    - SEMINARIO II (código: 305004, créditos: 2)
-    Total créditos del semestre 2: 10
-
-  Semestre 3:
-    - ELECTIVA IV (código: 305030, créditos: 3)
-    - ELECTIVA V (código: 305031, créditos: 3)
-    - TRABAJO E INVESTIGACION I (código: 305005, créditos: 12)
-    Total créditos del semestre 3: 18
-
-  Semestre 4:
-    - ELCTIVA VI (código: 305032, créditos: 3)
-    - SEMINARIO III (código: 305006, créditos: 2)
-    - TRABAJO DE INVESTIGACIÓN II (código: 305007, créditos: 12)
-    Total créditos del semestre 4: 17
-
-  Semestre 5:
-    - TRABAJO DE INVESTIGACIÓN III (código: 305008, créditos: 12)
-    Total créditos del semestre 5: 12
-
-  Semestre 6:
-    - TRABAJO DE INVESTIGACION IV (código: 305009, créditos: 12)
-    Total créditos del semestre 6: 12
-
-  Semestre 7:
-    - SEMINARIO IV (código: 305011, créditos: 2)
-    - TRABAJO DE INVESTIGACIÓN V (código: 305010, créditos: 12)
-    Total créditos del semestre 7: 14
-
-  Semestre 8:
-    - TRABAJO DE INVESTIGACIÓN VI (código: 305012, créditos: 12)
-    Total créditos del semestre 8: 12
-
-
-PROGRAMA: DOCTORADO EN CIENCIAS AGRARIAS
-SEDE: MONTERIA
-JORNADA: DIURNA
-PENSUM: 2022-1
-TOTAL CRÉDITOS DEL PENSUM: 120
---------------------------------------------------
-  Semestre 1:
-    - ELECTIVA I (código: 301820, créditos: 4)
-    - HISTORIA Y EVALUACION DE LA AGRICULTURA (código: 301801, créditos: 4)
-    - PRESENTACION DE SEMINARIO I (código: 301802, créditos: 2)
-    Total créditos del semestre 1: 10
-
-  Semestre 2:
-    - AGROINFORMATICA (código: 301804, créditos: 4)
-    - ELECTIVA II (código: 301821, créditos: 4)
-    - SEMINARIO PROYECTO DE GRADO (código: 301805, créditos: 2)
-    Total créditos del semestre 2: 10
-
-  Semestre 3:
-    - ELECTIVA III (código: 301822, créditos: 4)
-    - SEMINARIO DE INVESTIGACION I (código: 301807, créditos: 2)
-    - TRABAJO DE INVESTIGACION I (código: 301806, créditos: 12)
-    Total créditos del semestre 3: 18
-
-  Semestre 4:
-    - ELECTIVA IV (código: 301823, créditos: 4)
-    - SEMINARIO DE IVESTIGACION II (código: 301809, créditos: 2)
-    - TRABAJO DE INVESTIGACION II (código: 301808, créditos: 12)
-    Total créditos del semestre 4: 18
-
-  Semestre 5:
-    - ELECTIVA LIBRE V (código: 301824, créditos: 4)
-    - SEMINARIO DE INVESTIGACION III (código: 301811, créditos: 2)
-    - TRABAJO DE INVESTIGACION III (código: 301810, créditos: 12)
-    Total créditos del semestre 5: 18
-
-  Semestre 6:
-    - ELECTIVA VI (código: 301825, créditos: 4)
-    - SEMINARIO DE INVESTIGACION IV (código: 301813, créditos: 2)
-    - TRABAJO INVESTIGACION IV (código: 301812, créditos: 12)
-    Total créditos del semestre 6: 18
-
-  Semestre 7:
-    - SEMINARIO INVESTIGACION V (código: 301815, créditos: 2)
-    - TRABAJO INVESTIGACION V (código: 301814, créditos: 12)
-    Total créditos del semestre 7: 14
-
-  Semestre 8:
-    - SEMINARIO INVESTIGACION VI (código: 301817, créditos: 2)
-    - TRABAJO DEINVESTIGACION VI (código: 301816, créditos: 12)
-    Total créditos del semestre 8: 14
-
-
-PROGRAMA: DOCTORADO EN CIENCIAS ANIMALES DEL TROPICO
-SEDE: BERASTEGUI
-JORNADA: VIERNES- SABADO
-PENSUM: 2024-2
-TOTAL CRÉDITOS DEL PENSUM: 108
---------------------------------------------------
-  Semestre 1:
-    - BIOESTADISTICA Y DISEÑO EXPERIMENTAL (código: 102180, créditos: 4)
-    - BIOLOGIA CELULAR Y MOLECULAR (código: 102181, créditos: 4)
-    - ELECTIVA I (código: 102182, créditos: 4)
-    - ELECTIVA II (código: 102183, créditos: 4)
-    - SEMINARIO DE INVESTIGACION I (código: 102184, créditos: 2)
-    Total créditos del semestre 1: 18
-
-  Semestre 2:
-    - ELECTIVA III (código: 102187, créditos: 4)
-    - ELECTIVA IV (código: 102188, créditos: 4)
-    - LEGISLACION ANIMAL Y BIOETICA (código: 102185, créditos: 4)
-    - ONE HEALTH Y DESARROLLO SOSTENIBLE (código: 102186, créditos: 4)
-    - SEMIANRIO DE INVESTIGACION II (código: 102189, créditos: 2)
-    Total créditos del semestre 2: 18
-
-  Semestre 3:
-    - TRABAJO DE INVESTIGACION I (código: 102190, créditos: 12)
-    Total créditos del semestre 3: 12
-
-  Semestre 4:
-    - TRABAJO DE INVESTIGACION II (código: 102191, créditos: 12)
-    Total créditos del semestre 4: 12
-
-  Semestre 5:
-    - TRABAJO DE INVESTIGACION III (código: 102192, créditos: 12)
-    Total créditos del semestre 5: 12
-
-  Semestre 6:
-    - TRABAJO DE INVESTIGACION IV (código: 102193, créditos: 12)
-    Total créditos del semestre 6: 12
-
-  Semestre 7:
-    - TRABAJO DE INVESTIGACION V (código: 102194, créditos: 12)
-    Total créditos del semestre 7: 12
-
-  Semestre 8:
-    - TRABAJO DE INVESTIGACION VI (código: 102195, créditos: 12)
-    Total créditos del semestre 8: 12
-
-
-PROGRAMA: DOCTORADO EN CIENCIAS FISICAS
-SEDE: MONTERIA
-JORNADA: DIURNA
-PENSUM: 2012-1
-TOTAL CRÉDITOS DEL PENSUM: 80
---------------------------------------------------
-  Semestre 1:
-    - AVANZADO POR AREA I (código: 405726, créditos: 4)
-    - AVANZADO POR AREA II (código: 405727, créditos: 4)
-    Total créditos del semestre 1: 8
-
-  Semestre 2:
-    - AVANZADO POR AREA III (código: 405728, créditos: 4)
-    - INVESTIGACION I (código: 405729, créditos: 2)
-    - SEMINARIO I (código: 405730, créditos: 2)
-    Total créditos del semestre 2: 8
-
-  Semestre 3:
-    - INVESTIGACION II (código: 405731, créditos: 4)
-    - SEMINARIO II (código: 405732, créditos: 3)
-    Total créditos del semestre 3: 7
-
-  Semestre 4:
-    - INVESTIGACION III (código: 405733, créditos: 4)
-    - SEMINARIO III (código: 405734, créditos: 3)
-    Total créditos del semestre 4: 7
-
-  Semestre 5:
-    - INVESTIGACION IV (código: 405735, créditos: 4)
-    Total créditos del semestre 5: 4
-
-  Semestre 6:
-    - INVESTIGACION V (código: 405736, créditos: 6)
-    - TESIS I (código: 405737, créditos: 6)
-    Total créditos del semestre 6: 12
-
-  Semestre 7:
-    - TESIS II (código: 405738, créditos: 14)
-    Total créditos del semestre 7: 14
-
-  Semestre 8:
-    - TESIS III (código: 405739, créditos: 20)
-    Total créditos del semestre 8: 20
-
-
-PROGRAMA: DOCTORADO EN DIDACTICA DE LAS CIENCIAS
-SEDE: MONTERIA
-JORNADA: JUEVES- SABADO
-PENSUM: 2024-2
-TOTAL CRÉDITOS DEL PENSUM: 100
---------------------------------------------------
-  Semestre 1:
-    - ELECTIVA PROFUNDIZACION DIDACTICA I (código: 221004, créditos: 4)
-    - EPISTEMOLOGÍA DE LA DIDACTICA DE LAS CIENCIAS (código: 221003, créditos: 4)
-    - SEMINARIO DE TESIS DOCTORAL I (código: 221001, créditos: 2)
-    - TÓPICOS AVANZADOS EN DIDACTICA DE LAS CIENCIAS I (código: 221002, créditos: 4)
-    Total créditos del semestre 1: 14
-
-  Semestre 2:
-    - EDUCACIÓN PARA LA SALUD Y GESTION EN EL AULA (código: 221008, créditos: 4)
-    - ELECTIVA PROFUNDIZACION DIDACTICA II (código: 221009, créditos: 4)
-    - SEMINARIO DE TESIS DOCTORAL II (código: 221005, créditos: 2)
-    - TÓPICOS AVANZADOS EN DIDÁCTICA DE LA CIENCIAS II (código: 221007, créditos: 4)
-    - TUTORÍA DE TESIS DOCTORAL I (código: 221006, créditos: 4)
-    Total créditos del semestre 2: 18
-
-  Semestre 3:
-    - ELABORACIÓN DE ARTICULOS CIENTIFICOS (código: 221011, créditos: 4)
-    - PENSAMIENTO CRÍTICO Y CUESTIONES SOCIO CIENTIFICAS EN LA ENSELÑANZA DE LAS CIENCIAS (código: 221014, créditos: 4)
-    - SEMINARIO DE TESIS DOCTORAL III (código: 221010, créditos: 2)
-    - TÓPICOS AVANZADOS EN DIDACTICA DE LAS CIENCIAS III (código: 221013, créditos: 4)
-    - TUTORÍA DE TESIS DOCTORAL II (código: 221012, créditos: 4)
-    Total créditos del semestre 3: 18
-
-  Semestre 4:
-    - DISEÑO Y EVALUACIÓN DE SECUENCIAS DIDACTICAS EN CIENCIAS (código: 221019, créditos: 4)
-    - ELECTIVA INTERVENCIÓN DIDACTICA I (código: 221015, créditos: 4)
-    - ELECTIVA INTERVENCIÓN DIDACTICA II (código: 221020, créditos: 4)
-    - SEMINARIO DE TESIS DOCTORAL IV (código: 221016, créditos: 2)
-    - SUFICIENCIA INVESTIGATIVA (código: 221018, créditos: 4)
-    - TUTORÍA DE TESIS DOCTORAL III (código: 221017, créditos: 4)
-    Total créditos del semestre 4: 22
-
-  Semestre 5:
-    - SUSTENTABILIDAD EN LA ENSEÑANZA DE LAS CIENCIAS (código: 221022, créditos: 4)
-    - TEORÍA DE TESIS DOCTORAL IV (código: 221021, créditos: 4)
-    Total créditos del semestre 5: 8
-
-  Semestre 6:
-    - PASANTÍA NACIONAL O INTERNACIONAL (código: 221024, créditos: 4)
-    - TUTORÍA DE TESIS DOCTORAL V (código: 221023, créditos: 4)
-    Total créditos del semestre 6: 8
-
-  Semestre 7:
-    - TUTORÍA DE TESIS DOCTORAL VI (código: 221025, créditos: 4)
-    Total créditos del semestre 7: 4
-
-  Semestre 8:
-    - TESIS DOCTORAL (código: 221026, créditos: 8)
-    Total créditos del semestre 8: 8
-
-
-PROGRAMA: DOCTORADO EN MICROBIOLOGIA Y SALUD TROPICAL
-SEDE: BERASTEGUI
-JORNADA: LUNES- VIERNES
-PENSUM: 2016-1
-TOTAL CRÉDITOS DEL PENSUM: 98
---------------------------------------------------
-  Semestre 1:
-    - BIOESTADISTICA Y DISEÑO EXPERIMENTAL (código: 101750, créditos: 3)
-    - BIOETICA (código: 101751, créditos: 2)
-    - ELECTIVA I (código: 101762, créditos: 2)
-    - ELECTIVA II (código: 101763, créditos: 2)
-    - SEMINARIO DE INVESTIGACION I (código: 101752, créditos: 1)
-    Total créditos del semestre 1: 10
-
-  Semestre 2:
-    - ECOEPIDEMIOLOGIA Y GIS (código: 101754, créditos: 2)
-    - ELECTIVA III (código: 101764, créditos: 2)
-    - ELECTIVA IV (código: 101765, créditos: 2)
-    - EPIDEMIOLOGIA Y SALUD PUBLICA (código: 101753, créditos: 3)
-    - SEMINARIO DE INVESTIGACION II (código: 101755, créditos: 1)
-    Total créditos del semestre 2: 10
-
-  Semestre 3:
-    - INVESTIGACION I (código: 101756, créditos: 13)
-    Total créditos del semestre 3: 13
-
-  Semestre 4:
-    - INVESTIGACION II (código: 101757, créditos: 13)
-    Total créditos del semestre 4: 13
-
-  Semestre 5:
-    - INVESTIGACION III (código: 101758, créditos: 13)
-    Total créditos del semestre 5: 13
-
-  Semestre 6:
-    - INVESTIGACION IV (código: 101759, créditos: 13)
-    Total créditos del semestre 6: 13
-
-  Semestre 7:
-    - INVESTIGACION V (código: 101760, créditos: 13)
-    Total créditos del semestre 7: 13
-
-  Semestre 8:
-    - INVESTIGACION VI (código: 101761, créditos: 13)
-    Total créditos del semestre 8: 13
-
-
 PROGRAMA: ENFERMERÍA
 SEDE: MONTERIA
 JORNADA: DIURNA
@@ -5169,192 +4972,6 @@ TOTAL CRÉDITOS DEL PENSUM: 158
     - PRÁCTICA INSTITUCIONAL (código: 501075, créditos: 9)
     - TRABAJO DE GRADO (código: 501074, créditos: 6)
     Total créditos del semestre 8: 19
-
-
-PROGRAMA: ESPECIALIZACIÓN  EN AUDITORIA DE LA CALIDAD EN SALUD
-SEDE: MONTERIA
-JORNADA: VIERNES- SABADO
-PENSUM: 2015-1
-TOTAL CRÉDITOS DEL PENSUM: 30
---------------------------------------------------
-  Semestre 1:
-    - CONTRATACIÓN Y NEGOCIACIÓN EN SALUD (código: 505028, créditos: 2)
-    - ELECTIVA LIBRE I (código: 505037, créditos: 2)
-    - ÉTICA APLICADA A LA AUDITORIA (código: 505025, créditos: 1)
-    - LEGISLACIÓN EN SALUD Y SEGURIDAD SOCIAL (código: 505024, créditos: 1)
-    - PLANEACIÓN ESTRATÉGICA DE PROCESOS Y DESARROLLO DE HABILIDADES GERENCIALES (código: 505027, créditos: 2)
-    - SISTEMA OBLIGATORIO DE GARANTÍA DE LA CALIDAD EN SALUD (código: 505026, créditos: 2)
-    Total créditos del semestre 1: 10
-
-  Semestre 2:
-    - AUDITORIA EN SALUD (código: 505031, créditos: 2)
-    - ECONOMÍA DE LA SALUD Y AUDITORIA DE COSTOS (código: 505030, créditos: 2)
-    - ELECTIVA LIBRE II (código: 505038, créditos: 2)
-    - NORMALIZACIÓN Y MEJORAMIENTO DE PROCESOS (código: 505032, créditos: 2)
-    - SEMINARIO DE INVESTIGACIÓN  I (código: 505029, créditos: 2)
-    Total créditos del semestre 2: 10
-
-  Semestre 3:
-    - AUDITORIA CLÍNICA Y CONCURRENTE (código: 505034, créditos: 2)
-    - AUDITORIA INTERNA DEL SISTEMA DE GESTIÓN DE LA CALIDAD (código: 505033, créditos: 2)
-    - ELECTIVA LIBRE III (código: 505039, créditos: 2)
-    - FACTURACIÓN Y AUDITORIA DE CUENTA MÉDICAS (código: 505035, créditos: 2)
-    - SEMINARIO DE INVESTIGACIÓN II (código: 505036, créditos: 2)
-    Total créditos del semestre 3: 10
-
-
-PROGRAMA: Especialización en Administración Total de la Calidad
-SEDE: MONTERIA
-JORNADA: VIERNES- SABADO
-PENSUM: 2015-2
-TOTAL CRÉDITOS DEL PENSUM: 23
---------------------------------------------------
-  Semestre 1:
-    - CULTURA Y CLIMA ORGANIZACIONAL (código: 406824, créditos: 1)
-    - ELECTIVA (código: 406829, créditos: 1)
-    - ESTADÍSTICA (código: 406800, créditos: 1)
-    - FUNDAMENTOS DE ADMINISTRACIÓN (código: 406801, créditos: 1)
-    - FUNDAMENTOS DE LA CALIDAD TOTAL (código: 406808, créditos: 2)
-    - GESTIÓN DE COMPRAS Y LOGÍSTICA INTEGRAL (código: 406804, créditos: 1)
-    - GESTIÓN DE OPERACIONES (código: 406802, créditos: 1)
-    - HABILIDADES GERENCIALES PARA LA GESTIÓN DE LA CALIDAD (código: 406823, créditos: 1)
-    - HERRAMIENTAS ESTADÍSTICAS (código: 406821, créditos: 2)
-    - LIDERAZGO Y PLANEACIÓN DE LA CALIDAD TOTAL (código: 406822, créditos: 2)
-    - SEMINARIO I (código: 406819, créditos: 1)
-    Total créditos del semestre 1: 14
-
-  Semestre 2:
-    - AUDITORÍA INTERNA (código: 406825, créditos: 2)
-    - DOCUMENTACIÓN Y MANUAL DE CALIDAD (código: 406817, créditos: 1)
-    - FUNDAMENTACIÓN METROLÓGICA (código: 406811, créditos: 1)
-    - IMPLEMENTACIÓN DE LA CALIDAD TOTAL (código: 406812, créditos: 2)
-    - MANTENIMIENTO INDUSTRIAL (código: 406813, créditos: 1)
-    - MEJORAMIENTO DE PROCESOS (código: 406826, créditos: 1)
-    - SEMINARIO II (código: 406820, créditos: 1)
-    Total créditos del semestre 2: 9
-
-
-PROGRAMA: ESPECIALIZACIÓN EN DERECHOS HUMANOS Y JUSTICIA SOCIAL
-SEDE: MONTERIA
-JORNADA: VIERNES- SABADO
-PENSUM: 2026-1
-TOTAL CRÉDITOS DEL PENSUM: 26
---------------------------------------------------
-  Semestre 1:
-    - ELECTIVA INTERDISCIPLINARIA I (código: 7301003, créditos: 4)
-    - FUNDAMENTACIÓN TEÓRICA EN POLÍTICAS PÚBLICAS (código: 7301002, créditos: 4)
-    - TEORÍA DEL ESTADO SOCIAL DE DERECHO, DE LA JUSTICIA SOCIAL Y LOS DERECHOS HUMANOS (código: 7301001, créditos: 4)
-    Total créditos del semestre 1: 12
-
-  Semestre 2:
-    - ELECTIVA INTERDISCIPLINARIA II (código: 7301007, créditos: 4)
-    - FORMULACION DE POLITICAS PUBLICAS EN DERECHOS HUMANOS Y JUSTICIA SOCIAL (código: 7301006, créditos: 4)
-    - SISTEMAS DE PROTECCIÓN Y MECANISMOS NACIONALES DE LOS DERECHOS HUMANOS (código: 7301005, créditos: 4)
-    - TRABAJO DE GRADO (código: 7301004, créditos: 2)
-    Total créditos del semestre 2: 14
-
-
-PROGRAMA: ESPECIALIZACIÓN EN GERENCIA ADMINISTRACIÓN EN SALUD
-SEDE: MONTERIA
-JORNADA: VIERNES- SABADO
-PENSUM: 2005-1
-TOTAL CRÉDITOS DEL PENSUM: 30
---------------------------------------------------
-  Semestre 1:
-    - ELECTIVA LIBRE I (código: 504819, créditos: 2)
-    - GERENCIA EN SALUD I (código: 504801, créditos: 2)
-    - INTRODUCCIÓN A LA SALUD PÚBLICA (código: 504802, créditos: 2)
-    - LEGISLACIÓN EN SALUD Y SEGURIDAD SOCIAL (código: 504800, créditos: 2)
-    - SEMINARIO DE INVESTIGACIÓN I (código: 504803, créditos: 2)
-    Total créditos del semestre 1: 10
-
-  Semestre 2:
-    - ELECTIVA LIBRE II (código: 504822, créditos: 2)
-    - GERENCIA EN SALUD II (código: 504807, créditos: 2)
-    - GESTIÓN FINANCIERA, COSTOS Y PRESUPUESTO I (código: 504808, créditos: 2)
-    - PLANEACIÓN Y PLANIFICACIÓN DE LA SALUD (código: 504805, créditos: 2)
-    - SEMINARIO DE INVESTIGACIÓN II (código: 504806, créditos: 2)
-    Total créditos del semestre 2: 10
-
-  Semestre 3:
-    - AUDITORÍA EN SALUD (código: 504813, créditos: 2)
-    - CONTROL INTERNO (código: 504810, créditos: 2)
-    - ELECTIVA LIBRE III (código: 504825, créditos: 2)
-    - GESTIÓN FINANCIERA COSTOS Y PRESUPUESTOS II (código: 504811, créditos: 2)
-    - SEMINARIO DE INVESTIGACIÓN III (código: 504812, créditos: 2)
-    Total créditos del semestre 3: 10
-
-
-PROGRAMA: ESPECIALIZACIÓN EN HIGIERNE Y SEGURIDAD INDUSTRIAL
-SEDE: MONTERIA
-JORNADA: VIERNES- SABADO
-PENSUM: 2018-2
-TOTAL CRÉDITOS DEL PENSUM: 25
---------------------------------------------------
-  Semestre 1:
-    - ELECTIVA I (código: 406740, créditos: 2)
-    - HIGIENE AMBIENTAL Y LABORAL I (código: 406721, créditos: 2)
-    - INTRODUCCION A LA SALUD LABORAL (código: 406720, créditos: 2)
-    - LEGISLACION EN SEGURIDAD Y SALUD TRABAJO (código: 406724, créditos: 2)
-    - SEGURIDAD INDUSTRIAL I (código: 406722, créditos: 2)
-    - SISTEMA DE GESTION DE SEGURIDAD Y SALUD (código: 406723, créditos: 2)
-    Total créditos del semestre 1: 12
-
-  Semestre 2:
-    - ELECTIVA II (código: 406741, créditos: 2)
-    - GESTION DE RIESGO (código: 406729, créditos: 2)
-    - HIGIENE AMBIENTAL Y LABORAL II (código: 406727, créditos: 2)
-    - INGENIERIA ERGONOMIC (código: 406726, créditos: 2)
-    - SEGURIDAD INDUSTRIAL II (código: 406728, créditos: 2)
-    - TRABAJO DE GRADO (código: 406730, créditos: 3)
-    Total créditos del semestre 2: 13
-
-
-PROGRAMA: ESPECIALIZACION EN MEDICINA Y CIRUGIA DE ANIMALES DE COMPAÑIA
-SEDE: BERASTEGUI
-JORNADA: VIERNES- SABADO
-PENSUM: 2021-2
-TOTAL CRÉDITOS DEL PENSUM: 25
---------------------------------------------------
-  Semestre 1:
-    - ANESTESIA Y ANALGESIA (código: 1019004, créditos: 3)
-    - BIOETICA Y LEGISLACIÓN (código: 1019001, créditos: 1)
-    - DIAGNOSTICO POR IMAGEN (código: 1019002, créditos: 3)
-    - MANEJO DE EMERGENCIAS (código: 1019005, créditos: 2)
-    - PATOLOGÍA CLINICA Y TÉCNICAS DE DIAGNOSTICO (código: 1019003, créditos: 3)
-    Total créditos del semestre 1: 12
-
-  Semestre 2:
-    - CURSOS OBLIGATORIOS (código: 1019006, créditos: 9)
-    - ELECTIVA (código: 1019007, créditos: 2)
-    - SEMINARIO (código: 1019008, créditos: 1)
-    - TRABAJO DE GRADO (código: 1019009, créditos: 1)
-    Total créditos del semestre 2: 13
-
-
-PROGRAMA: ESPECIALIZACIÓN EN PRODUCCIÓN BOVINA TROPICAL
-SEDE: BERASTEGUI
-JORNADA: VIERNES- SABADO
-PENSUM: 2015-1
-TOTAL CRÉDITOS DEL PENSUM: 26
---------------------------------------------------
-  Semestre 1:
-    - ELECTIVA I (código: 102146, créditos: 1)
-    - GESTION AGROEMPRESARIAL I (código: 102139, créditos: 2)
-    - MEJORAMIENTO GENETICO ANIMAL I (código: 102138, créditos: 1)
-    - NUTRICION Y ALIMENTACION I (código: 102136, créditos: 6)
-    - REPRODUCCION I (código: 102137, créditos: 4)
-    - SEMINARIO DE INVESTIGACION I (código: 102140, créditos: 1)
-    Total créditos del semestre 1: 15
-
-  Semestre 2:
-    - ELECTIVA II (código: 102147, créditos: 1)
-    - GESTION AGROEMPRESAR II (código: 102144, créditos: 2)
-    - MEJORAMIENTO GENETICO ANIMAL II (código: 102143, créditos: 1)
-    - NUTRICION Y ALIMENTACION II (código: 102141, créditos: 4)
-    - REPRODUCCION II (código: 102142, créditos: 2)
-    - SEMINARIO DE INVESTIGACION II (código: 102145, créditos: 1)
-    Total créditos del semestre 2: 11
 
 
 PROGRAMA: ESTADÍSTICA
@@ -7686,6 +7303,1079 @@ TOTAL CRÉDITOS DEL PENSUM: 48
     Total créditos del semestre 4: 12
 
 
+PROGRAMA: MATEMÁTICAS
+SEDE: MONTERIA
+JORNADA: DIURNA
+PENSUM: 2019-2
+TOTAL CRÉDITOS DEL PENSUM: 142
+--------------------------------------------------
+  Semestre 1:
+    - APRENDIZAJE AUTÓNOMO (código: 408303, créditos: 1)
+    - CÁLCULO DIFERENCIAL (código: 408301, créditos: 3)
+    - CONSTIUCIÓN POLÍTICA  Y LEGISLACIÓN  AMBIENTAL (código: 408305, créditos: 2)
+    - FUNDAMENTOS DE MATEMÁTICAS I (código: 408300, créditos: 4)
+    - GEOMETRÍA ANALÍTICA (código: 408302, créditos: 3)
+    - UNIVERSIDAD Y CONTEXTO (código: 408304, créditos: 1)
+    Total créditos del semestre 1: 14
+
+  Semestre 2:
+    - ÁLGEBRA LINEAL (código: 408308, créditos: 3)
+    - CÁLCULO INTEGRAL (código: 408307, créditos: 3)
+    - COMPRENSIÓN Y PRODUCCIÓN DE TEXTOS (código: 408310, créditos: 2)
+    - FUNDAMENTOS DE MATEMÁTICAS II (código: 408306, créditos: 4)
+    - PROBABILIDAD Y ESTADÍSTICA (código: 408309, créditos: 3)
+    Total créditos del semestre 2: 15
+
+  Semestre 3:
+    - CÁLCULO VECTORIAL (código: 408311, créditos: 3)
+    - ECUACIONES DIFERENCIALES ORDINARIAS (código: 408312, créditos: 3)
+    - FÍSICA I (MECÁNICA) (código: 408314, créditos: 3)
+    - GEOMETRÍA EUCLIDIANA (código: 408313, créditos: 4)
+    - TEORÍA DE NÚMEROS (código: 408315, créditos: 4)
+    Total créditos del semestre 3: 17
+
+  Semestre 4:
+    - ANÁLISIS MATEMÁTICO I (código: 408316, créditos: 4)
+    - FÍSICA II (ELECTRICIDAD Y MAGNETISMO) (código: 408318, créditos: 3)
+    - INGLÉS  I (código: 408320, créditos: 2)
+    - MÉTODOS NUMÉRICOS (código: 408317, créditos: 3)
+    - SOFTWARE MATEMÁTICO Y ESTADÍSTICO (código: 408319, créditos: 2)
+    - TEORÍA DE CONJUNTOS (código: 408321, créditos: 4)
+    Total créditos del semestre 4: 18
+
+  Semestre 5:
+    - ANÁLISIS MATEMÁTICO II (código: 408322, créditos: 4)
+    - ECUACIONES DIFERENCIALES PARCIALES (código: 408324, créditos: 3)
+    - ÉTICA PROFESIONAL (código: 408325, créditos: 2)
+    - INGLÉS II (código: 408326, créditos: 2)
+    - TEORÍA DE GRUPOS (código: 408323, créditos: 4)
+    Total créditos del semestre 5: 15
+
+  Semestre 6:
+    - ANÁLISIS MATEMÁTICO III (código: 408327, créditos: 4)
+    - ELECTIVA LIBRE I (código: 408346, créditos: 2)
+    - INGLÉS III (código: 408330, créditos: 2)
+    - TEORÍA DE ANILLOS Y CUERPOS (código: 408328, créditos: 4)
+    - TOPOLOGÍA (código: 408329, créditos: 4)
+    Total créditos del semestre 6: 16
+
+  Semestre 7:
+    - ANÁLISIS NUMÉRICO (código: 408331, créditos: 4)
+    - ELECTIVA LIBRE II (código: 408347, créditos: 2)
+    - GEOMETRÍA DIFERENCIAL (código: 408333, créditos: 4)
+    - INGLÉS IV (código: 408334, créditos: 2)
+    - VARIABLE COMPLEJA (código: 408332, créditos: 4)
+    Total créditos del semestre 7: 16
+
+  Semestre 8:
+    - ELECTIVA DE CARRERA I (código: 408341, créditos: 4)
+    - ELECTIVA DE PROFUNDIZACIÓN I (código: 408342, créditos: 4)
+    - ELECTIVA LIBRE III (código: 408348, créditos: 2)
+    - EPISTEMOLOGÍA E HISTORIA  DE LAS MATEMÁTICAS (código: 408335, créditos: 3)
+    - SEMINARIO DE PROYECTO DE GRADO (código: 408336, créditos: 2)
+    Total créditos del semestre 8: 15
+
+  Semestre 9:
+    - ELECTIVA DE CARRERA II (código: 408343, créditos: 4)
+    - ELECTIVA DE PROFUNDIZACIÓN II (código: 408344, créditos: 4)
+    - TRABAJO DE GRADO (código: 408337, créditos: 8)
+    Total créditos del semestre 9: 16
+
+
+PROGRAMA: MEDICINA VETERINARIA Y ZOOTECNIA
+SEDE: BERASTEGUI
+JORNADA: DIURNA
+PENSUM: 2020-1
+TOTAL CRÉDITOS DEL PENSUM: 180
+--------------------------------------------------
+  Semestre 1:
+    - ANATOMIA I (código: 101824, créditos: 3)
+    - BIOLOGIA CELULAR Y MOLECULAR (código: 101820, créditos: 4)
+    - CATEDRA INSTITUCIONAL I (código: 101825, créditos: 1)
+    - FUNDAMENTOS DE M.V.Z (código: 101821, créditos: 3)
+    - INGLES I (código: 101826, créditos: 2)
+    - MATEMATICAS (código: 101822, créditos: 2)
+    - QUIMICA (código: 101823, créditos: 3)
+    Total créditos del semestre 1: 18
+
+  Semestre 2:
+    - ANATOMIA II (código: 101830, créditos: 3)
+    - BIOETICA (código: 101831, créditos: 2)
+    - BIOFISICA (código: 101827, créditos: 2)
+    - BIOQUIMICA (código: 101829, créditos: 3)
+    - CATEDRA INSTITUCIONAL (código: 101832, créditos: 1)
+    - COMPETENCIAS COMUNICATIVAS (código: 101833, créditos: 1)
+    - ECOLOGIA (código: 101828, créditos: 2)
+    - INGLES II (código: 101834, créditos: 2)
+    - SOCIOLOGIA RURAL (código: 101835, créditos: 2)
+    Total créditos del semestre 2: 18
+
+  Semestre 3:
+    - BIOESTADISTICA (código: 101838, créditos: 3)
+    - FAUNA SILVESTRE (código: 101841, créditos: 2)
+    - HISTOLOGIA Y EMBRIOLOGIA (código: 101840, créditos: 3)
+    - INGLES III (código: 101842, créditos: 2)
+    - METODOLOGIA DE LA INVESTIGACION (código: 101837, créditos: 2)
+    - MICROBIOLOGIA (código: 101836, créditos: 3)
+    - SUELOS Y FORRAJES (código: 101839, créditos: 3)
+    Total créditos del semestre 3: 18
+
+  Semestre 4:
+    - ECONOMIA (código: 101847, créditos: 2)
+    - ELECTIVA DE CARRERA I (código: 101879, créditos: 2)
+    - FISIOLOGIA ANIMAL (código: 101846, créditos: 3)
+    - GENETICA (código: 101845, créditos: 2)
+    - INGLES IV (código: 101848, créditos: 2)
+    - INMUNOLOGIA Y VIROLOGIA (código: 101843, créditos: 3)
+    - PATOLOGIA GENERAL (código: 101844, créditos: 3)
+    Total créditos del semestre 4: 17
+
+  Semestre 5:
+    - ADMINISTRACION AGROPECUARIA (código: 101854, créditos: 2)
+    - ELECTIVA LIBRE I (código: 101880, créditos: 2)
+    - ETOLOGIA Y BIENESTAR ANIMAL (código: 101849, créditos: 2)
+    - FARMACOLOGIA Y TERAPEUTICA (código: 101853, créditos: 4)
+    - MEJORAMIENTO GENETICO (código: 101851, créditos: 3)
+    - NUTRICION Y ALIMENTACION DE MONOGASTRICOS (código: 101852, créditos: 3)
+    - PARASITOLOGIA (código: 101850, créditos: 2)
+    Total créditos del semestre 5: 18
+
+  Semestre 6:
+    - ALIMENTACION Y NUTRICION DE POLIGASTRICOS (código: 101858, créditos: 3)
+    - ELECTIVA DE CARRERA II (código: 101881, créditos: 2)
+    - ENFERMEDADES INFECCIOSAS (código: 101859, créditos: 3)
+    - EPIDEMIOLOGIA (código: 101857, créditos: 2)
+    - GERENCIA FINANCIERA Y DE MERCADOS (código: 101860, créditos: 2)
+    - REPRODUCCION I (código: 101861, créditos: 3)
+    - SEMIOLOGIA (código: 101856, créditos: 2)
+    - TOXICOLOGIA (código: 101855, créditos: 2)
+    Total créditos del semestre 6: 19
+
+  Semestre 7:
+    - ELECTIVA DE PROFUNIZACION I (código: 101882, créditos: 3)
+    - MEDICINA DE GRANDES ANIMALES (código: 101863, créditos: 3)
+    - PATOLOGIA CLINICA (código: 101862, créditos: 2)
+    - PRODUCCION BOVINA (código: 101864, créditos: 3)
+    - PRODUCCION PORCINA (código: 101865, créditos: 3)
+    - REPRODUCCION II (código: 101867, créditos: 3)
+    - SEMINARIO DE INVESTIGACION (código: 101866, créditos: 2)
+    Total créditos del semestre 7: 19
+
+  Semestre 8:
+    - CIRUGIA (código: 101870, créditos: 3)
+    - ELECTIVA DE PROFUNDIZACION II (código: 101884, créditos: 3)
+    - MEDICINA DE ANIMALES DE COMPAÑIA (código: 101869, créditos: 3)
+    - PRODUCCION AVICOLA (código: 101871, créditos: 3)
+    - PRODUCCION OVINO CAPRINA (código: 101872, créditos: 3)
+    - SALUD PUBLICA (código: 101868, créditos: 2)
+    Total créditos del semestre 8: 17
+
+  Semestre 9:
+    - CLINICA MEDICO QUIRURGICA DE ANIMALES DE COMPAÑIA (código: 101873, créditos: 4)
+    - CLINICA MEDICO QUIRURGICA DE GRANDES ANIMALES (código: 101874, créditos: 4)
+    - ELECTIVA DE PROFUNDIZACIÓN III (código: 101885, créditos: 3)
+    - ELECTIVA LIBRE II (código: 101883, créditos: 2)
+    - EXTENSIÓN RURAL (código: 101875, créditos: 2)
+    - FORMULACION Y EVALUACION DE PROYECTOS (código: 101876, créditos: 2)
+    Total créditos del semestre 9: 17
+
+  Semestre 10:
+    - PASANTIA (código: 101877, créditos: 15)
+    - TRABAJO DE GRADO (código: 101878, créditos: 4)
+    Total créditos del semestre 10: 19
+
+
+PROGRAMA: QUÍMICA
+SEDE: MONTERIA
+JORNADA: DIURNA
+PENSUM: 2016-1
+TOTAL CRÉDITOS DEL PENSUM: 180
+--------------------------------------------------
+  Semestre 1:
+    - ÁLGEBRA LINEAL (código: 402186, créditos: 3)
+    - CÁLCULO I (código: 402185, créditos: 3)
+    - COMPETENCIAS COMUNICATIVAS I (código: 402188, créditos: 2)
+    - CONSTITUCIÓN POLÍTICA Y LEGISLACIÓN AMBIENTAL (código: 402189, créditos: 2)
+    - ELECTIVA LIBRE I (código: 402191, créditos: 2)
+    - INGLÉS I (código: 402187, créditos: 2)
+    - INSTITUCIONAL I (código: 402190, créditos: 1)
+    - QUÍMICA FUNDAMENTAL I (código: 402184, créditos: 4)
+    Total créditos del semestre 1: 19
+
+  Semestre 2:
+    - CÁLCULO II (código: 402193, créditos: 3)
+    - COMPETENCIAS COMUNICATIVAS II (código: 402196, créditos: 2)
+    - ELECTIVA LIBRE II (código: 402199, créditos: 2)
+    - FÍSICA I (código: 402194, créditos: 3)
+    - INFORMÁTICA I (código: 402197, créditos: 2)
+    - INGLÉS II (código: 402195, créditos: 2)
+    - INSTITUCIONAL II (código: 402198, créditos: 1)
+    - QUÍMICA FUNDAMENTAL II (código: 402192, créditos: 4)
+    Total créditos del semestre 2: 19
+
+  Semestre 3:
+    - CÁLCULO III (código: 402201, créditos: 3)
+    - ESTADÍSTICA (código: 402202, créditos: 3)
+    - FÍSICA II (código: 402203, créditos: 3)
+    - INFORMÁTICA II (código: 402205, créditos: 2)
+    - INGLÉS III (código: 402204, créditos: 2)
+    - QUÍMICA ORGÁNICA I (código: 402200, créditos: 4)
+    Total créditos del semestre 3: 17
+
+  Semestre 4:
+    - ECUACIONES DIFERENCIALES (código: 402209, créditos: 3)
+    - FÍSICA III (código: 402210, créditos: 3)
+    - FÍSICOQUÍMICA I (código: 402208, créditos: 4)
+    - INGLÉS IV (código: 402211, créditos: 2)
+    - QUÍMICA ANALÍTICA I (código: 402207, créditos: 4)
+    - QUÍMICA ORGÁNICA II (código: 402206, créditos: 4)
+    Total créditos del semestre 4: 20
+
+  Semestre 5:
+    - FÍSICOQUÍMICA II (código: 402214, créditos: 4)
+    - QUÍMICA ANALÍTICA II (código: 402213, créditos: 4)
+    - QUÍMICA INORGÁNICA I (código: 402215, créditos: 4)
+    - QUÍMICA ORGÁNICA III (código: 402212, créditos: 4)
+    - SOCIOANTROPOLOGÍA (código: 402226, créditos: 2)
+    Total créditos del semestre 5: 18
+
+  Semestre 6:
+    - ELECTIVA CARRERA I (código: 402221, créditos: 3)
+    - FÍSICOQUÍMICA III (código: 402219, créditos: 4)
+    - QUÍMICA ANALÍTICA III (código: 402218, créditos: 4)
+    - QUÍMICA INORGÁNICA II (código: 402220, créditos: 4)
+    - QUÍMICA ORGÁNICA IV (código: 402217, créditos: 4)
+    Total créditos del semestre 6: 19
+
+  Semestre 7:
+    - BIOLOGÍA (código: 402225, créditos: 4)
+    - ELECTIVA CARRERA II (código: 402227, créditos: 3)
+    - ELUCIDACIÓN DE ESTRUCTURAS (código: 402224, créditos: 3)
+    - QUÍMICA ANALÍTICA IV (código: 402223, créditos: 4)
+    - QUÍMICA CUÁNTICA (código: 402216, créditos: 3)
+    - QUÍMICA INORGÁNICA III (código: 402222, créditos: 2)
+    Total créditos del semestre 7: 19
+
+  Semestre 8:
+    - BIOQUÍMICA (código: 402228, créditos: 5)
+    - ELECTIVA CARRERA III (código: 402233, créditos: 3)
+    - ELECTIVA CARRERA IV (código: 402234, créditos: 3)
+    - ÉTICA (código: 402232, créditos: 2)
+    - QUÍMICA AGRÍCOLA (código: 402229, créditos: 3)
+    - QUÍMICA AMBIENTAL (código: 402230, créditos: 3)
+    - SEMINARIO DE INVESTIGACIÓN (código: 402231, créditos: 1)
+    Total créditos del semestre 8: 20
+
+  Semestre 9:
+    - ASEGURAMIENTO DE LA CALIDAD (código: 402237, créditos: 3)
+    - ELECTIVA DE PROFUNDIZACIÓN I (código: 402239, créditos: 3)
+    - ELECTIVA DE PROFUNDIZACIÓN II (código: 402240, créditos: 3)
+    - INSTITUCIONAL III (código: 402238, créditos: 1)
+    - QUÍMICA INDUSTRIAL (código: 402236, créditos: 3)
+    - TRABAJO DE GRADO I (código: 402235, créditos: 5)
+    Total créditos del semestre 9: 18
+
+  Semestre 10:
+    - ELECTIVA DE PROFUNDIZACIÓN III (código: 402242, créditos: 3)
+    - ELECTIVA DE PROFUNDIZACIÓN IV (código: 402243, créditos: 3)
+    - TRABAJO DE GRADO II (código: 402241, créditos: 5)
+    Total créditos del semestre 10: 11
+
+
+PROGRAMA: TÉCNICO PROFESIONAL EN PROGRAMACIÓN WEB
+SEDE: CHINÚ
+JORNADA: A DISTANCIA
+PENSUM: 2025-2
+TOTAL CRÉDITOS DEL PENSUM: 48
+--------------------------------------------------
+  Semestre 1:
+    - APRENDIZAJE AUTÓNOMO (código: 420002, créditos: 2)
+    - FUNDAMENTOS DE PROGRAMACIÓN (código: 420003, créditos: 3)
+    - HABILIDADES COMUNICATIVAS I (código: 420004, créditos: 2)
+    - INGLES I (código: 420001, créditos: 3)
+    - INTRODUCCIÓN A LA PROGRAMACIÓN WEB (código: 420006, créditos: 3)
+    - MATEMATICA BÁSICA (código: 420005, créditos: 3)
+    Total créditos del semestre 1: 16
+
+  Semestre 2:
+    - BASE DE DATOS (código: 420011, créditos: 3)
+    - DISEÑO DE INTERFACES DE USUARIO - FRONTEND (código: 420012, créditos: 3)
+    - ESTADISTICA Y PROBABILIDAD (código: 420008, créditos: 2)
+    - HABILIDADES COMUNICATIVAS II (código: 420009, créditos: 2)
+    - INGLES II (código: 420007, créditos: 3)
+    - PROGRAMACIÓN WEB I-BACKEND (código: 420010, créditos: 3)
+    Total créditos del semestre 2: 16
+
+  Semestre 3:
+    - INNOVACIÓN Y EMPRENDIMIENTO DIGITAL (código: 420015, créditos: 3)
+    - PROGRAMACIÓN WEB II -BACKEND (código: 420017, créditos: 3)
+    - PROYECTO WEB (código: 420014, créditos: 4)
+    - SEGURIDAD APLICACIONES WEB (código: 420016, créditos: 3)
+    - SERVICIOS DE COMPUTACION EN LA NUBE (código: 420013, créditos: 3)
+    Total créditos del semestre 3: 16
+
+
+PROGRAMA: TÉCNICO PROFESIONAL EN PROGRAMACIÓN WEB
+SEDE: CIÉNAGA DE ORO
+JORNADA: A DISTANCIA
+PENSUM: 2025-2
+TOTAL CRÉDITOS DEL PENSUM: 48
+--------------------------------------------------
+  Semestre 1:
+    - APRENDIZAJE AUTÓNOMO (código: 420002, créditos: 2)
+    - FUNDAMENTOS DE PROGRAMACIÓN (código: 420003, créditos: 3)
+    - HABILIDADES COMUNICATIVAS I (código: 420004, créditos: 2)
+    - INGLES I (código: 420001, créditos: 3)
+    - INTRODUCCIÓN A LA PROGRAMACIÓN WEB (código: 420006, créditos: 3)
+    - MATEMATICA BÁSICA (código: 420005, créditos: 3)
+    Total créditos del semestre 1: 16
+
+  Semestre 2:
+    - BASE DE DATOS (código: 420011, créditos: 3)
+    - DISEÑO DE INTERFACES DE USUARIO - FRONTEND (código: 420012, créditos: 3)
+    - ESTADISTICA Y PROBABILIDAD (código: 420008, créditos: 2)
+    - HABILIDADES COMUNICATIVAS II (código: 420009, créditos: 2)
+    - INGLES II (código: 420007, créditos: 3)
+    - PROGRAMACIÓN WEB I-BACKEND (código: 420010, créditos: 3)
+    Total créditos del semestre 2: 16
+
+  Semestre 3:
+    - INNOVACIÓN Y EMPRENDIMIENTO DIGITAL (código: 420015, créditos: 3)
+    - PROGRAMACIÓN WEB II -BACKEND (código: 420017, créditos: 3)
+    - PROYECTO WEB (código: 420014, créditos: 4)
+    - SEGURIDAD APLICACIONES WEB (código: 420016, créditos: 3)
+    - SERVICIOS DE COMPUTACION EN LA NUBE (código: 420013, créditos: 3)
+    Total créditos del semestre 3: 16
+
+
+PROGRAMA: TÉCNICO PROFESIONAL EN PROGRAMACIÓN WEB
+SEDE: VALENCIA
+JORNADA: A DISTANCIA
+PENSUM: 2025-2
+TOTAL CRÉDITOS DEL PENSUM: 48
+--------------------------------------------------
+  Semestre 1:
+    - APRENDIZAJE AUTÓNOMO (código: 420002, créditos: 2)
+    - FUNDAMENTOS DE PROGRAMACIÓN (código: 420003, créditos: 3)
+    - HABILIDADES COMUNICATIVAS I (código: 420004, créditos: 2)
+    - INGLES I (código: 420001, créditos: 3)
+    - INTRODUCCIÓN A LA PROGRAMACIÓN WEB (código: 420006, créditos: 3)
+    - MATEMATICA BÁSICA (código: 420005, créditos: 3)
+    Total créditos del semestre 1: 16
+
+  Semestre 2:
+    - BASE DE DATOS (código: 420011, créditos: 3)
+    - DISEÑO DE INTERFACES DE USUARIO - FRONTEND (código: 420012, créditos: 3)
+    - ESTADISTICA Y PROBABILIDAD (código: 420008, créditos: 2)
+    - HABILIDADES COMUNICATIVAS II (código: 420009, créditos: 2)
+    - INGLES II (código: 420007, créditos: 3)
+    - PROGRAMACIÓN WEB I-BACKEND (código: 420010, créditos: 3)
+    Total créditos del semestre 2: 16
+
+  Semestre 3:
+    - INNOVACIÓN Y EMPRENDIMIENTO DIGITAL (código: 420015, créditos: 3)
+    - PROGRAMACIÓN WEB II -BACKEND (código: 420017, créditos: 3)
+    - PROYECTO WEB (código: 420014, créditos: 4)
+    - SEGURIDAD APLICACIONES WEB (código: 420016, créditos: 3)
+    - SERVICIOS DE COMPUTACION EN LA NUBE (código: 420013, créditos: 3)
+    Total créditos del semestre 3: 16
+
+
+PROGRAMA: TÉCNICO PROFESIONAL EN PROGRAMACIÓN WEB
+SEDE: SAN PELAYO
+JORNADA: A DISTANCIA
+PENSUM: 2025-2
+TOTAL CRÉDITOS DEL PENSUM: 48
+--------------------------------------------------
+  Semestre 1:
+    - APRENDIZAJE AUTÓNOMO (código: 420002, créditos: 2)
+    - FUNDAMENTOS DE PROGRAMACIÓN (código: 420003, créditos: 3)
+    - HABILIDADES COMUNICATIVAS I (código: 420004, créditos: 2)
+    - INGLES I (código: 420001, créditos: 3)
+    - INTRODUCCIÓN A LA PROGRAMACIÓN WEB (código: 420006, créditos: 3)
+    - MATEMATICA BÁSICA (código: 420005, créditos: 3)
+    Total créditos del semestre 1: 16
+
+  Semestre 2:
+    - BASE DE DATOS (código: 420011, créditos: 3)
+    - DISEÑO DE INTERFACES DE USUARIO - FRONTEND (código: 420012, créditos: 3)
+    - ESTADISTICA Y PROBABILIDAD (código: 420008, créditos: 2)
+    - HABILIDADES COMUNICATIVAS II (código: 420009, créditos: 2)
+    - INGLES II (código: 420007, créditos: 3)
+    - PROGRAMACIÓN WEB I-BACKEND (código: 420010, créditos: 3)
+    Total créditos del semestre 2: 16
+
+  Semestre 3:
+    - INNOVACIÓN Y EMPRENDIMIENTO DIGITAL (código: 420015, créditos: 3)
+    - PROGRAMACIÓN WEB II -BACKEND (código: 420017, créditos: 3)
+    - PROYECTO WEB (código: 420014, créditos: 4)
+    - SEGURIDAD APLICACIONES WEB (código: 420016, créditos: 3)
+    - SERVICIOS DE COMPUTACION EN LA NUBE (código: 420013, créditos: 3)
+    Total créditos del semestre 3: 16
+
+
+PROGRAMA: TÉCNICO PROFESIONAL EN PROGRAMACIÓN WEB
+SEDE: MONTERIA
+JORNADA: A DISTANCIA
+PENSUM: 2025-2
+TOTAL CRÉDITOS DEL PENSUM: 48
+--------------------------------------------------
+  Semestre 1:
+    - APRENDIZAJE AUTÓNOMO (código: 420002, créditos: 2)
+    - FUNDAMENTOS DE PROGRAMACIÓN (código: 420003, créditos: 3)
+    - HABILIDADES COMUNICATIVAS I (código: 420004, créditos: 2)
+    - INGLES I (código: 420001, créditos: 3)
+    - INTRODUCCIÓN A LA PROGRAMACIÓN WEB (código: 420006, créditos: 3)
+    - MATEMATICA BÁSICA (código: 420005, créditos: 3)
+    Total créditos del semestre 1: 16
+
+  Semestre 2:
+    - BASE DE DATOS (código: 420011, créditos: 3)
+    - DISEÑO DE INTERFACES DE USUARIO - FRONTEND (código: 420012, créditos: 3)
+    - ESTADISTICA Y PROBABILIDAD (código: 420008, créditos: 2)
+    - HABILIDADES COMUNICATIVAS II (código: 420009, créditos: 2)
+    - INGLES II (código: 420007, créditos: 3)
+    - PROGRAMACIÓN WEB I-BACKEND (código: 420010, créditos: 3)
+    Total créditos del semestre 2: 16
+
+  Semestre 3:
+    - INNOVACIÓN Y EMPRENDIMIENTO DIGITAL (código: 420015, créditos: 3)
+    - PROGRAMACIÓN WEB II -BACKEND (código: 420017, créditos: 3)
+    - PROYECTO WEB (código: 420014, créditos: 4)
+    - SEGURIDAD APLICACIONES WEB (código: 420016, créditos: 3)
+    - SERVICIOS DE COMPUTACION EN LA NUBE (código: 420013, créditos: 3)
+    Total créditos del semestre 3: 16
+
+
+PROGRAMA: TECNOLOGÍA EN DESARROLLO DE SOFTWARE
+SEDE: LORICA
+JORNADA: DIURNA
+PENSUM: 2026-1
+TOTAL CRÉDITOS DEL PENSUM: 80
+--------------------------------------------------
+  Semestre 1:
+    - ALGEBRA LINEAL (código: 430001, créditos: 3)
+    - APRENDIZAJE AUTÓNOMO (código: 430002, créditos: 2)
+    - ARQUITECTURA DE SISTEMAS DE INFORMACIÓN (código: 430003, créditos: 3)
+    - COMPETENCIAS COMUNICATIVAS (código: 430004, créditos: 2)
+    - FUNDAMENTOS MATEMÁTICOS (código: 430005, créditos: 3)
+    - INTRODUCCIÓN A LA LÓGICA DE PROGRAMACIÓN (código: 430006, créditos: 3)
+    Total créditos del semestre 1: 16
+
+
+PROGRAMA: TECNOLOGÍA EN DESARROLLO DE SOFTWARE
+SEDE: CIÉNAGA DE ORO
+JORNADA: DIURNA
+PENSUM: 2026-1
+TOTAL CRÉDITOS DEL PENSUM: 80
+--------------------------------------------------
+  Semestre 1:
+    - ALGEBRA LINEAL (código: 430001, créditos: 3)
+    - APRENDIZAJE AUTÓNOMO (código: 430002, créditos: 2)
+    - ARQUITECTURA DE SISTEMAS DE INFORMACIÓN (código: 430003, créditos: 3)
+    - COMPETENCIAS COMUNICATIVAS (código: 430004, créditos: 2)
+    - FUNDAMENTOS MATEMÁTICOS (código: 430005, créditos: 3)
+    - INTRODUCCIÓN A LA LÓGICA DE PROGRAMACIÓN (código: 430006, créditos: 3)
+    Total créditos del semestre 1: 16
+
+
+PROGRAMA: TECNOLOGÍA EN DESARROLLO DE SOFTWARE
+SEDE: SAHAGUN
+JORNADA: DIURNA
+PENSUM: 2026-1
+TOTAL CRÉDITOS DEL PENSUM: 80
+--------------------------------------------------
+  Semestre 1:
+    - ALGEBRA LINEAL (código: 430001, créditos: 3)
+    - APRENDIZAJE AUTÓNOMO (código: 430002, créditos: 2)
+    - ARQUITECTURA DE SISTEMAS DE INFORMACIÓN (código: 430003, créditos: 3)
+    - COMPETENCIAS COMUNICATIVAS (código: 430004, créditos: 2)
+    - FUNDAMENTOS MATEMÁTICOS (código: 430005, créditos: 3)
+    - INTRODUCCIÓN A LA LÓGICA DE PROGRAMACIÓN (código: 430006, créditos: 3)
+    Total créditos del semestre 1: 16
+
+
+PROGRAMA: TECNOLOGÍA EN DESARROLLO DE SOFTWARE
+SEDE: MONTERIA
+JORNADA: DIURNA
+PENSUM: 2026-1
+TOTAL CRÉDITOS DEL PENSUM: 80
+--------------------------------------------------
+  Semestre 1:
+    - ALGEBRA LINEAL (código: 430001, créditos: 3)
+    - APRENDIZAJE AUTÓNOMO (código: 430002, créditos: 2)
+    - ARQUITECTURA DE SISTEMAS DE INFORMACIÓN (código: 430003, créditos: 3)
+    - COMPETENCIAS COMUNICATIVAS (código: 430004, créditos: 2)
+    - FUNDAMENTOS MATEMÁTICOS (código: 430005, créditos: 3)
+    - INTRODUCCIÓN A LA LÓGICA DE PROGRAMACIÓN (código: 430006, créditos: 3)
+    Total créditos del semestre 1: 16
+
+
+PROGRAMA: TECNOLOGÍA EN DESARROLLO DE SOFTWARE
+SEDE: MONTELIBANO
+JORNADA: DIURNA
+PENSUM: 2026-1
+TOTAL CRÉDITOS DEL PENSUM: 80
+--------------------------------------------------
+  Semestre 1:
+    - ALGEBRA LINEAL (código: 430001, créditos: 3)
+    - APRENDIZAJE AUTÓNOMO (código: 430002, créditos: 2)
+    - ARQUITECTURA DE SISTEMAS DE INFORMACIÓN (código: 430003, créditos: 3)
+    - COMPETENCIAS COMUNICATIVAS (código: 430004, créditos: 2)
+    - FUNDAMENTOS MATEMÁTICOS (código: 430005, créditos: 3)
+    - INTRODUCCIÓN A LA LÓGICA DE PROGRAMACIÓN (código: 430006, créditos: 3)
+    Total créditos del semestre 1: 16
+
+
+PROGRAMA: TECNOLOGÍA EN REGENCIA DE FARMACIA
+SEDE: MONTERIA
+JORNADA: Nocturna
+PENSUM: 2020-2
+TOTAL CRÉDITOS DEL PENSUM: 104
+--------------------------------------------------
+  Semestre 1:
+    - APRENDIZAJE AUTONOMO (código: 502123, créditos: 1)
+    - FUNDAMENTOS DE BIOLOGIA (código: 502119, créditos: 3)
+    - FUNDAMENTOS DE MATEMATICA (código: 502120, créditos: 3)
+    - FUNDAMENTOS DE QUIMICA (código: 502118, créditos: 3)
+    - INFORMATICA I (código: 502124, créditos: 2)
+    - INGLES I (código: 502125, créditos: 2)
+    - INTRODUCCIÓN A LA FARMACIA (código: 502121, créditos: 2)
+    - SOCIOANTROPOLOGIA Y TRABAJO COMUNITARIO (código: 502122, créditos: 2)
+    Total créditos del semestre 1: 18
+
+  Semestre 2:
+    - COMPETENCIAS CIUDADANA (código: 502166, créditos: 1)
+    - FARMACIA GENERAL (código: 502130, créditos: 3)
+    - FUNDAMENTO DE QUIMICA ORGANICA (código: 502126, créditos: 3)
+    - FUNDAMENTOS DE BIOESTADISTICA (código: 502128, créditos: 2)
+    - FUNDAMENTOS DE CONTABILIDAD (código: 502129, créditos: 2)
+    - FUNDAMENTOS DE MICROBIOLOGIA (código: 502127, créditos: 3)
+    - INFORMATICA II (código: 502131, créditos: 2)
+    - INGLES II (código: 502133, créditos: 2)
+    Total créditos del semestre 2: 18
+
+  Semestre 3:
+    - ADMINISTRACIÓN EN FARMCIA (código: 502138, créditos: 3)
+    - COMUNICACIÓN Y PRODUCCIÓN DE TEXTO (código: 502139, créditos: 2)
+    - ELECTIVA LIBRE I (código: 502140, créditos: 2)
+    - ETICA Y BIOETICA (código: 502136, créditos: 2)
+    - FARMACOGNOSIA (código: 502137, créditos: 3)
+    - FUNDAMENTOS DE BIOQUIMICA (código: 502134, créditos: 3)
+    - FUNDAMENTOS DE MORFOFISIOLOGIA (código: 502135, créditos: 3)
+    Total créditos del semestre 3: 18
+
+  Semestre 4:
+    - ELECTIVA DE CARRERA (código: 502145, créditos: 3)
+    - FARMACIA MAGISTRAL (código: 502141, créditos: 3)
+    - FARMACOLOGIA (código: 502142, créditos: 3)
+    - FUNDAMENTOS DE GESTIÓN AMBIENTAL (código: 502144, créditos: 2)
+    - LEGISLACIÓN FARMACÈUTICA (código: 502143, créditos: 2)
+    - MERCADEO Y VENTAS (código: 502147, créditos: 2)
+    - SALUD OCUPACIONAL Y PRIMEROS AUXILIOS (código: 502146, créditos: 3)
+    Total créditos del semestre 4: 18
+
+  Semestre 5:
+    - ATENCIÓN FARMACÈUTICA (código: 502153, créditos: 3)
+    - DESARROLLO Y GESTIÓN EMPRESARIAL (código: 502151, créditos: 3)
+    - INSPECCIÓN Y VIGILANCIA (código: 502150, créditos: 3)
+    - METODOLOGIA DE LA INVESTIGACIÓN (código: 502148, créditos: 2)
+    - TOXICOLOGIA (código: 502149, créditos: 3)
+    - VIGILANCIA FARMACOLOGICA (código: 502152, créditos: 3)
+    Total créditos del semestre 5: 17
+
+  Semestre 6:
+    - ELECTIVA DE PROFUNDIZACION (código: 502156, créditos: 3)
+    - METODOLOGIA DE LA INVESTIGACIÓN II (código: 502154, créditos: 2)
+    - PRACTICAS ASISTENCIALES (código: 502155, créditos: 10)
+    Total créditos del semestre 6: 15
+
+
+PROGRAMA: DOCTORADO EN CIENCIA Y TECNOLOGÍA DE ALIMENTOS
+SEDE: BERASTEGUI
+JORNADA: LUNES- SABADO
+PENSUM: 2019-1
+TOTAL CRÉDITOS DEL PENSUM: 106
+--------------------------------------------------
+  Semestre 1:
+    - CIENCIA Y TECNOLOGÍA DE ALIMENTOS (código: 305000, créditos: 3)
+    - DISEÑO EXPERIMENTAL (código: 305001, créditos: 3)
+    - ELECTIVA I (código: 305027, créditos: 3)
+    - SEMINARIO I (código: 305002, créditos: 2)
+    Total créditos del semestre 1: 11
+
+  Semestre 2:
+    - BIOÉTICA Y LEGISLACIÓN (código: 305003, créditos: 2)
+    - ELECTIVA II (código: 305028, créditos: 3)
+    - ELECTIVA III (código: 305029, créditos: 3)
+    - SEMINARIO II (código: 305004, créditos: 2)
+    Total créditos del semestre 2: 10
+
+  Semestre 3:
+    - ELECTIVA IV (código: 305030, créditos: 3)
+    - ELECTIVA V (código: 305031, créditos: 3)
+    - TRABAJO E INVESTIGACION I (código: 305005, créditos: 12)
+    Total créditos del semestre 3: 18
+
+  Semestre 4:
+    - ELCTIVA VI (código: 305032, créditos: 3)
+    - SEMINARIO III (código: 305006, créditos: 2)
+    - TRABAJO DE INVESTIGACIÓN II (código: 305007, créditos: 12)
+    Total créditos del semestre 4: 17
+
+  Semestre 5:
+    - TRABAJO DE INVESTIGACIÓN III (código: 305008, créditos: 12)
+    Total créditos del semestre 5: 12
+
+  Semestre 6:
+    - TRABAJO DE INVESTIGACION IV (código: 305009, créditos: 12)
+    Total créditos del semestre 6: 12
+
+  Semestre 7:
+    - SEMINARIO IV (código: 305011, créditos: 2)
+    - TRABAJO DE INVESTIGACIÓN V (código: 305010, créditos: 12)
+    Total créditos del semestre 7: 14
+
+  Semestre 8:
+    - TRABAJO DE INVESTIGACIÓN VI (código: 305012, créditos: 12)
+    Total créditos del semestre 8: 12
+
+
+PROGRAMA: DOCTORADO EN CIENCIAS AGRARIAS
+SEDE: MONTERIA
+JORNADA: DIURNA
+PENSUM: 2022-1
+TOTAL CRÉDITOS DEL PENSUM: 120
+--------------------------------------------------
+  Semestre 1:
+    - ELECTIVA I (código: 301820, créditos: 4)
+    - HISTORIA Y EVALUACION DE LA AGRICULTURA (código: 301801, créditos: 4)
+    - PRESENTACION DE SEMINARIO I (código: 301802, créditos: 2)
+    Total créditos del semestre 1: 10
+
+  Semestre 2:
+    - AGROINFORMATICA (código: 301804, créditos: 4)
+    - ELECTIVA II (código: 301821, créditos: 4)
+    - SEMINARIO PROYECTO DE GRADO (código: 301805, créditos: 2)
+    Total créditos del semestre 2: 10
+
+  Semestre 3:
+    - ELECTIVA III (código: 301822, créditos: 4)
+    - SEMINARIO DE INVESTIGACION I (código: 301807, créditos: 2)
+    - TRABAJO DE INVESTIGACION I (código: 301806, créditos: 12)
+    Total créditos del semestre 3: 18
+
+  Semestre 4:
+    - ELECTIVA IV (código: 301823, créditos: 4)
+    - SEMINARIO DE IVESTIGACION II (código: 301809, créditos: 2)
+    - TRABAJO DE INVESTIGACION II (código: 301808, créditos: 12)
+    Total créditos del semestre 4: 18
+
+  Semestre 5:
+    - ELECTIVA LIBRE V (código: 301824, créditos: 4)
+    - SEMINARIO DE INVESTIGACION III (código: 301811, créditos: 2)
+    - TRABAJO DE INVESTIGACION III (código: 301810, créditos: 12)
+    Total créditos del semestre 5: 18
+
+  Semestre 6:
+    - ELECTIVA VI (código: 301825, créditos: 4)
+    - SEMINARIO DE INVESTIGACION IV (código: 301813, créditos: 2)
+    - TRABAJO INVESTIGACION IV (código: 301812, créditos: 12)
+    Total créditos del semestre 6: 18
+
+  Semestre 7:
+    - SEMINARIO INVESTIGACION V (código: 301815, créditos: 2)
+    - TRABAJO INVESTIGACION V (código: 301814, créditos: 12)
+    Total créditos del semestre 7: 14
+
+  Semestre 8:
+    - SEMINARIO INVESTIGACION VI (código: 301817, créditos: 2)
+    - TRABAJO DEINVESTIGACION VI (código: 301816, créditos: 12)
+    Total créditos del semestre 8: 14
+
+
+PROGRAMA: DOCTORADO EN CIENCIAS ANIMALES DEL TROPICO
+SEDE: BERASTEGUI
+JORNADA: VIERNES- SABADO
+PENSUM: 2024-2
+TOTAL CRÉDITOS DEL PENSUM: 108
+--------------------------------------------------
+  Semestre 1:
+    - BIOESTADISTICA Y DISEÑO EXPERIMENTAL (código: 102180, créditos: 4)
+    - BIOLOGIA CELULAR Y MOLECULAR (código: 102181, créditos: 4)
+    - ELECTIVA I (código: 102182, créditos: 4)
+    - ELECTIVA II (código: 102183, créditos: 4)
+    - SEMINARIO DE INVESTIGACION I (código: 102184, créditos: 2)
+    Total créditos del semestre 1: 18
+
+  Semestre 2:
+    - ELECTIVA III (código: 102187, créditos: 4)
+    - ELECTIVA IV (código: 102188, créditos: 4)
+    - LEGISLACION ANIMAL Y BIOETICA (código: 102185, créditos: 4)
+    - ONE HEALTH Y DESARROLLO SOSTENIBLE (código: 102186, créditos: 4)
+    - SEMIANRIO DE INVESTIGACION II (código: 102189, créditos: 2)
+    Total créditos del semestre 2: 18
+
+  Semestre 3:
+    - TRABAJO DE INVESTIGACION I (código: 102190, créditos: 12)
+    Total créditos del semestre 3: 12
+
+  Semestre 4:
+    - TRABAJO DE INVESTIGACION II (código: 102191, créditos: 12)
+    Total créditos del semestre 4: 12
+
+  Semestre 5:
+    - TRABAJO DE INVESTIGACION III (código: 102192, créditos: 12)
+    Total créditos del semestre 5: 12
+
+  Semestre 6:
+    - TRABAJO DE INVESTIGACION IV (código: 102193, créditos: 12)
+    Total créditos del semestre 6: 12
+
+  Semestre 7:
+    - TRABAJO DE INVESTIGACION V (código: 102194, créditos: 12)
+    Total créditos del semestre 7: 12
+
+  Semestre 8:
+    - TRABAJO DE INVESTIGACION VI (código: 102195, créditos: 12)
+    Total créditos del semestre 8: 12
+
+
+PROGRAMA: DOCTORADO EN CIENCIAS FISICAS
+SEDE: MONTERIA
+JORNADA: DIURNA
+PENSUM: 2012-1
+TOTAL CRÉDITOS DEL PENSUM: 80
+--------------------------------------------------
+  Semestre 1:
+    - AVANZADO POR AREA I (código: 405726, créditos: 4)
+    - AVANZADO POR AREA II (código: 405727, créditos: 4)
+    Total créditos del semestre 1: 8
+
+  Semestre 2:
+    - AVANZADO POR AREA III (código: 405728, créditos: 4)
+    - INVESTIGACION I (código: 405729, créditos: 2)
+    - SEMINARIO I (código: 405730, créditos: 2)
+    Total créditos del semestre 2: 8
+
+  Semestre 3:
+    - INVESTIGACION II (código: 405731, créditos: 4)
+    - SEMINARIO II (código: 405732, créditos: 3)
+    Total créditos del semestre 3: 7
+
+  Semestre 4:
+    - INVESTIGACION III (código: 405733, créditos: 4)
+    - SEMINARIO III (código: 405734, créditos: 3)
+    Total créditos del semestre 4: 7
+
+  Semestre 5:
+    - INVESTIGACION IV (código: 405735, créditos: 4)
+    Total créditos del semestre 5: 4
+
+  Semestre 6:
+    - INVESTIGACION V (código: 405736, créditos: 6)
+    - TESIS I (código: 405737, créditos: 6)
+    Total créditos del semestre 6: 12
+
+  Semestre 7:
+    - TESIS II (código: 405738, créditos: 14)
+    Total créditos del semestre 7: 14
+
+  Semestre 8:
+    - TESIS III (código: 405739, créditos: 20)
+    Total créditos del semestre 8: 20
+
+
+PROGRAMA: DOCTORADO EN DIDACTICA DE LAS CIENCIAS
+SEDE: MONTERIA
+JORNADA: JUEVES- SABADO
+PENSUM: 2024-2
+TOTAL CRÉDITOS DEL PENSUM: 100
+--------------------------------------------------
+  Semestre 1:
+    - ELECTIVA PROFUNDIZACION DIDACTICA I (código: 221004, créditos: 4)
+    - EPISTEMOLOGÍA DE LA DIDACTICA DE LAS CIENCIAS (código: 221003, créditos: 4)
+    - SEMINARIO DE TESIS DOCTORAL I (código: 221001, créditos: 2)
+    - TÓPICOS AVANZADOS EN DIDACTICA DE LAS CIENCIAS I (código: 221002, créditos: 4)
+    Total créditos del semestre 1: 14
+
+  Semestre 2:
+    - EDUCACIÓN PARA LA SALUD Y GESTION EN EL AULA (código: 221008, créditos: 4)
+    - ELECTIVA PROFUNDIZACION DIDACTICA II (código: 221009, créditos: 4)
+    - SEMINARIO DE TESIS DOCTORAL II (código: 221005, créditos: 2)
+    - TÓPICOS AVANZADOS EN DIDÁCTICA DE LA CIENCIAS II (código: 221007, créditos: 4)
+    - TUTORÍA DE TESIS DOCTORAL I (código: 221006, créditos: 4)
+    Total créditos del semestre 2: 18
+
+  Semestre 3:
+    - ELABORACIÓN DE ARTICULOS CIENTIFICOS (código: 221011, créditos: 4)
+    - PENSAMIENTO CRÍTICO Y CUESTIONES SOCIO CIENTIFICAS EN LA ENSELÑANZA DE LAS CIENCIAS (código: 221014, créditos: 4)
+    - SEMINARIO DE TESIS DOCTORAL III (código: 221010, créditos: 2)
+    - TÓPICOS AVANZADOS EN DIDACTICA DE LAS CIENCIAS III (código: 221013, créditos: 4)
+    - TUTORÍA DE TESIS DOCTORAL II (código: 221012, créditos: 4)
+    Total créditos del semestre 3: 18
+
+  Semestre 4:
+    - DISEÑO Y EVALUACIÓN DE SECUENCIAS DIDACTICAS EN CIENCIAS (código: 221019, créditos: 4)
+    - ELECTIVA INTERVENCIÓN DIDACTICA I (código: 221015, créditos: 4)
+    - ELECTIVA INTERVENCIÓN DIDACTICA II (código: 221020, créditos: 4)
+    - SEMINARIO DE TESIS DOCTORAL IV (código: 221016, créditos: 2)
+    - SUFICIENCIA INVESTIGATIVA (código: 221018, créditos: 4)
+    - TUTORÍA DE TESIS DOCTORAL III (código: 221017, créditos: 4)
+    Total créditos del semestre 4: 22
+
+  Semestre 5:
+    - SUSTENTABILIDAD EN LA ENSEÑANZA DE LAS CIENCIAS (código: 221022, créditos: 4)
+    - TEORÍA DE TESIS DOCTORAL IV (código: 221021, créditos: 4)
+    Total créditos del semestre 5: 8
+
+  Semestre 6:
+    - PASANTÍA NACIONAL O INTERNACIONAL (código: 221024, créditos: 4)
+    - TUTORÍA DE TESIS DOCTORAL V (código: 221023, créditos: 4)
+    Total créditos del semestre 6: 8
+
+  Semestre 7:
+    - TUTORÍA DE TESIS DOCTORAL VI (código: 221025, créditos: 4)
+    Total créditos del semestre 7: 4
+
+  Semestre 8:
+    - TESIS DOCTORAL (código: 221026, créditos: 8)
+    Total créditos del semestre 8: 8
+
+
+PROGRAMA: DOCTORADO EN MICROBIOLOGIA Y SALUD TROPICAL
+SEDE: BERASTEGUI
+JORNADA: LUNES- VIERNES
+PENSUM: 2016-1
+TOTAL CRÉDITOS DEL PENSUM: 98
+--------------------------------------------------
+  Semestre 1:
+    - BIOESTADISTICA Y DISEÑO EXPERIMENTAL (código: 101750, créditos: 3)
+    - BIOETICA (código: 101751, créditos: 2)
+    - ELECTIVA I (código: 101762, créditos: 2)
+    - ELECTIVA II (código: 101763, créditos: 2)
+    - SEMINARIO DE INVESTIGACION I (código: 101752, créditos: 1)
+    Total créditos del semestre 1: 10
+
+  Semestre 2:
+    - ECOEPIDEMIOLOGIA Y GIS (código: 101754, créditos: 2)
+    - ELECTIVA III (código: 101764, créditos: 2)
+    - ELECTIVA IV (código: 101765, créditos: 2)
+    - EPIDEMIOLOGIA Y SALUD PUBLICA (código: 101753, créditos: 3)
+    - SEMINARIO DE INVESTIGACION II (código: 101755, créditos: 1)
+    Total créditos del semestre 2: 10
+
+  Semestre 3:
+    - INVESTIGACION I (código: 101756, créditos: 13)
+    Total créditos del semestre 3: 13
+
+  Semestre 4:
+    - INVESTIGACION II (código: 101757, créditos: 13)
+    Total créditos del semestre 4: 13
+
+  Semestre 5:
+    - INVESTIGACION III (código: 101758, créditos: 13)
+    Total créditos del semestre 5: 13
+
+  Semestre 6:
+    - INVESTIGACION IV (código: 101759, créditos: 13)
+    Total créditos del semestre 6: 13
+
+  Semestre 7:
+    - INVESTIGACION V (código: 101760, créditos: 13)
+    Total créditos del semestre 7: 13
+
+  Semestre 8:
+    - INVESTIGACION VI (código: 101761, créditos: 13)
+    Total créditos del semestre 8: 13
+
+
+PROGRAMA: ESPECIALIZACIÓN  EN AUDITORIA DE LA CALIDAD EN SALUD
+SEDE: MONTERIA
+JORNADA: VIERNES- SABADO
+PENSUM: 2015-1
+TOTAL CRÉDITOS DEL PENSUM: 30
+--------------------------------------------------
+  Semestre 1:
+    - CONTRATACIÓN Y NEGOCIACIÓN EN SALUD (código: 505028, créditos: 2)
+    - ELECTIVA LIBRE I (código: 505037, créditos: 2)
+    - ÉTICA APLICADA A LA AUDITORIA (código: 505025, créditos: 1)
+    - LEGISLACIÓN EN SALUD Y SEGURIDAD SOCIAL (código: 505024, créditos: 1)
+    - PLANEACIÓN ESTRATÉGICA DE PROCESOS Y DESARROLLO DE HABILIDADES GERENCIALES (código: 505027, créditos: 2)
+    - SISTEMA OBLIGATORIO DE GARANTÍA DE LA CALIDAD EN SALUD (código: 505026, créditos: 2)
+    Total créditos del semestre 1: 10
+
+  Semestre 2:
+    - AUDITORIA EN SALUD (código: 505031, créditos: 2)
+    - ECONOMÍA DE LA SALUD Y AUDITORIA DE COSTOS (código: 505030, créditos: 2)
+    - ELECTIVA LIBRE II (código: 505038, créditos: 2)
+    - NORMALIZACIÓN Y MEJORAMIENTO DE PROCESOS (código: 505032, créditos: 2)
+    - SEMINARIO DE INVESTIGACIÓN  I (código: 505029, créditos: 2)
+    Total créditos del semestre 2: 10
+
+  Semestre 3:
+    - AUDITORIA CLÍNICA Y CONCURRENTE (código: 505034, créditos: 2)
+    - AUDITORIA INTERNA DEL SISTEMA DE GESTIÓN DE LA CALIDAD (código: 505033, créditos: 2)
+    - ELECTIVA LIBRE III (código: 505039, créditos: 2)
+    - FACTURACIÓN Y AUDITORIA DE CUENTA MÉDICAS (código: 505035, créditos: 2)
+    - SEMINARIO DE INVESTIGACIÓN II (código: 505036, créditos: 2)
+    Total créditos del semestre 3: 10
+
+
+PROGRAMA: Especialización en Administración Total de la Calidad
+SEDE: MONTERIA
+JORNADA: VIERNES- SABADO
+PENSUM: 2015-2
+TOTAL CRÉDITOS DEL PENSUM: 23
+--------------------------------------------------
+  Semestre 1:
+    - CULTURA Y CLIMA ORGANIZACIONAL (código: 406824, créditos: 1)
+    - ELECTIVA (código: 406829, créditos: 1)
+    - ESTADÍSTICA (código: 406800, créditos: 1)
+    - FUNDAMENTOS DE ADMINISTRACIÓN (código: 406801, créditos: 1)
+    - FUNDAMENTOS DE LA CALIDAD TOTAL (código: 406808, créditos: 2)
+    - GESTIÓN DE COMPRAS Y LOGÍSTICA INTEGRAL (código: 406804, créditos: 1)
+    - GESTIÓN DE OPERACIONES (código: 406802, créditos: 1)
+    - HABILIDADES GERENCIALES PARA LA GESTIÓN DE LA CALIDAD (código: 406823, créditos: 1)
+    - HERRAMIENTAS ESTADÍSTICAS (código: 406821, créditos: 2)
+    - LIDERAZGO Y PLANEACIÓN DE LA CALIDAD TOTAL (código: 406822, créditos: 2)
+    - SEMINARIO I (código: 406819, créditos: 1)
+    Total créditos del semestre 1: 14
+
+  Semestre 2:
+    - AUDITORÍA INTERNA (código: 406825, créditos: 2)
+    - DOCUMENTACIÓN Y MANUAL DE CALIDAD (código: 406817, créditos: 1)
+    - FUNDAMENTACIÓN METROLÓGICA (código: 406811, créditos: 1)
+    - IMPLEMENTACIÓN DE LA CALIDAD TOTAL (código: 406812, créditos: 2)
+    - MANTENIMIENTO INDUSTRIAL (código: 406813, créditos: 1)
+    - MEJORAMIENTO DE PROCESOS (código: 406826, créditos: 1)
+    - SEMINARIO II (código: 406820, créditos: 1)
+    Total créditos del semestre 2: 9
+
+
+PROGRAMA: ESPECIALIZACIÓN EN DERECHOS HUMANOS Y JUSTICIA SOCIAL
+SEDE: MONTERIA
+JORNADA: VIERNES- SABADO
+PENSUM: 2026-1
+TOTAL CRÉDITOS DEL PENSUM: 26
+--------------------------------------------------
+  Semestre 1:
+    - ELECTIVA INTERDISCIPLINARIA I (código: 7301003, créditos: 4)
+    - FUNDAMENTACIÓN TEÓRICA EN POLÍTICAS PÚBLICAS (código: 7301002, créditos: 4)
+    - TEORÍA DEL ESTADO SOCIAL DE DERECHO, DE LA JUSTICIA SOCIAL Y LOS DERECHOS HUMANOS (código: 7301001, créditos: 4)
+    Total créditos del semestre 1: 12
+
+  Semestre 2:
+    - ELECTIVA INTERDISCIPLINARIA II (código: 7301007, créditos: 4)
+    - FORMULACION DE POLITICAS PUBLICAS EN DERECHOS HUMANOS Y JUSTICIA SOCIAL (código: 7301006, créditos: 4)
+    - SISTEMAS DE PROTECCIÓN Y MECANISMOS NACIONALES DE LOS DERECHOS HUMANOS (código: 7301005, créditos: 4)
+    - TRABAJO DE GRADO (código: 7301004, créditos: 2)
+    Total créditos del semestre 2: 14
+
+
+PROGRAMA: ESPECIALIZACIÓN EN GERENCIA ADMINISTRACIÓN EN SALUD
+SEDE: MONTERIA
+JORNADA: VIERNES- SABADO
+PENSUM: 2005-1
+TOTAL CRÉDITOS DEL PENSUM: 30
+--------------------------------------------------
+  Semestre 1:
+    - ELECTIVA LIBRE I (código: 504819, créditos: 2)
+    - GERENCIA EN SALUD I (código: 504801, créditos: 2)
+    - INTRODUCCIÓN A LA SALUD PÚBLICA (código: 504802, créditos: 2)
+    - LEGISLACIÓN EN SALUD Y SEGURIDAD SOCIAL (código: 504800, créditos: 2)
+    - SEMINARIO DE INVESTIGACIÓN I (código: 504803, créditos: 2)
+    Total créditos del semestre 1: 10
+
+  Semestre 2:
+    - ELECTIVA LIBRE II (código: 504822, créditos: 2)
+    - GERENCIA EN SALUD II (código: 504807, créditos: 2)
+    - GESTIÓN FINANCIERA, COSTOS Y PRESUPUESTO I (código: 504808, créditos: 2)
+    - PLANEACIÓN Y PLANIFICACIÓN DE LA SALUD (código: 504805, créditos: 2)
+    - SEMINARIO DE INVESTIGACIÓN II (código: 504806, créditos: 2)
+    Total créditos del semestre 2: 10
+
+  Semestre 3:
+    - AUDITORÍA EN SALUD (código: 504813, créditos: 2)
+    - CONTROL INTERNO (código: 504810, créditos: 2)
+    - ELECTIVA LIBRE III (código: 504825, créditos: 2)
+    - GESTIÓN FINANCIERA COSTOS Y PRESUPUESTOS II (código: 504811, créditos: 2)
+    - SEMINARIO DE INVESTIGACIÓN III (código: 504812, créditos: 2)
+    Total créditos del semestre 3: 10
+
+
+PROGRAMA: ESPECIALIZACIÓN EN HIGIERNE Y SEGURIDAD INDUSTRIAL
+SEDE: MONTERIA
+JORNADA: VIERNES- SABADO
+PENSUM: 2018-2
+TOTAL CRÉDITOS DEL PENSUM: 25
+--------------------------------------------------
+  Semestre 1:
+    - ELECTIVA I (código: 406740, créditos: 2)
+    - HIGIENE AMBIENTAL Y LABORAL I (código: 406721, créditos: 2)
+    - INTRODUCCION A LA SALUD LABORAL (código: 406720, créditos: 2)
+    - LEGISLACION EN SEGURIDAD Y SALUD TRABAJO (código: 406724, créditos: 2)
+    - SEGURIDAD INDUSTRIAL I (código: 406722, créditos: 2)
+    - SISTEMA DE GESTION DE SEGURIDAD Y SALUD (código: 406723, créditos: 2)
+    Total créditos del semestre 1: 12
+
+  Semestre 2:
+    - ELECTIVA II (código: 406741, créditos: 2)
+    - GESTION DE RIESGO (código: 406729, créditos: 2)
+    - HIGIENE AMBIENTAL Y LABORAL II (código: 406727, créditos: 2)
+    - INGENIERIA ERGONOMIC (código: 406726, créditos: 2)
+    - SEGURIDAD INDUSTRIAL II (código: 406728, créditos: 2)
+    - TRABAJO DE GRADO (código: 406730, créditos: 3)
+    Total créditos del semestre 2: 13
+
+
+PROGRAMA: ESPECIALIZACION EN MEDICINA Y CIRUGIA DE ANIMALES DE COMPAÑIA
+SEDE: BERASTEGUI
+JORNADA: VIERNES- SABADO
+PENSUM: 2021-2
+TOTAL CRÉDITOS DEL PENSUM: 25
+--------------------------------------------------
+  Semestre 1:
+    - ANESTESIA Y ANALGESIA (código: 1019004, créditos: 3)
+    - BIOETICA Y LEGISLACIÓN (código: 1019001, créditos: 1)
+    - DIAGNOSTICO POR IMAGEN (código: 1019002, créditos: 3)
+    - MANEJO DE EMERGENCIAS (código: 1019005, créditos: 2)
+    - PATOLOGÍA CLINICA Y TÉCNICAS DE DIAGNOSTICO (código: 1019003, créditos: 3)
+    Total créditos del semestre 1: 12
+
+  Semestre 2:
+    - CURSOS OBLIGATORIOS (código: 1019006, créditos: 9)
+    - ELECTIVA (código: 1019007, créditos: 2)
+    - SEMINARIO (código: 1019008, créditos: 1)
+    - TRABAJO DE GRADO (código: 1019009, créditos: 1)
+    Total créditos del semestre 2: 13
+
+
+PROGRAMA: ESPECIALIZACIÓN EN PRODUCCIÓN BOVINA TROPICAL
+SEDE: BERASTEGUI
+JORNADA: VIERNES- SABADO
+PENSUM: 2015-1
+TOTAL CRÉDITOS DEL PENSUM: 26
+--------------------------------------------------
+  Semestre 1:
+    - ELECTIVA I (código: 102146, créditos: 1)
+    - GESTION AGROEMPRESARIAL I (código: 102139, créditos: 2)
+    - MEJORAMIENTO GENETICO ANIMAL I (código: 102138, créditos: 1)
+    - NUTRICION Y ALIMENTACION I (código: 102136, créditos: 6)
+    - REPRODUCCION I (código: 102137, créditos: 4)
+    - SEMINARIO DE INVESTIGACION I (código: 102140, créditos: 1)
+    Total créditos del semestre 1: 15
+
+  Semestre 2:
+    - ELECTIVA II (código: 102147, créditos: 1)
+    - GESTION AGROEMPRESAR II (código: 102144, créditos: 2)
+    - MEJORAMIENTO GENETICO ANIMAL II (código: 102143, créditos: 1)
+    - NUTRICION Y ALIMENTACION II (código: 102141, créditos: 4)
+    - REPRODUCCION II (código: 102142, créditos: 2)
+    - SEMINARIO DE INVESTIGACION II (código: 102145, créditos: 1)
+    Total créditos del semestre 2: 11
+
+
 PROGRAMA: MAESTRIA EN ACUICULTURA TROPICAL
 SEDE: MONTERIA
 JORNADA: LUNES- VIERNES
@@ -8282,592 +8972,4 @@ TOTAL CRÉDITOS DEL PENSUM: 44
     - ESCENARIO SOCIAL DE LA SALUD PÚBLICA (código: 5402026, créditos: 4)
     - INVESTIGACION III (código: 5402025, créditos: 4)
     Total créditos del semestre 3: 14
-
-
-PROGRAMA: MATEMÁTICAS
-SEDE: MONTERIA
-JORNADA: DIURNA
-PENSUM: 2019-2
-TOTAL CRÉDITOS DEL PENSUM: 142
---------------------------------------------------
-  Semestre 1:
-    - APRENDIZAJE AUTÓNOMO (código: 408303, créditos: 1)
-    - CÁLCULO DIFERENCIAL (código: 408301, créditos: 3)
-    - CONSTIUCIÓN POLÍTICA  Y LEGISLACIÓN  AMBIENTAL (código: 408305, créditos: 2)
-    - FUNDAMENTOS DE MATEMÁTICAS I (código: 408300, créditos: 4)
-    - GEOMETRÍA ANALÍTICA (código: 408302, créditos: 3)
-    - UNIVERSIDAD Y CONTEXTO (código: 408304, créditos: 1)
-    Total créditos del semestre 1: 14
-
-  Semestre 2:
-    - ÁLGEBRA LINEAL (código: 408308, créditos: 3)
-    - CÁLCULO INTEGRAL (código: 408307, créditos: 3)
-    - COMPRENSIÓN Y PRODUCCIÓN DE TEXTOS (código: 408310, créditos: 2)
-    - FUNDAMENTOS DE MATEMÁTICAS II (código: 408306, créditos: 4)
-    - PROBABILIDAD Y ESTADÍSTICA (código: 408309, créditos: 3)
-    Total créditos del semestre 2: 15
-
-  Semestre 3:
-    - CÁLCULO VECTORIAL (código: 408311, créditos: 3)
-    - ECUACIONES DIFERENCIALES ORDINARIAS (código: 408312, créditos: 3)
-    - FÍSICA I (MECÁNICA) (código: 408314, créditos: 3)
-    - GEOMETRÍA EUCLIDIANA (código: 408313, créditos: 4)
-    - TEORÍA DE NÚMEROS (código: 408315, créditos: 4)
-    Total créditos del semestre 3: 17
-
-  Semestre 4:
-    - ANÁLISIS MATEMÁTICO I (código: 408316, créditos: 4)
-    - FÍSICA II (ELECTRICIDAD Y MAGNETISMO) (código: 408318, créditos: 3)
-    - INGLÉS  I (código: 408320, créditos: 2)
-    - MÉTODOS NUMÉRICOS (código: 408317, créditos: 3)
-    - SOFTWARE MATEMÁTICO Y ESTADÍSTICO (código: 408319, créditos: 2)
-    - TEORÍA DE CONJUNTOS (código: 408321, créditos: 4)
-    Total créditos del semestre 4: 18
-
-  Semestre 5:
-    - ANÁLISIS MATEMÁTICO II (código: 408322, créditos: 4)
-    - ECUACIONES DIFERENCIALES PARCIALES (código: 408324, créditos: 3)
-    - ÉTICA PROFESIONAL (código: 408325, créditos: 2)
-    - INGLÉS II (código: 408326, créditos: 2)
-    - TEORÍA DE GRUPOS (código: 408323, créditos: 4)
-    Total créditos del semestre 5: 15
-
-  Semestre 6:
-    - ANÁLISIS MATEMÁTICO III (código: 408327, créditos: 4)
-    - ELECTIVA LIBRE I (código: 408346, créditos: 2)
-    - INGLÉS III (código: 408330, créditos: 2)
-    - TEORÍA DE ANILLOS Y CUERPOS (código: 408328, créditos: 4)
-    - TOPOLOGÍA (código: 408329, créditos: 4)
-    Total créditos del semestre 6: 16
-
-  Semestre 7:
-    - ANÁLISIS NUMÉRICO (código: 408331, créditos: 4)
-    - ELECTIVA LIBRE II (código: 408347, créditos: 2)
-    - GEOMETRÍA DIFERENCIAL (código: 408333, créditos: 4)
-    - INGLÉS IV (código: 408334, créditos: 2)
-    - VARIABLE COMPLEJA (código: 408332, créditos: 4)
-    Total créditos del semestre 7: 16
-
-  Semestre 8:
-    - ELECTIVA DE CARRERA I (código: 408341, créditos: 4)
-    - ELECTIVA DE PROFUNDIZACIÓN I (código: 408342, créditos: 4)
-    - ELECTIVA LIBRE III (código: 408348, créditos: 2)
-    - EPISTEMOLOGÍA E HISTORIA  DE LAS MATEMÁTICAS (código: 408335, créditos: 3)
-    - SEMINARIO DE PROYECTO DE GRADO (código: 408336, créditos: 2)
-    Total créditos del semestre 8: 15
-
-  Semestre 9:
-    - ELECTIVA DE CARRERA II (código: 408343, créditos: 4)
-    - ELECTIVA DE PROFUNDIZACIÓN II (código: 408344, créditos: 4)
-    - TRABAJO DE GRADO (código: 408337, créditos: 8)
-    Total créditos del semestre 9: 16
-
-
-PROGRAMA: MEDICINA VETERINARIA Y ZOOTECNIA
-SEDE: BERASTEGUI
-JORNADA: DIURNA
-PENSUM: 2020-1
-TOTAL CRÉDITOS DEL PENSUM: 180
---------------------------------------------------
-  Semestre 1:
-    - ANATOMIA I (código: 101824, créditos: 3)
-    - BIOLOGIA CELULAR Y MOLECULAR (código: 101820, créditos: 4)
-    - CATEDRA INSTITUCIONAL I (código: 101825, créditos: 1)
-    - FUNDAMENTOS DE M.V.Z (código: 101821, créditos: 3)
-    - INGLES I (código: 101826, créditos: 2)
-    - MATEMATICAS (código: 101822, créditos: 2)
-    - QUIMICA (código: 101823, créditos: 3)
-    Total créditos del semestre 1: 18
-
-  Semestre 2:
-    - ANATOMIA II (código: 101830, créditos: 3)
-    - BIOETICA (código: 101831, créditos: 2)
-    - BIOFISICA (código: 101827, créditos: 2)
-    - BIOQUIMICA (código: 101829, créditos: 3)
-    - CATEDRA INSTITUCIONAL (código: 101832, créditos: 1)
-    - COMPETENCIAS COMUNICATIVAS (código: 101833, créditos: 1)
-    - ECOLOGIA (código: 101828, créditos: 2)
-    - INGLES II (código: 101834, créditos: 2)
-    - SOCIOLOGIA RURAL (código: 101835, créditos: 2)
-    Total créditos del semestre 2: 18
-
-  Semestre 3:
-    - BIOESTADISTICA (código: 101838, créditos: 3)
-    - FAUNA SILVESTRE (código: 101841, créditos: 2)
-    - HISTOLOGIA Y EMBRIOLOGIA (código: 101840, créditos: 3)
-    - INGLES III (código: 101842, créditos: 2)
-    - METODOLOGIA DE LA INVESTIGACION (código: 101837, créditos: 2)
-    - MICROBIOLOGIA (código: 101836, créditos: 3)
-    - SUELOS Y FORRAJES (código: 101839, créditos: 3)
-    Total créditos del semestre 3: 18
-
-  Semestre 4:
-    - ECONOMIA (código: 101847, créditos: 2)
-    - ELECTIVA DE CARRERA I (código: 101879, créditos: 2)
-    - FISIOLOGIA ANIMAL (código: 101846, créditos: 3)
-    - GENETICA (código: 101845, créditos: 2)
-    - INGLES IV (código: 101848, créditos: 2)
-    - INMUNOLOGIA Y VIROLOGIA (código: 101843, créditos: 3)
-    - PATOLOGIA GENERAL (código: 101844, créditos: 3)
-    Total créditos del semestre 4: 17
-
-  Semestre 5:
-    - ADMINISTRACION AGROPECUARIA (código: 101854, créditos: 2)
-    - ELECTIVA LIBRE I (código: 101880, créditos: 2)
-    - ETOLOGIA Y BIENESTAR ANIMAL (código: 101849, créditos: 2)
-    - FARMACOLOGIA Y TERAPEUTICA (código: 101853, créditos: 4)
-    - MEJORAMIENTO GENETICO (código: 101851, créditos: 3)
-    - NUTRICION Y ALIMENTACION DE MONOGASTRICOS (código: 101852, créditos: 3)
-    - PARASITOLOGIA (código: 101850, créditos: 2)
-    Total créditos del semestre 5: 18
-
-  Semestre 6:
-    - ALIMENTACION Y NUTRICION DE POLIGASTRICOS (código: 101858, créditos: 3)
-    - ELECTIVA DE CARRERA II (código: 101881, créditos: 2)
-    - ENFERMEDADES INFECCIOSAS (código: 101859, créditos: 3)
-    - EPIDEMIOLOGIA (código: 101857, créditos: 2)
-    - GERENCIA FINANCIERA Y DE MERCADOS (código: 101860, créditos: 2)
-    - REPRODUCCION I (código: 101861, créditos: 3)
-    - SEMIOLOGIA (código: 101856, créditos: 2)
-    - TOXICOLOGIA (código: 101855, créditos: 2)
-    Total créditos del semestre 6: 19
-
-  Semestre 7:
-    - ELECTIVA DE PROFUNIZACION I (código: 101882, créditos: 3)
-    - MEDICINA DE GRANDES ANIMALES (código: 101863, créditos: 3)
-    - PATOLOGIA CLINICA (código: 101862, créditos: 2)
-    - PRODUCCION BOVINA (código: 101864, créditos: 3)
-    - PRODUCCION PORCINA (código: 101865, créditos: 3)
-    - REPRODUCCION II (código: 101867, créditos: 3)
-    - SEMINARIO DE INVESTIGACION (código: 101866, créditos: 2)
-    Total créditos del semestre 7: 19
-
-  Semestre 8:
-    - CIRUGIA (código: 101870, créditos: 3)
-    - ELECTIVA DE PROFUNDIZACION II (código: 101884, créditos: 3)
-    - MEDICINA DE ANIMALES DE COMPAÑIA (código: 101869, créditos: 3)
-    - PRODUCCION AVICOLA (código: 101871, créditos: 3)
-    - PRODUCCION OVINO CAPRINA (código: 101872, créditos: 3)
-    - SALUD PUBLICA (código: 101868, créditos: 2)
-    Total créditos del semestre 8: 17
-
-  Semestre 9:
-    - CLINICA MEDICO QUIRURGICA DE ANIMALES DE COMPAÑIA (código: 101873, créditos: 4)
-    - CLINICA MEDICO QUIRURGICA DE GRANDES ANIMALES (código: 101874, créditos: 4)
-    - ELECTIVA DE PROFUNDIZACIÓN III (código: 101885, créditos: 3)
-    - ELECTIVA LIBRE II (código: 101883, créditos: 2)
-    - EXTENSIÓN RURAL (código: 101875, créditos: 2)
-    - FORMULACION Y EVALUACION DE PROYECTOS (código: 101876, créditos: 2)
-    Total créditos del semestre 9: 17
-
-  Semestre 10:
-    - PASANTIA (código: 101877, créditos: 15)
-    - TRABAJO DE GRADO (código: 101878, créditos: 4)
-    Total créditos del semestre 10: 19
-
-
-PROGRAMA: QUÍMICA
-SEDE: MONTERIA
-JORNADA: DIURNA
-PENSUM: 2016-1
-TOTAL CRÉDITOS DEL PENSUM: 180
---------------------------------------------------
-  Semestre 1:
-    - ÁLGEBRA LINEAL (código: 402186, créditos: 3)
-    - CÁLCULO I (código: 402185, créditos: 3)
-    - COMPETENCIAS COMUNICATIVAS I (código: 402188, créditos: 2)
-    - CONSTITUCIÓN POLÍTICA Y LEGISLACIÓN AMBIENTAL (código: 402189, créditos: 2)
-    - ELECTIVA LIBRE I (código: 402191, créditos: 2)
-    - INGLÉS I (código: 402187, créditos: 2)
-    - INSTITUCIONAL I (código: 402190, créditos: 1)
-    - QUÍMICA FUNDAMENTAL I (código: 402184, créditos: 4)
-    Total créditos del semestre 1: 19
-
-  Semestre 2:
-    - CÁLCULO II (código: 402193, créditos: 3)
-    - COMPETENCIAS COMUNICATIVAS II (código: 402196, créditos: 2)
-    - ELECTIVA LIBRE II (código: 402199, créditos: 2)
-    - FÍSICA I (código: 402194, créditos: 3)
-    - INFORMÁTICA I (código: 402197, créditos: 2)
-    - INGLÉS II (código: 402195, créditos: 2)
-    - INSTITUCIONAL II (código: 402198, créditos: 1)
-    - QUÍMICA FUNDAMENTAL II (código: 402192, créditos: 4)
-    Total créditos del semestre 2: 19
-
-  Semestre 3:
-    - CÁLCULO III (código: 402201, créditos: 3)
-    - ESTADÍSTICA (código: 402202, créditos: 3)
-    - FÍSICA II (código: 402203, créditos: 3)
-    - INFORMÁTICA II (código: 402205, créditos: 2)
-    - INGLÉS III (código: 402204, créditos: 2)
-    - QUÍMICA ORGÁNICA I (código: 402200, créditos: 4)
-    Total créditos del semestre 3: 17
-
-  Semestre 4:
-    - ECUACIONES DIFERENCIALES (código: 402209, créditos: 3)
-    - FÍSICA III (código: 402210, créditos: 3)
-    - FÍSICOQUÍMICA I (código: 402208, créditos: 4)
-    - INGLÉS IV (código: 402211, créditos: 2)
-    - QUÍMICA ANALÍTICA I (código: 402207, créditos: 4)
-    - QUÍMICA ORGÁNICA II (código: 402206, créditos: 4)
-    Total créditos del semestre 4: 20
-
-  Semestre 5:
-    - FÍSICOQUÍMICA II (código: 402214, créditos: 4)
-    - QUÍMICA ANALÍTICA II (código: 402213, créditos: 4)
-    - QUÍMICA INORGÁNICA I (código: 402215, créditos: 4)
-    - QUÍMICA ORGÁNICA III (código: 402212, créditos: 4)
-    - SOCIOANTROPOLOGÍA (código: 402226, créditos: 2)
-    Total créditos del semestre 5: 18
-
-  Semestre 6:
-    - ELECTIVA CARRERA I (código: 402221, créditos: 3)
-    - FÍSICOQUÍMICA III (código: 402219, créditos: 4)
-    - QUÍMICA ANALÍTICA III (código: 402218, créditos: 4)
-    - QUÍMICA INORGÁNICA II (código: 402220, créditos: 4)
-    - QUÍMICA ORGÁNICA IV (código: 402217, créditos: 4)
-    Total créditos del semestre 6: 19
-
-  Semestre 7:
-    - BIOLOGÍA (código: 402225, créditos: 4)
-    - ELECTIVA CARRERA II (código: 402227, créditos: 3)
-    - ELUCIDACIÓN DE ESTRUCTURAS (código: 402224, créditos: 3)
-    - QUÍMICA ANALÍTICA IV (código: 402223, créditos: 4)
-    - QUÍMICA CUÁNTICA (código: 402216, créditos: 3)
-    - QUÍMICA INORGÁNICA III (código: 402222, créditos: 2)
-    Total créditos del semestre 7: 19
-
-  Semestre 8:
-    - BIOQUÍMICA (código: 402228, créditos: 5)
-    - ELECTIVA CARRERA III (código: 402233, créditos: 3)
-    - ELECTIVA CARRERA IV (código: 402234, créditos: 3)
-    - ÉTICA (código: 402232, créditos: 2)
-    - QUÍMICA AGRÍCOLA (código: 402229, créditos: 3)
-    - QUÍMICA AMBIENTAL (código: 402230, créditos: 3)
-    - SEMINARIO DE INVESTIGACIÓN (código: 402231, créditos: 1)
-    Total créditos del semestre 8: 20
-
-  Semestre 9:
-    - ASEGURAMIENTO DE LA CALIDAD (código: 402237, créditos: 3)
-    - ELECTIVA DE PROFUNDIZACIÓN I (código: 402239, créditos: 3)
-    - ELECTIVA DE PROFUNDIZACIÓN II (código: 402240, créditos: 3)
-    - INSTITUCIONAL III (código: 402238, créditos: 1)
-    - QUÍMICA INDUSTRIAL (código: 402236, créditos: 3)
-    - TRABAJO DE GRADO I (código: 402235, créditos: 5)
-    Total créditos del semestre 9: 18
-
-  Semestre 10:
-    - ELECTIVA DE PROFUNDIZACIÓN III (código: 402242, créditos: 3)
-    - ELECTIVA DE PROFUNDIZACIÓN IV (código: 402243, créditos: 3)
-    - TRABAJO DE GRADO II (código: 402241, créditos: 5)
-    Total créditos del semestre 10: 11
-
-
-PROGRAMA: TÉCNICO PROFESIONAL EN PROGRAMACIÓN WEB
-SEDE: CHINÚ
-JORNADA: A DISTANCIA
-PENSUM: 2025-2
-TOTAL CRÉDITOS DEL PENSUM: 48
---------------------------------------------------
-  Semestre 1:
-    - APRENDIZAJE AUTÓNOMO (código: 420002, créditos: 2)
-    - FUNDAMENTOS DE PROGRAMACIÓN (código: 420003, créditos: 3)
-    - HABILIDADES COMUNICATIVAS I (código: 420004, créditos: 2)
-    - INGLES I (código: 420001, créditos: 3)
-    - INTRODUCCIÓN A LA PROGRAMACIÓN WEB (código: 420006, créditos: 3)
-    - MATEMATICA BÁSICA (código: 420005, créditos: 3)
-    Total créditos del semestre 1: 16
-
-  Semestre 2:
-    - BASE DE DATOS (código: 420011, créditos: 3)
-    - DISEÑO DE INTERFACES DE USUARIO - FRONTEND (código: 420012, créditos: 3)
-    - ESTADISTICA Y PROBABILIDAD (código: 420008, créditos: 2)
-    - HABILIDADES COMUNICATIVAS II (código: 420009, créditos: 2)
-    - INGLES II (código: 420007, créditos: 3)
-    - PROGRAMACIÓN WEB I-BACKEND (código: 420010, créditos: 3)
-    Total créditos del semestre 2: 16
-
-  Semestre 3:
-    - INNOVACIÓN Y EMPRENDIMIENTO DIGITAL (código: 420015, créditos: 3)
-    - PROGRAMACIÓN WEB II -BACKEND (código: 420017, créditos: 3)
-    - PROYECTO WEB (código: 420014, créditos: 4)
-    - SEGURIDAD APLICACIONES WEB (código: 420016, créditos: 3)
-    - SERVICIOS DE COMPUTACION EN LA NUBE (código: 420013, créditos: 3)
-    Total créditos del semestre 3: 16
-
-
-PROGRAMA: TÉCNICO PROFESIONAL EN PROGRAMACIÓN WEB
-SEDE: CIÉNAGA DE ORO
-JORNADA: A DISTANCIA
-PENSUM: 2025-2
-TOTAL CRÉDITOS DEL PENSUM: 48
---------------------------------------------------
-  Semestre 1:
-    - APRENDIZAJE AUTÓNOMO (código: 420002, créditos: 2)
-    - FUNDAMENTOS DE PROGRAMACIÓN (código: 420003, créditos: 3)
-    - HABILIDADES COMUNICATIVAS I (código: 420004, créditos: 2)
-    - INGLES I (código: 420001, créditos: 3)
-    - INTRODUCCIÓN A LA PROGRAMACIÓN WEB (código: 420006, créditos: 3)
-    - MATEMATICA BÁSICA (código: 420005, créditos: 3)
-    Total créditos del semestre 1: 16
-
-  Semestre 2:
-    - BASE DE DATOS (código: 420011, créditos: 3)
-    - DISEÑO DE INTERFACES DE USUARIO - FRONTEND (código: 420012, créditos: 3)
-    - ESTADISTICA Y PROBABILIDAD (código: 420008, créditos: 2)
-    - HABILIDADES COMUNICATIVAS II (código: 420009, créditos: 2)
-    - INGLES II (código: 420007, créditos: 3)
-    - PROGRAMACIÓN WEB I-BACKEND (código: 420010, créditos: 3)
-    Total créditos del semestre 2: 16
-
-  Semestre 3:
-    - INNOVACIÓN Y EMPRENDIMIENTO DIGITAL (código: 420015, créditos: 3)
-    - PROGRAMACIÓN WEB II -BACKEND (código: 420017, créditos: 3)
-    - PROYECTO WEB (código: 420014, créditos: 4)
-    - SEGURIDAD APLICACIONES WEB (código: 420016, créditos: 3)
-    - SERVICIOS DE COMPUTACION EN LA NUBE (código: 420013, créditos: 3)
-    Total créditos del semestre 3: 16
-
-
-PROGRAMA: TÉCNICO PROFESIONAL EN PROGRAMACIÓN WEB
-SEDE: VALENCIA
-JORNADA: A DISTANCIA
-PENSUM: 2025-2
-TOTAL CRÉDITOS DEL PENSUM: 48
---------------------------------------------------
-  Semestre 1:
-    - APRENDIZAJE AUTÓNOMO (código: 420002, créditos: 2)
-    - FUNDAMENTOS DE PROGRAMACIÓN (código: 420003, créditos: 3)
-    - HABILIDADES COMUNICATIVAS I (código: 420004, créditos: 2)
-    - INGLES I (código: 420001, créditos: 3)
-    - INTRODUCCIÓN A LA PROGRAMACIÓN WEB (código: 420006, créditos: 3)
-    - MATEMATICA BÁSICA (código: 420005, créditos: 3)
-    Total créditos del semestre 1: 16
-
-  Semestre 2:
-    - BASE DE DATOS (código: 420011, créditos: 3)
-    - DISEÑO DE INTERFACES DE USUARIO - FRONTEND (código: 420012, créditos: 3)
-    - ESTADISTICA Y PROBABILIDAD (código: 420008, créditos: 2)
-    - HABILIDADES COMUNICATIVAS II (código: 420009, créditos: 2)
-    - INGLES II (código: 420007, créditos: 3)
-    - PROGRAMACIÓN WEB I-BACKEND (código: 420010, créditos: 3)
-    Total créditos del semestre 2: 16
-
-  Semestre 3:
-    - INNOVACIÓN Y EMPRENDIMIENTO DIGITAL (código: 420015, créditos: 3)
-    - PROGRAMACIÓN WEB II -BACKEND (código: 420017, créditos: 3)
-    - PROYECTO WEB (código: 420014, créditos: 4)
-    - SEGURIDAD APLICACIONES WEB (código: 420016, créditos: 3)
-    - SERVICIOS DE COMPUTACION EN LA NUBE (código: 420013, créditos: 3)
-    Total créditos del semestre 3: 16
-
-
-PROGRAMA: TÉCNICO PROFESIONAL EN PROGRAMACIÓN WEB
-SEDE: SAN PELAYO
-JORNADA: A DISTANCIA
-PENSUM: 2025-2
-TOTAL CRÉDITOS DEL PENSUM: 48
---------------------------------------------------
-  Semestre 1:
-    - APRENDIZAJE AUTÓNOMO (código: 420002, créditos: 2)
-    - FUNDAMENTOS DE PROGRAMACIÓN (código: 420003, créditos: 3)
-    - HABILIDADES COMUNICATIVAS I (código: 420004, créditos: 2)
-    - INGLES I (código: 420001, créditos: 3)
-    - INTRODUCCIÓN A LA PROGRAMACIÓN WEB (código: 420006, créditos: 3)
-    - MATEMATICA BÁSICA (código: 420005, créditos: 3)
-    Total créditos del semestre 1: 16
-
-  Semestre 2:
-    - BASE DE DATOS (código: 420011, créditos: 3)
-    - DISEÑO DE INTERFACES DE USUARIO - FRONTEND (código: 420012, créditos: 3)
-    - ESTADISTICA Y PROBABILIDAD (código: 420008, créditos: 2)
-    - HABILIDADES COMUNICATIVAS II (código: 420009, créditos: 2)
-    - INGLES II (código: 420007, créditos: 3)
-    - PROGRAMACIÓN WEB I-BACKEND (código: 420010, créditos: 3)
-    Total créditos del semestre 2: 16
-
-  Semestre 3:
-    - INNOVACIÓN Y EMPRENDIMIENTO DIGITAL (código: 420015, créditos: 3)
-    - PROGRAMACIÓN WEB II -BACKEND (código: 420017, créditos: 3)
-    - PROYECTO WEB (código: 420014, créditos: 4)
-    - SEGURIDAD APLICACIONES WEB (código: 420016, créditos: 3)
-    - SERVICIOS DE COMPUTACION EN LA NUBE (código: 420013, créditos: 3)
-    Total créditos del semestre 3: 16
-
-
-PROGRAMA: TÉCNICO PROFESIONAL EN PROGRAMACIÓN WEB
-SEDE: MONTERIA
-JORNADA: A DISTANCIA
-PENSUM: 2025-2
-TOTAL CRÉDITOS DEL PENSUM: 48
---------------------------------------------------
-  Semestre 1:
-    - APRENDIZAJE AUTÓNOMO (código: 420002, créditos: 2)
-    - FUNDAMENTOS DE PROGRAMACIÓN (código: 420003, créditos: 3)
-    - HABILIDADES COMUNICATIVAS I (código: 420004, créditos: 2)
-    - INGLES I (código: 420001, créditos: 3)
-    - INTRODUCCIÓN A LA PROGRAMACIÓN WEB (código: 420006, créditos: 3)
-    - MATEMATICA BÁSICA (código: 420005, créditos: 3)
-    Total créditos del semestre 1: 16
-
-  Semestre 2:
-    - BASE DE DATOS (código: 420011, créditos: 3)
-    - DISEÑO DE INTERFACES DE USUARIO - FRONTEND (código: 420012, créditos: 3)
-    - ESTADISTICA Y PROBABILIDAD (código: 420008, créditos: 2)
-    - HABILIDADES COMUNICATIVAS II (código: 420009, créditos: 2)
-    - INGLES II (código: 420007, créditos: 3)
-    - PROGRAMACIÓN WEB I-BACKEND (código: 420010, créditos: 3)
-    Total créditos del semestre 2: 16
-
-  Semestre 3:
-    - INNOVACIÓN Y EMPRENDIMIENTO DIGITAL (código: 420015, créditos: 3)
-    - PROGRAMACIÓN WEB II -BACKEND (código: 420017, créditos: 3)
-    - PROYECTO WEB (código: 420014, créditos: 4)
-    - SEGURIDAD APLICACIONES WEB (código: 420016, créditos: 3)
-    - SERVICIOS DE COMPUTACION EN LA NUBE (código: 420013, créditos: 3)
-    Total créditos del semestre 3: 16
-
-
-PROGRAMA: TECNOLOGÍA EN DESARROLLO DE SOFTWARE
-SEDE: LORICA
-JORNADA: DIURNA
-PENSUM: 2026-1
-TOTAL CRÉDITOS DEL PENSUM: 80
---------------------------------------------------
-  Semestre 1:
-    - ALGEBRA LINEAL (código: 430001, créditos: 3)
-    - APRENDIZAJE AUTÓNOMO (código: 430002, créditos: 2)
-    - ARQUITECTURA DE SISTEMAS DE INFORMACIÓN (código: 430003, créditos: 3)
-    - COMPETENCIAS COMUNICATIVAS (código: 430004, créditos: 2)
-    - FUNDAMENTOS MATEMÁTICOS (código: 430005, créditos: 3)
-    - INTRODUCCIÓN A LA LÓGICA DE PROGRAMACIÓN (código: 430006, créditos: 3)
-    Total créditos del semestre 1: 16
-
-
-PROGRAMA: TECNOLOGÍA EN DESARROLLO DE SOFTWARE
-SEDE: CIÉNAGA DE ORO
-JORNADA: DIURNA
-PENSUM: 2026-1
-TOTAL CRÉDITOS DEL PENSUM: 80
---------------------------------------------------
-  Semestre 1:
-    - ALGEBRA LINEAL (código: 430001, créditos: 3)
-    - APRENDIZAJE AUTÓNOMO (código: 430002, créditos: 2)
-    - ARQUITECTURA DE SISTEMAS DE INFORMACIÓN (código: 430003, créditos: 3)
-    - COMPETENCIAS COMUNICATIVAS (código: 430004, créditos: 2)
-    - FUNDAMENTOS MATEMÁTICOS (código: 430005, créditos: 3)
-    - INTRODUCCIÓN A LA LÓGICA DE PROGRAMACIÓN (código: 430006, créditos: 3)
-    Total créditos del semestre 1: 16
-
-
-PROGRAMA: TECNOLOGÍA EN DESARROLLO DE SOFTWARE
-SEDE: SAHAGUN
-JORNADA: DIURNA
-PENSUM: 2026-1
-TOTAL CRÉDITOS DEL PENSUM: 80
---------------------------------------------------
-  Semestre 1:
-    - ALGEBRA LINEAL (código: 430001, créditos: 3)
-    - APRENDIZAJE AUTÓNOMO (código: 430002, créditos: 2)
-    - ARQUITECTURA DE SISTEMAS DE INFORMACIÓN (código: 430003, créditos: 3)
-    - COMPETENCIAS COMUNICATIVAS (código: 430004, créditos: 2)
-    - FUNDAMENTOS MATEMÁTICOS (código: 430005, créditos: 3)
-    - INTRODUCCIÓN A LA LÓGICA DE PROGRAMACIÓN (código: 430006, créditos: 3)
-    Total créditos del semestre 1: 16
-
-
-PROGRAMA: TECNOLOGÍA EN DESARROLLO DE SOFTWARE
-SEDE: MONTERIA
-JORNADA: DIURNA
-PENSUM: 2026-1
-TOTAL CRÉDITOS DEL PENSUM: 80
---------------------------------------------------
-  Semestre 1:
-    - ALGEBRA LINEAL (código: 430001, créditos: 3)
-    - APRENDIZAJE AUTÓNOMO (código: 430002, créditos: 2)
-    - ARQUITECTURA DE SISTEMAS DE INFORMACIÓN (código: 430003, créditos: 3)
-    - COMPETENCIAS COMUNICATIVAS (código: 430004, créditos: 2)
-    - FUNDAMENTOS MATEMÁTICOS (código: 430005, créditos: 3)
-    - INTRODUCCIÓN A LA LÓGICA DE PROGRAMACIÓN (código: 430006, créditos: 3)
-    Total créditos del semestre 1: 16
-
-
-PROGRAMA: TECNOLOGÍA EN DESARROLLO DE SOFTWARE
-SEDE: MONTELIBANO
-JORNADA: DIURNA
-PENSUM: 2026-1
-TOTAL CRÉDITOS DEL PENSUM: 80
---------------------------------------------------
-  Semestre 1:
-    - ALGEBRA LINEAL (código: 430001, créditos: 3)
-    - APRENDIZAJE AUTÓNOMO (código: 430002, créditos: 2)
-    - ARQUITECTURA DE SISTEMAS DE INFORMACIÓN (código: 430003, créditos: 3)
-    - COMPETENCIAS COMUNICATIVAS (código: 430004, créditos: 2)
-    - FUNDAMENTOS MATEMÁTICOS (código: 430005, créditos: 3)
-    - INTRODUCCIÓN A LA LÓGICA DE PROGRAMACIÓN (código: 430006, créditos: 3)
-    Total créditos del semestre 1: 16
-
-
-PROGRAMA: TECNOLOGÍA EN REGENCIA DE FARMACIA
-SEDE: MONTERIA
-JORNADA: Nocturna
-PENSUM: 2020-2
-TOTAL CRÉDITOS DEL PENSUM: 104
---------------------------------------------------
-  Semestre 1:
-    - APRENDIZAJE AUTONOMO (código: 502123, créditos: 1)
-    - FUNDAMENTOS DE BIOLOGIA (código: 502119, créditos: 3)
-    - FUNDAMENTOS DE MATEMATICA (código: 502120, créditos: 3)
-    - FUNDAMENTOS DE QUIMICA (código: 502118, créditos: 3)
-    - INFORMATICA I (código: 502124, créditos: 2)
-    - INGLES I (código: 502125, créditos: 2)
-    - INTRODUCCIÓN A LA FARMACIA (código: 502121, créditos: 2)
-    - SOCIOANTROPOLOGIA Y TRABAJO COMUNITARIO (código: 502122, créditos: 2)
-    Total créditos del semestre 1: 18
-
-  Semestre 2:
-    - COMPETENCIAS CIUDADANA (código: 502166, créditos: 1)
-    - FARMACIA GENERAL (código: 502130, créditos: 3)
-    - FUNDAMENTO DE QUIMICA ORGANICA (código: 502126, créditos: 3)
-    - FUNDAMENTOS DE BIOESTADISTICA (código: 502128, créditos: 2)
-    - FUNDAMENTOS DE CONTABILIDAD (código: 502129, créditos: 2)
-    - FUNDAMENTOS DE MICROBIOLOGIA (código: 502127, créditos: 3)
-    - INFORMATICA II (código: 502131, créditos: 2)
-    - INGLES II (código: 502133, créditos: 2)
-    Total créditos del semestre 2: 18
-
-  Semestre 3:
-    - ADMINISTRACIÓN EN FARMCIA (código: 502138, créditos: 3)
-    - COMUNICACIÓN Y PRODUCCIÓN DE TEXTO (código: 502139, créditos: 2)
-    - ELECTIVA LIBRE I (código: 502140, créditos: 2)
-    - ETICA Y BIOETICA (código: 502136, créditos: 2)
-    - FARMACOGNOSIA (código: 502137, créditos: 3)
-    - FUNDAMENTOS DE BIOQUIMICA (código: 502134, créditos: 3)
-    - FUNDAMENTOS DE MORFOFISIOLOGIA (código: 502135, créditos: 3)
-    Total créditos del semestre 3: 18
-
-  Semestre 4:
-    - ELECTIVA DE CARRERA (código: 502145, créditos: 3)
-    - FARMACIA MAGISTRAL (código: 502141, créditos: 3)
-    - FARMACOLOGIA (código: 502142, créditos: 3)
-    - FUNDAMENTOS DE GESTIÓN AMBIENTAL (código: 502144, créditos: 2)
-    - LEGISLACIÓN FARMACÈUTICA (código: 502143, créditos: 2)
-    - MERCADEO Y VENTAS (código: 502147, créditos: 2)
-    - SALUD OCUPACIONAL Y PRIMEROS AUXILIOS (código: 502146, créditos: 3)
-    Total créditos del semestre 4: 18
-
-  Semestre 5:
-    - ATENCIÓN FARMACÈUTICA (código: 502153, créditos: 3)
-    - DESARROLLO Y GESTIÓN EMPRESARIAL (código: 502151, créditos: 3)
-    - INSPECCIÓN Y VIGILANCIA (código: 502150, créditos: 3)
-    - METODOLOGIA DE LA INVESTIGACIÓN (código: 502148, créditos: 2)
-    - TOXICOLOGIA (código: 502149, créditos: 3)
-    - VIGILANCIA FARMACOLOGICA (código: 502152, créditos: 3)
-    Total créditos del semestre 5: 17
-
-  Semestre 6:
-    - ELECTIVA DE PROFUNDIZACION (código: 502156, créditos: 3)
-    - METODOLOGIA DE LA INVESTIGACIÓN II (código: 502154, créditos: 2)
-    - PRACTICAS ASISTENCIALES (código: 502155, créditos: 10)
-    Total créditos del semestre 6: 15
 

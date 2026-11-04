@@ -22,6 +22,14 @@ export interface FaqMatchResult {
 const THRESHOLD_EXACT = 0.88;
 const THRESHOLD_SHORT_QUERY = 0.95;
 
+function normalizeFaqIntent(text: string): string {
+  return normalizeText(text)
+    .replace(/\bderecho de inscripcion\b/g, "inscripcion")
+    .replace(/\bpin\b/g, "inscripcion")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function getKeywordsOverlapCount(
   queryKeywords: string[],
   faqKeywords: string[],
@@ -43,15 +51,18 @@ function scoreVariant(
 ): number {
   if (!variantNormalized) return 0;
 
-  let score = calculateSimilarity(normalizedQuery, variantNormalized);
+  const comparableQuery = normalizeFaqIntent(normalizedQuery);
+  const comparableVariant = normalizeFaqIntent(variantNormalized);
+
+  let score = calculateSimilarity(comparableQuery, comparableVariant);
 
   const contains =
-    normalizedQuery.includes(variantNormalized) ||
-    variantNormalized.includes(normalizedQuery);
+    comparableQuery.includes(comparableVariant) ||
+    comparableVariant.includes(comparableQuery);
 
   if (contains) {
     const enoughSignal =
-      normalizedQuery.length >= 12 || queryKeywords.length >= 2;
+      comparableQuery.length >= 12 || queryKeywords.length >= 2;
     score = Math.max(score, enoughSignal ? 0.92 : 0.78);
   }
 

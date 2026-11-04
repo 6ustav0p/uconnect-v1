@@ -1,0 +1,94 @@
+{
+  "monteria": {
+    "nombre": "Sede Central Montería",
+    "facultades": {
+      "Facultad de Ciencias Agrícolas": [
+        "Ingeniería Agronómica"
+      ],
+      "Facultad de Ciencias Básicas": [
+        "Biología",
+        "Estadística",
+        "Física",
+        "Geografía",
+        "Matemáticas",
+        "Química"
+      ],
+      "Facultad de Ciencias de la Salud": [
+        "Administración en Salud",
+        "Bacteriología",
+        "Enfermería",
+        "Medicina",
+        "Tecnología en Regencia de Farmacia"
+      ],
+      "Facultad de Ciencias Económicas, Jurídicas y Administrativas": [
+        "Administración en Finanzas y Negocios Internacionales",
+        "Derecho"
+      ],
+      "Facultad de Educación y Ciencias Humanas": [
+        "Licenciatura en Ciencias Naturales y Educación Ambiental",
+        "Licenciatura en Ciencias Sociales",
+        "Licenciatura en Educación Artística",
+        "Licenciatura en Educación Básica con Énfasis en Artística",
+        "Licenciatura en Educación Básica con Énfasis en Ciencias Sociales",
+        "Licenciatura en Educación Básica con Énfasis en Humanidades Inglés",
+        "Licenciatura en Educación Básica con Énfasis en Humanidades Lengua Castellana",
+        "Licenciatura en Educación Física Recreación y Deporte",
+        "Licenciatura en Educación Infantil",
+        "Licenciatura en Informática",
+        "Licenciatura en Informática y Medios Audiovisuales",
+        "Licenciatura en Lenguas Extranjeras con Énfasis en Inglés",
+        "Licenciatura en Literatura y Lengua Castellana"
+      ],
+      "Facultad de Ingenierías": [
+        "Ingeniería Ambiental",
+        "Ingeniería de Alimentos",
+        "Ingeniería de Sistemas",
+        "Ingeniería Industrial",
+        "Ingeniería Mecánica",
+        "Técnico Profesional en Programación Web",
+        "Tecnología en Desarrollo de Software"
+      ],
+      "Facultad de Medicina Veterinaria y Zootecnia": [
+        "Acuicultura",
+        "Medicina Veterinaria y Zootecnia"
+      ]
+    }
+  },
+  "lorica": {
+    "nombre": "Sede Regional Lorica",
+    "programas": [
+      "Ingeniería de Sistemas (Modalidad A Distancia)",
+      "Administración en Salud (Modalidad A Distancia)",
+      "Administración en Finanzas y Negocios Internacionales",
+      "Licenciatura en Informática",
+      "Acuicultura"
+    ]
+  },
+  "sahagun": {
+    "nombre": "Sede Regional Sahagún",
+    "programas": [
+      "Ingeniería de Sistemas",
+      "Ingeniería Industrial",
+      "Administración en Salud (Modalidad A Distancia)",
+      "Administración en Finanzas y Negocios Internacionales",
+      "Licenciatura en Informática"
+    ]
+  },
+  "montelibano": {
+    "nombre": "Sede Regional Montelíbano",
+    "programas": [
+      "Ingeniería de Sistemas",
+      "Ingeniería Industrial",
+      "Ingeniería Mecánica",
+      "Administración en Salud (Modalidad A Distancia)",
+      "Administración en Finanzas y Negocios Internacionales"
+    ]
+  },
+  "berastegui": {
+    "nombre": "Sede Regional Berástegui",
+    "programas": [
+      "Ingeniería Agronómica",
+      "Ingeniería de Alimentos (Incluye laboratorios y prácticas)"
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 /**
- * Convierte pensum_programa.json a texto plano legible para subir al vector store de OpenAI.
+ * Convierte los Markdown de pensum a texto plano legible para subir al vector store de OpenAI.
  *
- * El JSON plano (30k+ registros) no es buscable porque los chunks de OpenAI cortan
+ * Los registros estructurados no son buscables porque los chunks de OpenAI cortan
  * los registros sin contexto. Este script agrupa por programa+jornada+semestre y
  * genera un archivo de texto con secciones claras.
  *
@@ -11,6 +11,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import { loadPensumFromMarkdown } from "../src/services/pensum-markdown.service";
 
 interface PensumRecord {
   programa: string;
@@ -25,10 +26,9 @@ interface PensumRecord {
   total_creditos_semestre: string;
 }
 
-const inputPath = path.join(__dirname, "../src/pensum_programa.json");
 const outputPath = path.join(__dirname, "pensum_readable.txt");
 
-const data: PensumRecord[] = JSON.parse(fs.readFileSync(inputPath, "utf-8"));
+const data: PensumRecord[] = loadPensumFromMarkdown();
 
 // Agrupar por programa + jornada + unidad + semestre
 type SemestreKey = string; // "PROGRAMA|JORNADA|UNIDAD|SEMESTRE"
@@ -85,8 +85,18 @@ for (const [progKey, semestresMap] of programas) {
       const key = m.codigo_materia;
       if (!seen.has(key)) {
         seen.add(key);
+        const hasOfficialCode =
+          m.codigo_materia && !m.codigo_materia.startsWith("SIN_CODIGO_");
+        const hasCredits =
+          m.creditos && m.creditos !== "NO ESPECIFICADO";
+        const details = [
+          hasOfficialCode ? `código: ${m.codigo_materia}` : "",
+          hasCredits ? `créditos: ${m.creditos}` : "",
+        ]
+          .filter(Boolean)
+          .join(", ");
         lines.push(
-          `    - ${m.materia} (código: ${m.codigo_materia}, créditos: ${m.creditos})`,
+          `    - ${m.materia}${details ? ` (${details})` : ""}`,
         );
       }
     }

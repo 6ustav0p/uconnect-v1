@@ -18,6 +18,40 @@ export type VectorStoreFileInfo = {
 };
 
 const VECTOR_STORE_ID = config.openai.vectorStoreId;
+const UPLOAD_MAX_ATTEMPTS = 3;
+
+function isConnectionError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    (/connection error|fetch failed|socket|econnreset|etimedout/i.test(
+      error.message,
+    ) ||
+      Boolean((error as Error & { cause?: unknown }).cause))
+  );
+}
+
+async function withUploadRetry<T>(
+  operation: () => Promise<T>,
+  operationName: string,
+): Promise<T> {
+  for (let attempt = 1; attempt <= UPLOAD_MAX_ATTEMPTS; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      const canRetry = isConnectionError(error) && attempt < UPLOAD_MAX_ATTEMPTS;
+      if (!canRetry) throw error;
+
+      const delayMs = attempt * 2000;
+      logger.warn(
+        `[VectorStore] ${operationName} falló por conexión; reintentando (${attempt + 1}/${UPLOAD_MAX_ATTEMPTS})`,
+        { error: error instanceof Error ? error.message : "Error desconocido" },
+      );
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  throw new Error(`[VectorStore] ${operationName} agotó los reintentos.`);
+}
 
 export class GptVectorStoreService {
   private client: OpenAI;
@@ -40,20 +74,25 @@ export class GptVectorStoreService {
   ): Promise<FileObject> {
     logger.info(`[VectorStore] Uploading file "${fileName}" to OpenAI.`);
     const uploadFile = await toFile(fileBuffer, fileName);
-    const file = await this.client.files.create({
-      file: uploadFile,
-      purpose: "assistants",
-    });
+    const file = await withUploadRetry(
+      () =>
+        this.client.files.create({
+          file: uploadFile,
+          purpose: "assistants",
+        }),
+      `subida del archivo "${fileName}"`,
+    );
     logger.info(
       `[VectorStore] File uploaded with ID: ${file.id}. Adding to vector store.`,
     );
 
-    const vectorStoreFile = await this.client.vectorStores.files.create(
-      VECTOR_STORE_ID,
-      {
-        file_id: file.id,
-        attributes: options?.attributes ?? undefined,
-      },
+    const vectorStoreFile = await withUploadRetry(
+      () =>
+        this.client.vectorStores.files.create(VECTOR_STORE_ID, {
+          file_id: file.id,
+          attributes: options?.attributes ?? undefined,
+        }),
+      `asociación del archivo "${fileName}" al Vector Store`,
     );
     logger.info(
       `[VectorStore] File ${file.id} added to store. Polling for completion...`,
