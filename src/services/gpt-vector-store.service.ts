@@ -162,9 +162,19 @@ export class GptVectorStoreService {
     logger.info(
       `[VectorStore] Listing vector store files for store ID: ${VECTOR_STORE_ID}`,
     );
+    // La página por defecto del SDK trae ~20 resultados; con más archivos
+    // que eso (ya pasamos de 40), un archivo reciente puede quedar fuera
+    // de esa primera página. Se itera con el async iterator del SDK, que
+    // pagina automáticamente, en vez de leer solo vectorStoreFiles.data.
     const vectorStoreFiles =
-      await this.client.vectorStores.files.list(VECTOR_STORE_ID);
-    return (vectorStoreFiles.data || []).map((file: any) => ({
+      await this.client.vectorStores.files.list(VECTOR_STORE_ID, {
+        limit: 100,
+      });
+    const files: any[] = [];
+    for await (const file of vectorStoreFiles) {
+      files.push(file);
+    }
+    return files.map((file: any) => ({
       id: file.id,
       createdAt: file.created_at,
       status: file.status,

@@ -52,15 +52,7 @@ const PENSUM_KEYWORDS =
 const IMPLICIT_PENSUM_FOLLOWUP =
   /^(?:ahora|y\s+ahora|dame|quiero|mu[eé]strame|muestra(?:me)?|el)\b/i;
 
-// Preguntas por la oferta académica ("¿qué programas/carreras hay?", "dime
-// las carreras de Lorica", "programas que hay en Sahagún"...). En vez de
-// mantener una lista de frases exactas (frágil ante variaciones de orden de
-// palabras), se dispara con CUALQUIER mención de "programa/carrera/opciones"
-// salvo que la pregunta ya sea claramente de pensum, de perfil de programa
-// (PEP), o de beneficios de admisión especial del Acuerdo 062 — la palabra
-// "programa" tiene alta similitud semántica con ese documento, así que se
-// excluye explícitamente para no confundir oferta académica con cupos de
-// admisión especial.
+// Preguntas por la oferta académica
 const PROGRAM_OR_CAREER_WORD = /\bprogramas?\b|\bcarreras?\b|\bopciones\b/i;
 
 const ADMISSION_BENEFIT_SIGNAL =
@@ -76,8 +68,7 @@ const ACADEMIC_CALENDAR_QUERY =
 
 /**
  * Arma un listado de la oferta académica real (facultades + programas) a
- * partir de los datos locales. Esta ruta está reservada para la oferta de
- * pregrado; las preguntas de posgrado se resuelven mediante la vector store.
+ * partir de los datos locales.
  */
 function buildOfferingContext(contextQuery: string): string {
   const normalizedQuery = normalizeText(contextQuery);
@@ -107,23 +98,9 @@ function buildOfferingContext(contextQuery: string): string {
   return lines.join("\n");
 }
 
-// Keywords that indicate the student is asking about a program's PEP
-// (Proyecto Educativo del Programa: perfil profesional, misión, objetivos,
-// etc.), as opposed to a general question (reglamentos, admisión, etc).
-// The vector store mixes reglamentos (ej. Acuerdo 062) con los PEP de cada
-// carrera; sin este filtro, un PEP de un programa que nadie mencionó puede
-// colarse con buen score en preguntas que no tienen nada que ver.
 const PEP_PROFILE_KEYWORDS =
   /perfil (profesional|ocupacional)|proyecto educativo|\bPEP\b|misión del programa|visión del programa|competencias del programa|líneas de investigación|campos ocupacionales/i;
 
-// Preguntas que piden un detalle exhaustivo, o que mencionan "requisito(s)"
-// en cualquier forma (ej. "qué requisitos piden", "requisitos exactos"),
-// se benefician de traer más fragmentos del documento: varios capítulos del
-// Acuerdo 062 tienen listas de requisitos casi idénticas entre sí, y una
-// búsqueda angosta puede traer la lista de un capítulo vecino en vez de la
-// del capítulo correcto. "requisito(s)" es justo la palabra donde vive ese
-// problema — no se amplía a preguntas de otro tipo (fechas, cupos,
-// porcentajes, etc.), para no pagar la latencia extra donde no hace falta.
 const DETAIL_QUERY_KEYWORDS =
   /\brequisitos?\b|todos los requisitos|lista completa|en detalle|exactamente qu[eé]|cu[aá]les son (todos|los requisitos)/i;
 
@@ -160,7 +137,6 @@ function extractSemestre(query: string): string | undefined {
 
 /**
  * Builds a plain-text pensum context block from local JSON data.
- * Returns null if no matching program is found.
  */
 function buildPensumContext(query: string): string | null {
   const programaNombre = localData.buscarProgramaPorKeyword(query);
@@ -311,13 +287,6 @@ function cosineSimilarity(a: number[], b: number[]): number {
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
-/**
- * Word-count fallback used only if the embeddings call fails (rate limit,
- * network error, etc). Calibrated empirically: pure similarity is more
- * reliable than this for short/unrelated follow-ups (see
- * scripts/calibrate-embeddings.js), but this keeps the feature degrading
- * gracefully instead of throwing.
- */
 function isShortFollowupHeuristic(message: string): boolean {
   return message.trim().split(/\s+/).filter(Boolean).length <= SHORT_FOLLOWUP_MAX_WORDS;
 }
@@ -368,16 +337,6 @@ Tu objetivo es ayudar a estudiantes con información verificable de los document
     });
   }
 
-  /**
-   * Decide si la pregunta nueva es una continuación del mensaje anterior
-   * (y por tanto conviene sumarle ese contexto a la búsqueda) o si es un
-   * tema nuevo (y debe buscarse sola, para no "arrastrar" el tema viejo).
-   * Se mide con similitud coseno de embeddings en vez de un conteo de
-   * palabras: un follow-up corto pero sin relación real (p.ej. "¿cómo
-   * recupero mi correo?" tras una pregunta de admisión) da una similitud
-   * baja aunque sea corto, mientras que un conteo de palabras lo trataría
-   * como continuación y contaminaría la búsqueda con el tema viejo.
-   */
   private async buildContextualSearchQuery(
     message: string,
     history: ChatMessage[] = [],
@@ -412,9 +371,6 @@ Tu objetivo es ayudar a estudiantes con información verificable de los document
     }
   }
 
-  /**
-   * Procesa una consulta usando datos locales + GPT para formatear (pensum/materias)
-   */
   private async processWithLocalPensum(
     message: string,
     pensumContext: string,
@@ -453,11 +409,6 @@ Responde de forma clara y amigable usando ÚNICAMENTE los datos académicos ante
     };
   }
 
-  /**
-   * Procesa preguntas por la oferta académica general (facultades/programas)
-   * usando datos locales, para no confundir "programas académicos" con los
-   * "programas de admisión especial" del Acuerdo 062.
-   */
   private async processWithLocalOffering(
     message: string,
     offeringContext: string,
@@ -479,9 +430,6 @@ Responde de forma clara y amigable usando ÚNICAMENTE los datos académicos ante
     };
   }
 
-  /**
-   * Procesa preguntas generales sin documentos relevantes.
-   */
   private async processGeneralQuery(
     message: string,
     history: ChatMessage[] = [],
@@ -512,9 +460,6 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
     };
   }
 
-  /**
-   * Procesa una consulta usando GPT con RAG (vector store)
-   */
   async processQuery(
     message: string,
     options: GptQueryOptions = {},
@@ -538,10 +483,7 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
           contextualSearchQuery,
         );
 
-        // Ruta 0: preguntas de pensum/materias ("dame el de ...", como
-        // seguimiento de una oferta) → usar datos locales directamente.
-        // Debe evaluarse antes de la oferta porque contextualSearchQuery
-        // también contiene la pregunta anterior sobre "programas".
+        // Ruta 0: preguntas de pensum/materias
         if (
           !mentionsPostgrado &&
           isImplicitPensumQuery(message, contextualSearchQuery, history)
@@ -556,17 +498,9 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
           }
         }
 
-        // Ruta 1: preguntas de oferta académica ("¿qué programas hay?",
-        // "carreras de Lorica", "programas que hay en Sahagún"...) → datos
-        // locales, para no confundir con los "programas" de admisión
-        // especial del Acuerdo 062 ni robarle la pregunta a pensum/PEP. Se
-        // prueba contra el query con contexto para que un "me refiero a
-        // posgrado" como aclaración corta siga heredando el tema anterior.
+        // Ruta 1: preguntas de oferta académica
         const mentionsProgramOrCareer =
           PROGRAM_OR_CAREER_WORD.test(contextualSearchQuery);
-        const isMedicineSpecialAdmissionQuery =
-          MEDICINE_PROGRAM_SIGNAL.test(contextualSearchQuery) &&
-          mentionsAdmissionBenefit;
         const isOfferingQuery =
           !mentionsPostgrado &&
           !PENSUM_KEYWORDS.test(message) &&
@@ -583,12 +517,7 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
           );
         }
 
-        // Ruta 2: resto → vector store RAG
-        // Si no es una pregunta de perfil de programa (PEP), se excluyen los
-        // PEP de las carreras y el KB de FAQ (que tiene su propio flujo de
-        // coincidencia exacta) de la búsqueda, para que no compitan con
-        // reglamentos/admisión en preguntas que no tienen nada que ver con
-        // ellos — sin importar qué grupo o tema puntual se pregunte.
+        // Ruta 2: vector store RAG
         const isPepProfileQuery = PEP_PROFILE_KEYWORDS.test(message);
         const wantsExhaustiveDetail = DETAIL_QUERY_KEYWORDS.test(message);
         const isAcademicCalendarQuery = ACADEMIC_CALENDAR_QUERY.test(
@@ -667,6 +596,7 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
                   { type: "ne" as const, key: "kind", value: "pensum_data" },
                 ],
               };
+
         const searchResult = await this.client.vectorStores.search(
           this.config.vectorStoreId,
           {
@@ -698,15 +628,6 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
           return await this.processGeneralQuery(message, history);
         }
 
-        // El vector store mezcla varios documentos (Acuerdo 062, PEPs de
-        // otros programas, etc). Para una pregunta específica, un documento
-        // ajeno a veces entra con un score no despreciable y contamina la
-        // respuesta con un tema que nadie preguntó. Se descartan los
-        // resultados muy por debajo del mejor score de esta búsqueda.
-        // En preguntas de detalle se usa un piso más permisivo: varios
-        // capítulos del Acuerdo 062 tienen listas de requisitos casi
-        // idénticas entre sí, así que el fragmento correcto a veces queda
-        // con un score más bajo aunque sí sea relevante.
         const topScore = searchResult.data[0].score;
         const scoreFloor = wantsExhaustiveDetail
           ? DETAIL_QUERY_RELATIVE_SCORE_FLOOR
@@ -715,8 +636,10 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
           (result) => result.score >= topScore * scoreFloor,
         );
 
-        // Evitar que un documento de cupos de Medicina contamine preguntas
-        // generales sobre beneficios o grupos poblacionales.
+        const isMedicineSpecialAdmissionQuery =
+          MEDICINE_PROGRAM_SIGNAL.test(contextualSearchQuery) &&
+          mentionsAdmissionBenefit;
+
         if (isMedicineSpecialAdmissionQuery) {
           filteredResults = filteredResults.filter((result) =>
             isMedicineSpecialAdmissionDocument(
@@ -749,14 +672,12 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
           return await this.processGeneralQuery(message, history);
         }
 
-        // Extraer contenido de los documentos
         const relevantDocs = filteredResults
           .map((result, index) => {
             return `DOCUMENTO ${index + 1}: ${result.filename}\nContenido: ${result.content?.[0]?.text || "Sin contenido disponible"}\nRelevancia: ${result.score.toFixed(4)}`;
           })
           .join("\n\n");
 
-        // Crear prompt con contexto
         const contextualPrompt = `Contexto de los documentos:
 
 ${relevantDocs}
@@ -816,15 +737,11 @@ Responde de forma clara y amigable. Para datos específicos, básate SOLO en la 
     });
   }
 
-  /**
-   * Verifica si el servicio está disponible
-   */
   async isAvailable(): Promise<boolean> {
     try {
       if (!process.env.OPENAI_API_KEY) {
         return false;
       }
-      // Simple check - list models
       await this.client.models.list();
       return true;
     } catch {
@@ -833,5 +750,4 @@ Responde de forma clara y amigable. Para datos específicos, básate SOLO en la 
   }
 }
 
-// Singleton instance
 export const gptAgentService = new GptAgentService();

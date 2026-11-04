@@ -70,7 +70,76 @@ function extractJsonObject(text: string): string {
   return trimmed;
 }
 
+function slugify(text: string): string {
+  return normalizeText(text)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+    .slice(0, 60);
+}
+
+/**
+ * Formato Markdown de FAQ (el que produce el equipo de contenido):
+ *   ## Categoría: X
+ *   **Pregunta:** ...
+ *   **Respuesta:** ... (puede tener varias líneas, incluye listas con "-")
+ *   ---
+ * No trae tier explícito -> se asigna "faq" por defecto a todas las entradas.
+ */
+function isFaqKbMarkdown(text: string): boolean {
+  return /\*\*Pregunta:\*\*/i.test(text) && /\*\*Respuesta:\*\*/i.test(text);
+}
+
+function parseFaqKbMarkdown(text: string): FaqKbEntry[] {
+  const entries: FaqKbEntry[] = [];
+  let currentCategory = "General";
+  let counter = 0;
+
+  // Se parte por los encabezados de categoría, conservando el encabezado
+  // como separador para saber a qué sección pertenece cada bloque.
+  const sections = text.split(/^##\s*Categor[ií]a:\s*(.+)$/im);
+  // sections[0] es el texto antes de la primera categoría (el título H1);
+  // luego alternan: nombre de categoría, contenido de esa categoría.
+  for (let i = 1; i < sections.length; i += 2) {
+    currentCategory = sections[i].trim() || currentCategory;
+    const block = sections[i + 1] || "";
+
+    const items = block.split(/^\s*---\s*$/m);
+    for (const item of items) {
+      const questionMatch = item.match(
+        /\*\*Pregunta:\*\*\s*([\s\S]*?)(?=\n\s*\n\*\*Respuesta:\*\*|\*\*Respuesta:\*\*)/i,
+      );
+      const answerMatch = item.match(/\*\*Respuesta:\*\*\s*([\s\S]*)/i);
+
+      const question = questionMatch?.[1]?.trim();
+      const answer = answerMatch?.[1]?.trim();
+      if (!question || !answer) continue;
+
+      counter += 1;
+      entries.push({
+        id: `md-${slugify(currentCategory)}-${counter}`,
+        tier: "faq",
+        category: currentCategory,
+        questions: [question],
+        answer,
+        isActive: true,
+      });
+    }
+  }
+
+  if (entries.length === 0) {
+    throw new Error(
+      "FAQ KB inválido: el Markdown no tiene bloques '**Pregunta:**'/'**Respuesta:**' reconocibles",
+    );
+  }
+
+  return entries;
+}
+
 export function parseFaqKbText(text: string): FaqKbEntry[] {
+  if (isFaqKbMarkdown(text)) {
+    return parseFaqKbMarkdown(text);
+  }
+
   const jsonText = extractJsonObject(text);
   let parsed: any;
 
