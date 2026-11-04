@@ -19,7 +19,9 @@ import {
   gptVectorStoreService,
   faqService,
   faqKbAdminService,
+  localDataService,
 } from "../services";
+import { config } from "../config";
 import { logger } from "../utils";
 import multer from "multer";
 import { ADMISSION_GUIDED_QUESTIONS } from "../config/prompts";
@@ -59,6 +61,133 @@ const chatLimiter = rateLimit({
     message: "Demasiadas solicitudes. Intenta de nuevo en un minuto.",
   },
 });
+
+const ACADEMIC_LEVEL_KEYWORDS =
+  /pregrado|pregado|posgrado|postgrado|maestr[ií]a|doctorado|especializaci[oó]n/i;
+const PREGRADO_LEVEL_KEYWORDS = /pregrado|pregado/i;
+const POSTGRADO_KEYWORDS =
+  /posgrado|postgrado|maestr[ií]a|doctorado|especializaci[oó]n/i;
+const ACADEMIC_LEVEL_FOLLOWUP =
+  /^(pregrado|pregado|posgrado|postgrado|maestr[ií]a|doctorado|especializaci[oó]n)$/i;
+const ACADEMIC_LEVEL_CLARIFICATION =
+  /¿?te refieres a pregrado o a posgrado\?/i;
+const ACADEMIC_LEVEL_SENSITIVE_QUERY =
+  /inscrip|matr[ií]cula|fecha|calendario|clases?|inici\w*|estudiantes?\s+(nuevos?|antiguos?)|cupo|admisi[oó]n|pensum|materias|asignaturas|programas?|carreras?|requisit|costos?|duraci[oó]n/i;
+const ACADEMIC_CALENDAR_QUERY =
+  /calendario|fecha|inici\w*|cu[aá]ndo.*(clases?|semestre|periodo|matr[ií]cula|inscrip)|clases?.*(inician|empiezan|comienzan)/i;
+const SPECIAL_ADMISSION_CONTEXT =
+  /beneficios?|cupos?\s+(?:especial(?:es)?|poblacional(?:es)?)|comunidades?\s+(?:afro|palenquer|ind[ií]gen)/i;
+const REGISTRATION_COST_QUERY =
+  /(?:valor|costo|precio|cu[aá]nto)\s+(?:de\s+)?(?:la\s+)?(?:inscripci[oó]n|inscripcion|matr[ií]cula|matricula)|derecho\s+de\s+inscripci[oó]n|pin\b/i;
+const ADMISSION_SCORE_QUERY =
+  /cu[aá]nto\s+(?:debo|necesito|hay\s+que)\s+sacar|puntajes?\s+(?:de\s+)?referencia|puntaje|icfes|saber\s*11|ponderad|simulador|nota\s+de\s+corte|corte\s+(?:de\s+)?(?:admisi[oó]n|ingreso)?/i;
+
+function isAdmissionScoreQuery(message: string): boolean {
+  return ADMISSION_SCORE_QUERY.test(message);
+}
+
+function buildAdmissionScoreResponse(): string {
+  const { simuladorUrl, puntajesReferenciaUrl } = config.admision;
+
+  return (
+    "No existe un puntaje único para todas las carreras: el resultado depende " +
+    "del promedio ponderado y del programa al que aspiras. Calcula tu resultado " +
+    "con tus puntajes de Saber 11 y compáralo con los puntajes de referencia de " +
+    "la convocatoria vigente.\n\n" +
+    "🧮 [**Descargar el simulador de promedio ponderado**](" +
+    `${simuladorUrl})\n\n` +
+    "📊 [**Consultar los puntajes de referencia por programa y jornada**](" +
+    `${puntajesReferenciaUrl})\n\n` +
+    "Los puntajes históricos son orientativos y no garantizan la admisión en " +
+    "una convocatoria futura."
+  );
+}
+
+function hasPregradoAdmissionsContext(
+  message: string,
+  history: Array<{ role: string; content: string }>,
+): boolean {
+  if (POSTGRADO_KEYWORDS.test(message)) return false;
+
+  const conversation = history.map((item) => item.content).join("\n");
+  return (
+    !POSTGRADO_KEYWORDS.test(conversation) &&
+    SPECIAL_ADMISSION_CONTEXT.test(conversation)
+  );
+}
+
+function hasPregradoConversationContext(
+  message: string,
+  history: Array<{ role: string; content: string }>,
+): boolean {
+  if (POSTGRADO_KEYWORDS.test(message)) return false;
+  const previousLevel = history
+    .filter((item) => item.role === "user")
+    .map((item) => item.content)
+    .reverse()
+    .find((content) => ACADEMIC_LEVEL_KEYWORDS.test(content));
+
+  return Boolean(
+    PREGRADO_LEVEL_KEYWORDS.test(message) ||
+      (previousLevel && PREGRADO_LEVEL_KEYWORDS.test(previousLevel)),
+  );
+}
+
+function getPendingAcademicLevelQuestion(
+  history: Array<{ role: string; content: string }>,
+): string | undefined {
+  for (let index = history.length - 1; index >= 0; index -= 1) {
+    const item = history[index];
+    if (
+      item.role !== "assistant" ||
+      !ACADEMIC_LEVEL_CLARIFICATION.test(item.content)
+    ) {
+      continue;
+    }
+
+    for (let previousIndex = index - 1; previousIndex >= 0; previousIndex -= 1) {
+      const previous = history[previousIndex];
+      if (previous.role === "user") return previous.content;
+    }
+  }
+
+  return undefined;
+}
+
+function normalizeAcademicLevel(value: string): string {
+  return /^pregado$/i.test(value.trim()) ? "pregrado" : value.trim();
+}
+
+function needsAcademicLevelClarification(
+  message: string,
+  history: Array<{ role: string; content: string }>,
+): boolean {
+  if (!ACADEMIC_LEVEL_SENSITIVE_QUERY.test(message)) return false;
+  if (ACADEMIC_LEVEL_KEYWORDS.test(message)) return false;
+  if (hasPregradoAdmissionsContext(message, history)) return false;
+
+  const previousUserMessages = history
+    .filter((item) => item.role === "user")
+    .map((item) => item.content);
+  if (
+    previousUserMessages.some((content) =>
+      ACADEMIC_LEVEL_KEYWORDS.test(content),
+    )
+  ) {
+    return false;
+  }
+
+  const program = localDataService.buscarProgramaPorKeyword(message);
+  if (!program) return true;
+
+  const matchingPrograms = localDataService.getProgramas(program, "");
+  return (
+    matchingPrograms.length === 0 ||
+    matchingPrograms.some((item) =>
+      /maestr[ií]a|doctorado|especializaci[oó]n/i.test(item.prog_nombre),
+    )
+  );
+}
 
 // Logging de requests
 app.use((req: Request, _res: Response, next: NextFunction) => {
@@ -262,8 +391,111 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
     await ensureSessionMetricsSafe(activeSessionId, activeUserId);
     const trimmedMessage = message.trim();
     const startedAt = Date.now();
+    const history = await chatRepository.getHistory(activeSessionId, 10);
+    const lastUserMessage = [...history]
+      .reverse()
+      .find((item) => item.role === "user");
+    const pendingAcademicLevelQuestion = getPendingAcademicLevelQuestion(history);
+    const isAcademicLevelFollowup =
+      Boolean(pendingAcademicLevelQuestion) &&
+      ACADEMIC_LEVEL_FOLLOWUP.test(trimmedMessage);
+    const inheritsPregradoAdmissionsContext = hasPregradoAdmissionsContext(
+      trimmedMessage,
+      history,
+    );
+    const inheritsPregradoConversationContext = hasPregradoConversationContext(
+      trimmedMessage,
+      history,
+    );
+    const routedMessage = isAcademicLevelFollowup
+      ? `${pendingAcademicLevelQuestion} ${normalizeAcademicLevel(trimmedMessage)}`
+      : inheritsPregradoAdmissionsContext || inheritsPregradoConversationContext
+        ? `${trimmedMessage} pregrado`
+      : trimmedMessage;
+    const isAcademicCalendarQuery = ACADEMIC_CALENDAR_QUERY.test(routedMessage);
+    const hasPostgradoContext =
+      POSTGRADO_KEYWORDS.test(routedMessage) ||
+      (lastUserMessage ? POSTGRADO_KEYWORDS.test(lastUserMessage.content) : false);
 
-    const faqMatch = await faqService.match(trimmedMessage);
+    if (needsAcademicLevelClarification(trimmedMessage, history)) {
+      const clarification =
+        "¿Te refieres a pregrado o a posgrado? La información puede variar según el nivel académico.";
+
+      await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
+      await chatRepository.addMessage(
+        activeSessionId,
+        "assistant",
+        clarification,
+        { sources: [] },
+      );
+      await trackConversationTurnSafe({
+        sessionId: activeSessionId,
+        userId: activeUserId,
+        route: "general",
+        responseTimeMs: Date.now() - startedAt,
+        tokensUsed: { input: 0, output: 0 },
+      });
+
+      return res.json({
+        sessionId: activeSessionId,
+        userId: activeUserId,
+        response: {
+          message: clarification,
+          tokensUsed: { input: 0, output: 0 },
+          engine: "local-chat",
+          route: "clarification",
+        },
+      });
+    }
+
+    if (isAdmissionScoreQuery(routedMessage) && !hasPostgradoContext) {
+      const admissionScoreResponse = buildAdmissionScoreResponse();
+
+      await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
+      await chatRepository.addMessage(
+        activeSessionId,
+        "assistant",
+        admissionScoreResponse,
+        {
+          sources: [
+            "Simulador de promedio ponderado",
+            "Puntajes de referencia",
+          ],
+        },
+      );
+      await trackConversationTurnSafe({
+        sessionId: activeSessionId,
+        userId: activeUserId,
+        route: "faq",
+        responseTimeMs: Date.now() - startedAt,
+        tokensUsed: { input: 0, output: 0 },
+      });
+
+      return res.json({
+        sessionId: activeSessionId,
+        userId: activeUserId,
+        response: {
+          message: admissionScoreResponse,
+          sources: [
+            "Simulador de promedio ponderado",
+            "Puntajes de referencia",
+          ],
+          tokensUsed: { input: 0, output: 0 },
+          engine: "local-chat",
+          route: "faq",
+        },
+      });
+    }
+
+    let faqMatch =
+      hasPostgradoContext ||
+      isAcademicLevelFollowup ||
+      (inheritsPregradoConversationContext &&
+        REGISTRATION_COST_QUERY.test(trimmedMessage))
+      ? null
+      : await faqService.match(
+          routedMessage,
+        );
     if (faqMatch) {
       await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
       await chatRepository.addMessage(
@@ -295,11 +527,7 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
       });
     }
 
-    const history = await chatRepository.getHistory(
-      activeSessionId,
-      10,
-    );
-    const gptResult = await gptAgentService.processQuery(trimmedMessage, {
+    const gptResult = await gptAgentService.processQuery(routedMessage, {
       sessionId: activeSessionId,
       history,
     });
@@ -1317,26 +1545,44 @@ app.post(
       const kindRaw = req.query.kind ?? req.body.kind;
       const kindValue = Array.isArray(kindRaw) ? kindRaw[0] : kindRaw;
       const kind = typeof kindValue === "string" ? kindValue.trim() : "";
+      const academicLevelRaw = req.query.academicLevel ?? req.body.academicLevel;
+      const academicLevelValue = Array.isArray(academicLevelRaw)
+        ? academicLevelRaw[0]
+        : academicLevelRaw;
+      const academicLevel =
+        academicLevelValue === "pregrado" ||
+        academicLevelValue === "posgrado" ||
+        academicLevelValue === "general"
+          ? academicLevelValue
+          : "";
+
+      const attributes = {
+        ...(kind ? { kind } : {}),
+        ...(academicLevel ? { academic_level: academicLevel } : {}),
+      };
 
       const fileObject = await gptVectorStoreService.uploadAndPoll(
         req.file.buffer,
         req.file.originalname,
-        kind ? { attributes: { kind } } : undefined,
+        Object.keys(attributes).length > 0 ? { attributes } : undefined,
       );
 
       res.status(201).json({
         message: "Archivo subido y procesado correctamente.",
         kind: kind || undefined,
+        academicLevel: academicLevel || undefined,
         data: fileObject,
       });
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Error desconocido";
       logger.error("Error en POST /api/admin/vector-store/files", {
-        error: (error as Error).message,
+        error: errorMessage,
       });
       res.status(500).json({
         error: true,
         code: "INTERNAL_ERROR",
-        message: "Error subiendo archivo al Vector Store.",
+        message: `Error subiendo archivo al Vector Store: ${errorMessage}`,
       });
     }
   },

@@ -10,6 +10,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY src ./src
+COPY scripts ./scripts
 RUN npm run build
 
 FROM node:20-alpine AS prod-deps
