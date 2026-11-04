@@ -7,7 +7,7 @@
     "unicordoba-mcp": "./dist/mcp/server.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node scripts/copy-pensum-assets.js",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "start": "node dist/index.js",
     "api": "ts-node-dev --respawn --transpile-only src/api/server.ts",
