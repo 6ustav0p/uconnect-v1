@@ -46,6 +46,28 @@ const DETAIL_QUERY_MAX_RESULTS = 14;
 
 const localData = new LocalDataService();
 
+/**
+ * Distancia de edición (Levenshtein) entre dos strings, para tolerar
+ * errores de tipeo en nombres propios (ej. sedes regionales) sin tener
+ * que mantener una lista de variantes mal escritas a mano.
+ */
+function levenshteinDistance(a: string, b: string): number {
+  const dp: number[][] = Array.from({ length: a.length + 1 }, () =>
+    new Array(b.length + 1).fill(0),
+  );
+  for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+  for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      dp[i][j] =
+        a[i - 1] === b[j - 1]
+          ? dp[i - 1][j - 1]
+          : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[a.length][b.length];
+}
+
 // Keywords that indicate a pensum/academic plan query
 const PENSUM_KEYWORDS =
   /pensum|materias|asignaturas|semestre|plan de estudio|plan\s+de\s+estudio/i;
@@ -104,6 +126,103 @@ function buildOfferingContext(contextQuery: string): string {
     for (const programa of sede.programas) lines.push(`  - ${programa}`);
   }
 
+  return lines.join("\n");
+}
+
+// Keywords that indicate the student is asking about a program's PEP
+// (Proyecto Educativo del Programa: perfil profesional, misión, objetivos,
+// etc.), as opposed to a general question (reglamentos, admisión, etc).
+// The vector store mixes reglamentos (ej. Acuerdo 062) con los PEP de cada
+// carrera; sin este filtro, un PEP de un programa que nadie mencionó puede
+// colarse con buen score en preguntas que no tienen nada que ver.
+const PEP_PROFILE_KEYWORDS =
+  /perfil (profesional|ocupacional)|proyecto educativo|\bPEP\b|misión del programa|visión del programa|competencias del programa|líneas de investigación|campos ocupacionales/i;
+
+// Preguntas que piden un detalle exhaustivo, o que mencionan "requisito(s)"
+// en cualquier forma (ej. "qué requisitos piden", "requisitos exactos"),
+// se benefician de traer más fragmentos del documento: varios capítulos del
+// Acuerdo 062 tienen listas de requisitos casi idénticas entre sí, y una
+// búsqueda angosta puede traer la lista de un capítulo vecino en vez de la
+// del capítulo correcto. "requisito(s)" es justo la palabra donde vive ese
+// problema — no se amplía a preguntas de otro tipo (fechas, cupos,
+// porcentajes, etc.), para no pagar la latencia extra donde no hace falta.
+const DETAIL_QUERY_KEYWORDS =
+  /\brequisitos?\b|todos los requisitos|lista completa|en detalle|exactamente qu[eé]|cu[aá]les son (todos|los requisitos)/i;
+
+// Preguntas por la oferta académica ("¿qué programas/carreras hay?", "dime
+// las carreras de Lorica", "programas que hay en Sahagún"...). En vez de
+// mantener una lista de frases exactas (frágil ante variaciones de orden de
+// palabras), se dispara con CUALQUIER mención de "programa/carrera/opciones"
+// salvo que la pregunta ya sea claramente de pensum, de perfil de programa
+// (PEP), o de beneficios de admisión especial del Acuerdo 062 — la palabra
+// "programa" tiene alta similitud semántica con ese documento, así que se
+// excluye explícitamente para no confundir oferta académica con cupos de
+// admisión especial.
+const PROGRAM_OR_CAREER_WORD = /\bprogramas?\b|\bcarreras?\b|\bopciones\b/i;
+
+const ADMISSION_BENEFIT_SIGNAL =
+  /beneficio|exoneraci[oó]n|cupos? especial(es)?|admisi[oó]n especial|acuerdo\s*062|comunidad(es)?|discapacidad|v[íi]ctima|veterano|desmovilizado|requisito/i;
+
+const POSGRADO_KEYWORDS = /posgrado|postgrado|maestr[ií]a|doctorado|especializaci[oó]n/i;
+
+/**
+ * Arma un listado de la oferta académica real (facultades + programas) a
+ * partir de los datos locales. Si la pregunta es sobre posgrado, devuelve
+ * una advertencia en vez de inventar programas: esta plataforma solo tiene
+ * indexado el pregrado.
+ */
+function buildOfferingContext(contextQuery: string): string {
+  if (POSGRADO_KEYWORDS.test(contextQuery)) {
+    return `ADVERTENCIA: Esta plataforma actualmente NO tiene indexada la oferta de posgrados (maestrías, especializaciones, doctorados) de la Universidad de Córdoba, solo la oferta de pregrado. No inventes ni supongas nombres de programas de posgrado.`;
+  }
+
+  // El pensum sí distingue sede (unid_nombre); programas_academicos_api.json
+  // no. Si la pregunta nombra una sede regional, se usa esa fuente para no
+  // responder con la oferta genérica (centrada en Montería) cuando
+  // preguntan específicamente por Lorica, Sahagún, etc. Se compara con
+  // distancia de edición (no substring exacto) porque los nombres de sede
+  // se escriben mal seguido (ej. "sahgun", "lorca").
+  const queryWords = normalizeText(contextQuery).split(/\s+/);
+  const sedeMencionada = localData.getSedes().find((sede) => {
+    const normSede = normalizeText(sede);
+    return queryWords.some(
+      (word) =>
+        word.length >= 4 &&
+        levenshteinDistance(word, normSede) <= (normSede.length >= 7 ? 2 : 1),
+    );
+  });
+
+  if (sedeMencionada) {
+    const programas = localData.getProgramasPorSede(sedeMencionada);
+    const lines = [`OFERTA ACADÉMICA DE PREGRADO EN LA SEDE ${sedeMencionada.toUpperCase()}:`];
+    if (programas.length === 0) {
+      lines.push(
+        "(No se encontraron programas de pregrado registrados para esta sede en los datos disponibles.)",
+      );
+    } else {
+      for (const nombre of programas) lines.push(`  - ${nombre}`);
+    }
+    return lines.join("\n");
+  }
+
+  // getProgramas() sin filtros ya excluye postgrado (maestría, doctorado,
+  // especialización) — no usar getProgramasPorFacultad aquí, que sí los
+  // incluye y rompería la garantía de "solo pregrado".
+  const programas = localData.getProgramas();
+  const porFacultad = new Map<string, string[]>();
+  for (const p of programas) {
+    const grupo = porFacultad.get(p.facultad_nombre) ?? [];
+    grupo.push(p.prog_nombre);
+    porFacultad.set(p.facultad_nombre, grupo);
+  }
+
+  const lines = [
+    "OFERTA ACADÉMICA DE PREGRADO - Universidad de Córdoba (sede Montería; otras sedes regionales ofrecen un subconjunto, pregunta por una sede específica para verla):",
+  ];
+  for (const [facultad, nombres] of porFacultad) {
+    lines.push(`\n${facultad}:`);
+    for (const nombre of nombres) lines.push(`  - ${nombre}`);
+  }
   return lines.join("\n");
 }
 
@@ -354,8 +473,11 @@ REGLAS:
 
 15. DATO OBLIGATORIO — Capítulo III del Acuerdo 062 (indígenas, afrodescendientes, pueblo Rrom, raizales, palenqueros): si te preguntan por los requisitos de CUALQUIERA de estos cinco grupos, SIEMPRE debes incluir este requisito: "aval del Cabildo, o de su equivalente, o de una asociación de autoridades tradicionales" (Artículo 13). Aunque el Artículo 13 empiece mencionando solo a "comunidad indígena", aplica por igual a los cinco grupos del capítulo — es una redacción ambigua del documento, no una limitación real. No omitas este requisito para afrodescendientes, Rrom, raizales o palenqueros.
 16. La palabra "programa" es ambigua en los documentos: puede referirse a un PROGRAMA ACADÉMICO (una carrera) o a un PROGRAMA DE ADMISIÓN ESPECIAL del Acuerdo 062 (cupos para víctimas, comunidades étnicas, discapacidad, deportistas, artistas, veteranos, etc.). Si el estudiante pregunta de forma genérica por "programas", "carreras" u "oferta académica" sin mencionar beneficios, cupos, exoneraciones o un grupo poblacional, asume que pregunta por programas académicos — NO por los cupos especiales del Acuerdo 062.
+<<<<<<< HEAD
 17. Los documentos de cupos especiales de un programa concreto, como Medicina, solo aplican cuando el estudiante menciona explícitamente ese programa en la pregunta. No uses un documento de cupos de Medicina para responder preguntas generales sobre beneficios de comunidades, grupos minoritarios o el Acuerdo 062; en esos casos usa únicamente la normativa general.
 18. Si la consulta trata exclusivamente sobre beneficios, cupos o admisión especial de Medicina, usa el documento "Modelo Especial de Admisión y Distribución de Cupos - Programa de Medicina", basado en los Acuerdos 090 de 2026 y 414 de 2026. No respondas esa consulta con el Acuerdo 062, salvo que el estudiante lo pida expresamente.
+=======
+>>>>>>> 8e5ee4694468d03a5015158a3b69c5261a6009c8
 
 Tu objetivo es ayudar a estudiantes con información verificable de los documentos institucionales y orientación general responsable cuando no haya datos específicos disponibles.`,
       model: this.config.model,
@@ -463,11 +585,38 @@ Responde de forma clara y amigable usando ÚNICAMENTE los datos académicos ante
     offeringContext: string,
     history: ChatMessage[] = [],
   ): Promise<GptQueryResult> {
+<<<<<<< HEAD
+=======
+    const formattedHistory = formatHistoryForPrompt(history);
+    const prompt = `Tienes los siguientes datos de oferta académica de la Universidad de Córdoba:
+
+${offeringContext}
+
+Historial reciente de la conversación:
+${formattedHistory}
+
+Pregunta del estudiante: ${message}
+
+Responde de forma clara y amigable usando ÚNICAMENTE los datos anteriores. Estos son programas académicos (carreras), NO programas de admisión especial ni beneficios del Acuerdo 062 — no menciones cupos especiales, exoneraciones ni comunidades beneficiarias aquí, eso es un tema aparte. Si la pregunta es sobre posgrado y arriba dice que no está indexado, dilo tal cual de forma transparente y directa (sin inventar programas), y sugiere contactar a la oficina de posgrados de la Universidad de Córdoba. Si la lista es larga, organízala por facultad con viñetas.`;
+
+    const conversationHistory: AgentInputItem[] = [
+      { role: "user", content: [{ type: "input_text", text: prompt }] },
+    ];
+
+    const runner = new Runner();
+    const agentResult = await runner.run(this.agent, conversationHistory);
+
+    if (!agentResult.finalOutput) {
+      throw new Error("El agente no generó una respuesta");
+    }
+
+>>>>>>> 8e5ee4694468d03a5015158a3b69c5261a6009c8
     logger.info("GPT Agent: Consulta de oferta académica procesada con datos locales", {
       query: message.substring(0, 50),
     });
 
     return {
+<<<<<<< HEAD
       response: offeringContext,
       documents: [
         {
@@ -475,6 +624,11 @@ Responde de forma clara y amigable usando ÚNICAMENTE los datos académicos ante
           filename: "oferta_academica_pregrado_sedes.json",
           score: 1,
         },
+=======
+      response: agentResult.finalOutput,
+      documents: [
+        { id: "local", filename: "programas_academicos_api.json", score: 1 },
+>>>>>>> 8e5ee4694468d03a5015158a3b69c5261a6009c8
       ],
     };
   }
@@ -522,7 +676,11 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
     return await withTrace("uconnect-api", async () => {
       try {
         const history = options.history || [];
+<<<<<<< HEAD
         let contextualSearchQuery = await this.buildContextualSearchQuery(
+=======
+        const contextualSearchQuery = await this.buildContextualSearchQuery(
+>>>>>>> 8e5ee4694468d03a5015158a3b69c5261a6009c8
           message,
           history,
         );
@@ -538,6 +696,7 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
           contextualSearchQuery,
         );
 
+<<<<<<< HEAD
         // Ruta 0: preguntas de pensum/materias ("dame el de ...", como
         // seguimiento de una oferta) → usar datos locales directamente.
         // Debe evaluarse antes de la oferta porque contextualSearchQuery
@@ -546,6 +705,38 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
           !mentionsPostgrado &&
           isImplicitPensumQuery(message, contextualSearchQuery, history)
         ) {
+=======
+        // Ruta 0: preguntas de oferta académica ("¿qué programas hay?",
+        // "carreras de Lorica", "programas que hay en Sahagún"...) → datos
+        // locales, para no confundir con los "programas" de admisión
+        // especial del Acuerdo 062 ni robarle la pregunta a pensum/PEP. Se
+        // prueba contra el query con contexto para que un "me refiero a
+        // posgrado" como aclaración corta siga heredando el tema anterior.
+        const mentionsProgramOrCareer =
+          PROGRAM_OR_CAREER_WORD.test(contextualSearchQuery);
+        const mentionsAdmissionBenefit = ADMISSION_BENEFIT_SIGNAL.test(
+          contextualSearchQuery,
+        );
+        const isOfferingQuery =
+          !PENSUM_KEYWORDS.test(message) &&
+          !PEP_PROFILE_KEYWORDS.test(message) &&
+          ((mentionsProgramOrCareer && !mentionsAdmissionBenefit) ||
+            POSGRADO_KEYWORDS.test(contextualSearchQuery));
+
+        if (isOfferingQuery) {
+          const offeringContext = buildOfferingContext(contextualSearchQuery);
+          return await this.processWithLocalOffering(
+            message,
+            offeringContext,
+            history,
+          );
+        }
+
+        // Ruta 1: preguntas de pensum/materias → usar JSON local directamente
+        // (se prueba solo el mensaje actual, no el query con contexto, para
+        // que una palabra clave de una pregunta anterior no secuestre el tema)
+        if (PENSUM_KEYWORDS.test(message)) {
+>>>>>>> 8e5ee4694468d03a5015158a3b69c5261a6009c8
           const pensumContext = buildPensumContext(contextualSearchQuery);
           if (pensumContext) {
             return await this.processWithLocalPensum(
@@ -591,6 +782,7 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
         // ellos — sin importar qué grupo o tema puntual se pregunte.
         const isPepProfileQuery = PEP_PROFILE_KEYWORDS.test(message);
         const wantsExhaustiveDetail = DETAIL_QUERY_KEYWORDS.test(message);
+<<<<<<< HEAD
         const isAcademicCalendarQuery = ACADEMIC_CALENDAR_QUERY.test(
           contextualSearchQuery,
         );
@@ -667,6 +859,8 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
                   { type: "ne" as const, key: "kind", value: "pensum_data" },
                 ],
               };
+=======
+>>>>>>> 8e5ee4694468d03a5015158a3b69c5261a6009c8
         const searchResult = await this.client.vectorStores.search(
           this.config.vectorStoreId,
           {
@@ -674,7 +868,20 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
             max_num_results: wantsExhaustiveDetail
               ? DETAIL_QUERY_MAX_RESULTS
               : this.config.maxResults,
+<<<<<<< HEAD
             filters: searchFilters,
+=======
+            filters: isPepProfileQuery
+              ? { type: "ne", key: "kind", value: "pensum_data" }
+              : {
+                  type: "and",
+                  filters: [
+                    { type: "ne", key: "kind", value: "pep" },
+                    { type: "ne", key: "kind", value: "faq_kb" },
+                    { type: "ne", key: "kind", value: "pensum_data" },
+                  ],
+                },
+>>>>>>> 8e5ee4694468d03a5015158a3b69c5261a6009c8
           },
         );
 
@@ -748,6 +955,23 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
           }
           return await this.processGeneralQuery(message, history);
         }
+
+        // El vector store mezcla varios documentos (Acuerdo 062, PEPs de
+        // otros programas, etc). Para una pregunta específica, un documento
+        // ajeno a veces entra con un score no despreciable y contamina la
+        // respuesta con un tema que nadie preguntó. Se descartan los
+        // resultados muy por debajo del mejor score de esta búsqueda.
+        // En preguntas de detalle se usa un piso más permisivo: varios
+        // capítulos del Acuerdo 062 tienen listas de requisitos casi
+        // idénticas entre sí, así que el fragmento correcto a veces queda
+        // con un score más bajo aunque sí sea relevante.
+        const topScore = searchResult.data[0].score;
+        const scoreFloor = wantsExhaustiveDetail
+          ? DETAIL_QUERY_RELATIVE_SCORE_FLOOR
+          : RELATIVE_SCORE_FLOOR;
+        const filteredResults = searchResult.data.filter(
+          (result) => result.score >= topScore * scoreFloor,
+        );
 
         // Extraer contenido de los documentos
         const relevantDocs = filteredResults

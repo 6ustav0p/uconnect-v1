@@ -1,0 +1,36 @@
+flowchart LR
+  user[Estudiante / Administrador]
+
+  subgraph deployment[Despliegue con Docker Compose]
+    web[Frontend web<br/>Repositorio independiente]
+
+    subgraph api[UConnect API<br/>Express + TypeScript]
+      http[API REST<br/>Chat · FAQ · Administración · Métricas]
+      auth[Autenticación administrativa<br/>Firebase]
+      chat[Orquestación de consultas<br/>FAQ → Datos locales o RAG]
+      docs[Gestión documental<br/>Carga y procesamiento con OpenAI]
+      persistence[Repositorios Mongoose]
+      localData[(Datos académicos JSON)]
+    end
+
+    mongo[(MongoDB<br/>Chats · Métricas · PEP)]
+  end
+
+  openai[OpenAI<br/>Agente · LLM · Vector Store]
+  firebase[Firebase Authentication]
+
+  user -->|HTTPS| web
+  web -->|REST /api| http
+
+  http --> chat
+  http --> auth
+  http --> docs
+  http --> persistence
+
+  auth -->|Valida token| firebase
+  chat -->|RAG y generación| openai
+  chat -->|Pensum y materias| localData
+
+  docs -->|Carga, extracción y vectorización| openai
+
+  persistence --> mongo
