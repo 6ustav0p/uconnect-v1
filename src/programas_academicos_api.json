@@ -186,30 +186,6 @@
     "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
   },
   {
-    "prog_id": "64",
-    "prog_nombre": "LICENCIATURA EN EDUCACIÓN BÁSICA CON ÉNFASIS EN ARTÍSTICA",
-    "facultad_id": "22",
-    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-  },
-  {
-    "prog_id": "115",
-    "prog_nombre": "LICENCIATURA EN EDUCACIÓN BÁSICA CON ÉNFASIS EN CIENCIAS SOCIALES",
-    "facultad_id": "22",
-    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-  },
-  {
-    "prog_id": "20",
-    "prog_nombre": "LICENCIATURA EN EDUCACIÓN BÁSICA CON ÉNFASIS EN HUMANIDADES INGLÉS",
-    "facultad_id": "22",
-    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-  },
-  {
-    "prog_id": "106",
-    "prog_nombre": "LICENCIATURA EN EDUCACIÓN BÁSICA CON ÉNFASIS EN HUMANIDADES LENGUA CASTELLANA",
-    "facultad_id": "22",
-    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-  },
-  {
     "prog_id": "61",
     "prog_nombre": "LICENCIATURA EN EDUCACIÓN FÍSICA RECREACIÓN Y DEPORTE",
     "facultad_id": "22",
@@ -224,12 +200,6 @@
   {
     "prog_id": "22",
     "prog_nombre": "LICENCIATURA EN INFORMATICA",
-    "facultad_id": "22",
-    "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
-  },
-  {
-    "prog_id": "104",
-    "prog_nombre": "LICENCIATURA EN INFORMÁTICA Y MEDIOS AUDIOVISUALES",
     "facultad_id": "22",
     "facultad_nombre": "FACULTAD DE EDUCACION Y CIENCIAS HUMANAS"
   },
