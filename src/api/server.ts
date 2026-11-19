@@ -22,9 +22,14 @@ import {
   localDataService,
 } from "../services";
 import { config } from "../config";
-import { logger } from "../utils";
+import { logger, normalizeText } from "../utils";
 import multer from "multer";
 import { ADMISSION_GUIDED_QUESTIONS } from "../config/prompts";
+import {
+  ADMISSIONS_REGISTRATION_URL,
+  getRegistrationCostAnswer,
+  getRegistrationPortalAnswer,
+} from "../config/admission-faq";
 import { createAdminAuthMiddleware } from "./admin-auth";
 
 const app = express();
@@ -74,16 +79,30 @@ const ACADEMIC_LEVEL_CLARIFICATION =
 const ACADEMIC_LEVEL_SENSITIVE_QUERY =
   /inscrip|matr[ií]cula|fecha|calendario|clases?|inici\w*|estudiantes?\s+(nuevos?|antiguos?)|cupo|admisi[oó]n|pensum|materias|asignaturas|programas?|carreras?|requisit|costos?|duraci[oó]n/i;
 const ACADEMIC_CALENDAR_QUERY =
-  /calendario|fecha|inici\w*|cu[aá]ndo.*(clases?|semestre|periodo|matr[ií]cula|inscrip)|clases?.*(inician|empiezan|comienzan)/i;
+  /calendario|fecha|inici\w*|cu[aá]ndo.*(clases?|semestre|periodo|matr[ií]cula|inscrip|resultados?|admitidos?)|(?:resultados?|admitidos?).*(?:publican|fecha|cu[aá]ndo)|clases?.*(inician|empiezan|comienzan)/i;
 const SPECIAL_ADMISSION_CONTEXT =
   /beneficios?|cupos?\s+(?:especial(?:es)?|poblacional(?:es)?)|comunidades?\s+(?:afro|palenquer|ind[ií]gen)/i;
 const REGISTRATION_COST_QUERY =
-  /(?:valor|costo|precio|cu[aá]nto)\s+(?:de\s+)?(?:la\s+)?(?:inscripci[oó]n|inscripcion|matr[ií]cula|matricula)|derecho\s+de\s+inscripci[oó]n|pin\b/i;
+  /(?:valor|costo|precio|cuanto|vale)[\s\S]{0,80}\b(?:pin|inscripcion|matricula)\b|\b(?:pin|inscripcion|matricula)\b[\s\S]{0,80}(?:valor|costo|precio|cuanto|vale)|derecho\s+de\s+inscripcion/i;
+const REGISTRATION_PORTAL_QUERY =
+  /(?:donde|como|cual\s+es|via|enlace|link|liga|portal|pagina)[\s\S]{0,80}(?:inscrib|inscripcion|registro)/i;
+const GENERAL_ADMISSION_REQUIREMENTS_QUERY =
+  /(?:requisitos?|documentos?)[\s\S]{0,80}(?:ingresar|admisi[oó]n)|(?:ingresar|admisi[oó]n)[\s\S]{0,80}(?:requisitos?|documentos?)/i;
+const SPECIAL_ADMISSION_QUERY =
+  /acuerdo\s*062|cupo\s+especial|v[ií]ctima|afro|ind[ií]gena|discapacidad|deportista|veterano/i;
 const ADMISSION_SCORE_QUERY =
   /cu[aá]nto\s+(?:debo|necesito|hay\s+que)\s+sacar|puntajes?\s+(?:de\s+)?referencia|puntaje|icfes|saber\s*11|ponderad|simulador|nota\s+de\s+corte|corte\s+(?:de\s+)?(?:admisi[oó]n|ingreso)?/i;
 
 function isAdmissionScoreQuery(message: string): boolean {
   return ADMISSION_SCORE_QUERY.test(message);
+}
+
+function isRegistrationCostQuery(message: string): boolean {
+  return REGISTRATION_COST_QUERY.test(normalizeText(message));
+}
+
+function isRegistrationPortalQuery(message: string): boolean {
+  return REGISTRATION_PORTAL_QUERY.test(normalizeText(message));
 }
 
 function buildAdmissionScoreResponse(): string {
@@ -100,6 +119,16 @@ function buildAdmissionScoreResponse(): string {
     `${puntajesReferenciaUrl})\n\n` +
     "Los puntajes históricos son orientativos y no garantizan la admisión en " +
     "una convocatoria futura."
+  );
+}
+
+function buildGeneralAdmissionRequirementsResponse(): string {
+  return (
+    "Para ingresar a un programa de pregrado debes revisar la convocatoria vigente y " +
+    "cargar los documentos que allí se indiquen, normalmente el documento de identidad " +
+    "y los soportes académicos solicitados. Algunos programas o modalidades pueden exigir " +
+    "requisitos adicionales. Consulta la convocatoria oficial y el portal de Admisiones y " +
+    `Registro: ${ADMISSIONS_REGISTRATION_URL}`
   );
 }
 
@@ -121,15 +150,20 @@ function hasPregradoConversationContext(
   history: Array<{ role: string; content: string }>,
 ): boolean {
   if (POSTGRADO_KEYWORDS.test(message)) return false;
-  const previousLevel = history
+  const previousUserMessages = history
     .filter((item) => item.role === "user")
-    .map((item) => item.content)
+    .map((item) => item.content);
+  const previousLevel = previousUserMessages
     .reverse()
     .find((content) => ACADEMIC_LEVEL_KEYWORDS.test(content));
+  const hasPregradoAcademicTopic = previousUserMessages.some((content) =>
+    /pensum|carreras?|programas?|ingenier[ií]a|licenciatura/i.test(content),
+  );
 
   return Boolean(
     PREGRADO_LEVEL_KEYWORDS.test(message) ||
-      (previousLevel && PREGRADO_LEVEL_KEYWORDS.test(previousLevel)),
+      (previousLevel && PREGRADO_LEVEL_KEYWORDS.test(previousLevel)) ||
+      hasPregradoAcademicTopic,
   );
 }
 
@@ -162,9 +196,20 @@ function needsAcademicLevelClarification(
   message: string,
   history: Array<{ role: string; content: string }>,
 ): boolean {
+  if (isRegistrationCostQuery(message)) return false;
+  // El producto está orientado a aspirantes y la oferta pública local es de
+  // pregrado; una consulta genérica de carreras debe poder resolverse sin
+  // bloquearse con una aclaración de nivel.
+  if (
+    /programas?|carreras?/i.test(message) &&
+    !POSTGRADO_KEYWORDS.test(message)
+  ) {
+    return false;
+  }
   if (!ACADEMIC_LEVEL_SENSITIVE_QUERY.test(message)) return false;
   if (ACADEMIC_LEVEL_KEYWORDS.test(message)) return false;
   if (hasPregradoAdmissionsContext(message, history)) return false;
+  if (hasPregradoConversationContext(message, history)) return false;
 
   const previousUserMessages = history
     .filter((item) => item.role === "user")
@@ -412,6 +457,20 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
       : inheritsPregradoAdmissionsContext || inheritsPregradoConversationContext
         ? `${trimmedMessage} pregrado`
       : trimmedMessage;
+    const admissionGroupContext = [...history]
+      .reverse()
+      .find(
+        (item) =>
+          item.role === "user" &&
+          /v[ií]ctima|ind[ií]gena|afro|palenquer|raizal|rrom|deportista|veterano|discapacidad/i.test(
+            item.content,
+          ),
+      )?.content;
+    const routedMessageWithAdmissionGroup =
+      admissionGroupContext &&
+      /requisitos?|documentos?|soportes?/i.test(trimmedMessage)
+        ? `${routedMessage}\nContexto del grupo de admisión: ${admissionGroupContext}`
+        : routedMessage;
     const isAcademicCalendarQuery = ACADEMIC_CALENDAR_QUERY.test(routedMessage);
     const hasPostgradoContext =
       POSTGRADO_KEYWORDS.test(routedMessage) ||
@@ -448,7 +507,10 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
       });
     }
 
-    if (isAdmissionScoreQuery(routedMessage) && !hasPostgradoContext) {
+    if (
+      isAdmissionScoreQuery(trimmedMessage) &&
+      !POSTGRADO_KEYWORDS.test(trimmedMessage)
+    ) {
       const admissionScoreResponse = buildAdmissionScoreResponse();
 
       await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
@@ -487,26 +549,16 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
       });
     }
 
-    let faqMatch =
-      hasPostgradoContext ||
-      isAcademicLevelFollowup ||
-      (inheritsPregradoConversationContext &&
-        REGISTRATION_COST_QUERY.test(trimmedMessage))
-      ? null
-      : await faqService.match(
-          routedMessage,
-        );
-    if (faqMatch) {
+    if (isRegistrationCostQuery(routedMessage) && !hasPostgradoContext) {
+      const registrationCostResponse = getRegistrationCostAnswer();
+
       await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
       await chatRepository.addMessage(
         activeSessionId,
         "assistant",
-        faqMatch.answer,
-        {
-          sources: ["FAQ"],
-        },
+        registrationCostResponse,
+        { sources: ["FAQ"] },
       );
-
       await trackConversationTurnSafe({
         sessionId: activeSessionId,
         userId: activeUserId,
@@ -519,18 +571,88 @@ app.post("/api/chat", chatLimiter, async (req: Request, res: Response) => {
         sessionId: activeSessionId,
         userId: activeUserId,
         response: {
-          message: faqMatch.answer,
+          message: registrationCostResponse,
+          sources: ["FAQ"],
           tokensUsed: { input: 0, output: 0 },
           engine: "local-chat",
-          route: "general",
+          route: "faq",
         },
       });
     }
 
-    const gptResult = await gptAgentService.processQuery(routedMessage, {
-      sessionId: activeSessionId,
-      history,
-    });
+    if (isRegistrationPortalQuery(routedMessage) && !hasPostgradoContext) {
+      const registrationPortalResponse = getRegistrationPortalAnswer();
+
+      await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
+      await chatRepository.addMessage(
+        activeSessionId,
+        "assistant",
+        registrationPortalResponse,
+        { sources: ["FAQ"] },
+      );
+      await trackConversationTurnSafe({
+        sessionId: activeSessionId,
+        userId: activeUserId,
+        route: "faq",
+        responseTimeMs: Date.now() - startedAt,
+        tokensUsed: { input: 0, output: 0 },
+      });
+
+      return res.json({
+        sessionId: activeSessionId,
+        userId: activeUserId,
+        response: {
+          message: registrationPortalResponse,
+          sources: ["FAQ"],
+          tokensUsed: { input: 0, output: 0 },
+          engine: "local-chat",
+          route: "faq",
+        },
+      });
+    }
+
+    if (
+      GENERAL_ADMISSION_REQUIREMENTS_QUERY.test(routedMessage) &&
+      !hasPostgradoContext &&
+      !SPECIAL_ADMISSION_QUERY.test(routedMessage)
+    ) {
+      const requirementsResponse = buildGeneralAdmissionRequirementsResponse();
+
+      await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
+      await chatRepository.addMessage(
+        activeSessionId,
+        "assistant",
+        requirementsResponse,
+        { sources: ["FAQ"] },
+      );
+      await trackConversationTurnSafe({
+        sessionId: activeSessionId,
+        userId: activeUserId,
+        route: "faq",
+        responseTimeMs: Date.now() - startedAt,
+        tokensUsed: { input: 0, output: 0 },
+      });
+
+      return res.json({
+        sessionId: activeSessionId,
+        userId: activeUserId,
+        response: {
+          message: requirementsResponse,
+          sources: ["FAQ"],
+          tokensUsed: { input: 0, output: 0 },
+          engine: "local-chat",
+          route: "faq",
+        },
+      });
+    }
+
+    const gptResult = await gptAgentService.processQuery(
+      routedMessageWithAdmissionGroup,
+      {
+        sessionId: activeSessionId,
+        history,
+      },
+    );
 
     await chatRepository.addMessage(activeSessionId, "user", trimmedMessage);
     await chatRepository.addMessage(

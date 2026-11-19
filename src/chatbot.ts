@@ -111,25 +111,6 @@ export class Chatbot {
         return this.handleFarewell(sessionId, startTime);
       }
 
-      // Early-exit: banco de preguntas (FAQ)
-      const faqMatch = await faqService.match(userMessage);
-      if (faqMatch) {
-        await chatRepository.addMessage(
-          sessionId,
-          "assistant",
-          faqMatch.answer,
-          {
-            sources: ["FAQ"],
-          },
-        );
-
-        return {
-          message: faqMatch.answer,
-          sources: ["FAQ"],
-          tokensUsed: { input: 0, output: 0 },
-        };
-      }
-
       // Verificar intención de admisión
       if (entities.intenciones.includes("INFO_ADMISION")) {
         this.updateSessionContext(sessionId, entities);

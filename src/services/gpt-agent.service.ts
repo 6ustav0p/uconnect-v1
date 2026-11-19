@@ -9,6 +9,11 @@ import { logger, normalizeText } from "../utils";
 import { LocalDataService } from "./local-data.service";
 import { ChatMessage } from "../types";
 import offeringBySede from "../data/oferta_academica_pregrado_sedes.json";
+import {
+  getRegistrationCostAnswer,
+  getRegistrationPortalAnswer,
+  getMultipleProgramAnswer,
+} from "../config/admission-faq";
 
 // Types
 export interface GptQueryResult {
@@ -48,31 +53,54 @@ const localData = new LocalDataService();
 
 // Keywords that indicate a pensum/academic plan query
 const PENSUM_KEYWORDS =
-  /pensum|materias|asignaturas|semestre|plan de estudio|plan\s+de\s+estudio/i;
+  /pensum|malla\s+curricular|materias|asignaturas|semestre|plan\s+(?:de\s+estudio|curricular)|que\s+se\s+ve|clases\s+de/i;
 const IMPLICIT_PENSUM_FOLLOWUP =
   /^(?:ahora|y\s+ahora|dame|quiero|mu[eé]strame|muestra(?:me)?|el)\b/i;
 
 // Preguntas por la oferta académica ("¿qué programas/carreras hay?", "dime
 // las carreras de Lorica", "programas que hay en Sahagún"...). En vez de
 // mantener una lista de frases exactas (frágil ante variaciones de orden de
-// palabras), se dispara con CUALQUIER mención de "programa/carrera/opciones"
-// salvo que la pregunta ya sea claramente de pensum, de perfil de programa
-// (PEP), o de beneficios de admisión especial del Acuerdo 062 — la palabra
-// "programa" tiene alta similitud semántica con ese documento, así que se
-// excluye explícitamente para no confundir oferta académica con cupos de
-// admisión especial.
-const PROGRAM_OR_CAREER_WORD = /\bprogramas?\b|\bcarreras?\b|\bopciones\b/i;
+// palabras), se activa solo cuando la frase solicita explícitamente una
+// oferta/listado. Las preguntas sobre costos, admisión, requisitos o el perfil
+// de un programa deben continuar por sus rutas específicas.
+const PROGRAM_OR_CAREER_WORD =
+  /\bprogramas?\b|\bcarreras?\b|\bopciones\b|\bestudiar\b|\boferta\b/i;
+const OFFERING_QUERY_SIGNAL =
+  /(?:qu[eé]|cu[aá]les|lista|listar|dime|ofrece|ofert[ae]|hay|tiene|disponibles?|puedo\s+estudiar).*(?:programas?|carreras?|opciones?|estudiar)|(?:qu[eé]|cu[aá]les|dime)\s+(?:puedo\s+)?estudiar\b|(?:programas?|carreras?|opciones?).*(?:hay|ofrece|tiene|disponibles?)/i;
+const REGISTRATION_COST_QUERY =
+  /(?:valor|costo|precio|cuanto|vale)[\s\S]{0,80}\b(?:pin|inscripcion|matricula)\b|\b(?:pin|inscripcion|matricula)\b[\s\S]{0,80}(?:valor|costo|precio|cuanto|vale)|derecho\s+de\s+inscripcion/i;
+const REGISTRATION_PORTAL_QUERY =
+  /(?:donde|como|cual\s+es|via|enlace|link|liga|portal|pagina)[\s\S]{0,80}(?:inscrib|inscripcion|registro)/i;
+const MULTIPLE_PROGRAM_QUERY =
+  /\b(?:puedo|es\s+posible|se\s+puede)\b[\s\S]{0,100}\b(?:inscrib\w*|registr\w*|seleccion\w*)\b[\s\S]{0,100}\b(?:en\s+(?:dos|tres|cuatro|varios)|mas\s+de\s+un|varios)\s+programas?\b|\b(?:en\s+(?:dos|tres|cuatro|varios)|mas\s+de\s+un|varios)\s+programas?\b/i;
+const ADMISSION_RESULTS_QUERY =
+  /\b(?:donde|como)\b[\s\S]{0,100}\b(?:consult\w*|ver)\b[\s\S]{0,50}\b(?:resultados?|admitidos?)\b/i;
+const DURATION_QUERY =
+  /\b(?:duraci[oó]n|dura|cu[aá]ntos?\s+semestres?|cu[aá]ntos?\s+a[nñ]os?)\b/i;
+const KNOWN_SEDE_ALIASES: Record<string, string[]> = {
+  monteria: ["monteria", "sede central", "principal"],
+  lorica: ["lorica", "lorca"],
+  sahagun: ["sahagun", "sahgun"],
+  montelibano: ["montelibano", "montelibnao"],
+  berastegui: ["berastegui", "berastegui"],
+};
 
 const ADMISSION_BENEFIT_SIGNAL =
   /beneficio|exoneraci[oó]n|cupos? especial(es)?|admisi[oó]n especial|acuerdo\s*062|comunidad(es)?|discapacidad|v[íi]ctima|veterano|desmovilizado|requisito/i;
+const ADMISSION_GROUP_SIGNAL =
+  /v[íi]ctima|ind[ií]gena|afro|palenquer|raizal|rrom|deportista|veterano|discapacidad/i;
 const MEDICINE_PROGRAM_SIGNAL = /\bmedicin(?:a|as)\b|\bm[eé]dico\b/i;
 const MEDICINE_SPECIAL_ADMISSION_SIGNAL =
   /acuerdo\s*(?:no\.?\s*)?(?:090|414)|modelo\s+especial\s+de\s+admisi[oó]n|distribuci[oó]n\s+de\s+cupos/i;
 
-const POSGRADO_KEYWORDS = /posgrado|postgrado|maestr[ií]a|doctorado|especializaci[oó]n/i;
+const POSGRADO_KEYWORDS = /posgrado|postgrado|maestr[ií]a|m[aá]ster(?:es)?|master(?:es)?|doctorado|especializaci[oó]n|especialidad(?:es)?/i;
+const POSTGRADUATE_OFFERING_QUERY =
+  /(?:qu[eé]|cu[aá]les|hay|tienen|ofrecen|oferta).*(?:posgrado|postgrado|maestr[ií]a|m[aá]ster(?:es)?|master(?:es)?|doctorado|especializaci[oó]n)|(?:posgrado|postgrado|maestr[ií]a|m[aá]ster(?:es)?|master(?:es)?|doctorado|especializaci[oó]n).*(?:hay|tienen|ofrecen|programas?)/i;
 const PREGRADO_KEYWORDS = /pregrado/i;
 const ACADEMIC_CALENDAR_QUERY =
-  /calendario|fecha|inici\w*|cu[aá]ndo.*(clases?|semestre|periodo|matr[ií]cula|inscrip)|clases?.*(inician|empiezan|comienzan)/i;
+  /calendario|fecha|inici\w*|cu[aá]ndo.*(clases?|semestre|periodo|matr[ií]cula|inscrip|resultados?|admitidos?)|(?:resultados?|admitidos?).*(?:publican|fecha|cu[aá]ndo)|(?:cu[aá]ndo|fecha).*(?:resultados?|admitidos?)|clases?.*(inician|empiezan|comienzan)/i;
+const ADMISSION_RESULTS_DATE_QUERY =
+  /(?:cu[aá]ndo|fecha|d[ií]a).*(?:publican|salen|resultados?|admitidos?)|(?:publican|salen).*(?:resultados?|admitidos?)/i;
 
 /**
  * Arma un listado de la oferta académica real (facultades + programas) a
@@ -100,11 +128,60 @@ function buildOfferingContext(contextQuery: string): string {
       lines.push(`\n${facultad}:`);
       for (const programa of programas) lines.push(`  - ${programa}`);
     }
+
   } else {
     for (const programa of sede.programas) lines.push(`  - ${programa}`);
   }
 
   return lines.join("\n");
+}
+
+function buildPostgraduateOfferingContext(): string {
+  const programs = [...new Set(localData.getPosgrados().map((programa) => programa.prog_nombre))];
+  return [
+    "OFERTA ACADÉMICA DE POSGRADO - Universidad de Córdoba:",
+    ...programs.map((program) => `- ${program}`),
+  ].join("\n");
+}
+
+function getRequestedSede(query: string): string | null {
+  const normalized = normalizeText(query);
+  const knownSede = Object.entries(KNOWN_SEDE_ALIASES).find(([, aliases]) =>
+    aliases.some((alias) => normalized.includes(normalizeText(alias))),
+  );
+  if (knownSede) return knownSede[0];
+
+  const queryWithoutInstitutionName = normalized.replace(
+    /\b(?:en|de)\s+(?:la\s+)?universidad(?:\s+de\s+cordoba)?\b/g,
+    "",
+  );
+  const locationMatch = queryWithoutInstitutionName.match(
+    /(?:en|sede)\s+([a-z][a-z\s-]{2,40})(?:\?|$|,|\.)/i,
+  );
+  if (!locationMatch) return null;
+
+  const location = locationMatch[1].trim();
+  const known = Object.entries(KNOWN_SEDE_ALIASES).find(([, aliases]) =>
+    aliases.some((alias) => location.includes(normalizeText(alias))),
+  );
+  return known ? known[0] : location;
+}
+
+function buildUnavailableSedeResponse(sede: string): string {
+  return "No tengo esa información en mis documentos actuales.";
+}
+
+function buildMissingDurationResponse(): string {
+  return "No tengo información suficiente para indicar la duración. Indícame el programa académico y, si aplica, la sede o modalidad.";
+}
+
+function buildProgramDurationContext(query: string): string | null {
+  const program = localData.buscarProgramaPorKeyword(query);
+  if (!program) return null;
+  const pensum = localData.getPensumCompleto(program);
+  if (!pensum) return null;
+  const semesters = Object.keys(pensum.semestres).length;
+  return `El pensum disponible de ${pensum.programa} registra ${semesters} semestres. La duración real puede depender de la jornada, modalidad y reglamento vigente.`;
 }
 
 // Keywords that indicate the student is asking about a program's PEP
@@ -173,12 +250,13 @@ function buildPensumContext(query: string): string | null {
 
   if (semestre) {
     const lines = [
-      `PENSUM - ${programaNombre} (Semestre ${semestre}):`,
-      ...materias.map((m) => `  - ${formatMateria(m)}`),
+      `## Pensum de ${programaNombre}`,
+      `### Semestre ${semestre}`,
+      ...materias.map((m) => `- ${formatMateria(m)}`),
     ];
     const total = materias[0].total_creditos_semestre;
     if (total !== "NO ESPECIFICADO") {
-      lines.push(`Total créditos del semestre ${semestre}: ${total}`);
+      lines.push("", `**Total de créditos:** ${total}`);
     }
 
     return lines.join("\n");
@@ -189,19 +267,21 @@ function buildPensumContext(query: string): string | null {
   if (!pensumCompleto) return null;
 
   const lines = [
-    `PENSUM COMPLETO - ${pensumCompleto.programa} (${pensumCompleto.jornada}):`,
-    `Pensum: ${pensumCompleto.pensum} | Créditos totales: ${pensumCompleto.creditosTotales}`,
+    `## Pensum de ${pensumCompleto.programa}`,
+    `**Jornada:** ${pensumCompleto.jornada}  `,
+    `**Versión:** ${pensumCompleto.pensum}  `,
+    `**Créditos totales:** ${pensumCompleto.creditosTotales}`,
   ];
   for (const [sem, mats] of Object.entries(pensumCompleto.semestres).sort(
     ([a], [b]) => parseInt(a) - parseInt(b),
   )) {
-    lines.push(`  Semestre ${sem}:`);
+    lines.push("", `### Semestre ${sem}`);
     for (const m of mats) {
-      lines.push(`    - ${formatMateria(m)}`);
+      lines.push(`- ${formatMateria(m)}`);
     }
     const total = mats[0].total_creditos_semestre;
     if (total !== "NO ESPECIFICADO") {
-      lines.push(`    Total créditos semestre ${sem}: ${total}`);
+      lines.push("", `**Total de créditos del semestre:** ${total}`);
     }
   }
   return lines.join("\n");
@@ -340,11 +420,13 @@ REGLAS:
 1. Cuando recibas contexto de documentos, usa esa información como fuente principal y no inventes datos específicos que no estén allí.
 2. Si el estudiante hace una pregunta general de orientación, responde de forma útil y amigable con recomendaciones generales, sin presentar datos institucionales no verificados como hechos.
 3. Si el contexto no trae la información que te piden (sea cual sea el tema: un programa, un beneficio, una fecha, un requisito, lo que sea), NO inventes ni completes con supuestos. Dilo de forma directa y honesta, por ejemplo: "No tengo esa información en mis documentos actuales." y, solo si aplica, sugiere a quién preguntarle en la Universidad (ej. la División de Admisiones, Registro y Control Académico, o la coordinación del programa). No remitas genéricamente a "la página web" como si fuera la respuesta cuando en realidad simplemente no tienes el dato.
+3a. Regla general estricta: si no encuentras en el contexto una respuesta explícita y suficiente para la pregunta actual, responde únicamente "No tengo esa información en mis documentos actuales." No rellenes vacíos con ejemplos, promedios, fechas de otros períodos, datos de otra sede, otro programa o inferencias a partir de créditos.
 4. Cita el documento cuando sea relevante.
 5. Sé preciso cuando uses documentos y cercano cuando orientes de forma general.
 6. Nunca asumas por tu cuenta un programa, carrera, sede o tema del que el estudiante no haya hablado en su mensaje actual (ni lo infieras de preguntas anteriores sobre un tema distinto). Si el mensaje es ambiguo o genérico, pide que aclare a qué programa o tema se refiere en vez de adivinar.
 7. Si la nueva pregunta del estudiante cambia de tema respecto al historial, responde solo sobre el tema nuevo; no arrastres ni repitas información de la pregunta anterior.
 8. Ve directo al dato. No empieces la respuesta con frases de relleno como "Según el documento/Acuerdo/los documentos proporcionados..." — cita la fuente de forma breve solo si aporta algo (ej. "(Art. 5)"), no como preámbulo.
+8a. Cuando la pregunta sea sobre dónde, cómo o por qué medio realizar la inscripción, incluye siempre este enlace exacto y como enlace clicable: https://unicordoba.edu.co/admisiones-y-registro/. No reemplaces el enlace por una mención genérica a "la página web".
 9. No cierres cada respuesta con frases genéricas de relleno como "¿Hay algo más en lo que pueda ayudarte?", "no dudes en preguntar" o "si necesitas más información, dime". Solo ofrece seguir la conversación cuando de verdad haga falta una aclaración puntual (por ejemplo, pedir el programa o semestre).
 10. Apunta a respuestas cortas: normalmente 2-5 frases, o una lista breve con viñetas si son varios puntos. Da más extensión solo si el estudiante lo pide o el tema realmente lo requiere.
 11. Escribe con buena oratoria: frases completas, bien hilvanadas y naturales, como las diría una persona que domina el tema — no una lista telegráfica de fragmentos ni un tono robótico. El objetivo es sonar claro y fluido, no acumular relleno ni sonar cortante.
@@ -398,7 +480,12 @@ Tu objetivo es ayudar a estudiantes con información verificable de los document
         previous.embedding,
         current.embedding,
       );
-      return similarity >= CONTINUATION_SIMILARITY_THRESHOLD
+      const isBenefitDetailFollowup =
+        DETAIL_QUERY_KEYWORDS.test(trimmed) &&
+        (ADMISSION_BENEFIT_SIGNAL.test(lastUserMessage.content) ||
+          ADMISSION_GROUP_SIGNAL.test(lastUserMessage.content));
+      return similarity >= CONTINUATION_SIMILARITY_THRESHOLD ||
+        isBenefitDetailFollowup
         ? `${lastUserMessage.content}\n${trimmed}`
         : trimmed;
     } catch (error) {
@@ -420,35 +507,8 @@ Tu objetivo es ayudar a estudiantes con información verificable de los document
     pensumContext: string,
     history: ChatMessage[] = [],
   ): Promise<GptQueryResult> {
-    const formattedHistory = formatHistoryForPrompt(history);
-    const prompt = `Tienes los siguientes datos académicos de la Universidad de Córdoba:
-
-${pensumContext}
-
-Historial reciente de la conversación:
-${formattedHistory}
-
-Pregunta del estudiante: ${message}
-
-Responde de forma clara y amigable usando ÚNICAMENTE los datos académicos anteriores y el historial solo para entender referencias de seguimiento. Lista TODAS las materias del semestre o pensum solicitado con su nombre y créditos — no recortes, resumas ni omitas ninguna materia.`;
-
-    const conversationHistory: AgentInputItem[] = [
-      { role: "user", content: [{ type: "input_text", text: prompt }] },
-    ];
-
-    const runner = new Runner();
-    const agentResult = await runner.run(this.agent, conversationHistory);
-
-    if (!agentResult.finalOutput) {
-      throw new Error("El agente no generó una respuesta");
-    }
-
-    logger.info("GPT Agent: Consulta de pensum procesada con datos locales", {
-      query: message.substring(0, 50),
-    });
-
     return {
-      response: agentResult.finalOutput,
+      response: pensumContext,
       documents: [{ id: "local", filename: "pensum_programa.json", score: 1 }],
     };
   }
@@ -522,31 +582,103 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
     return await withTrace("uconnect-api", async () => {
       try {
         const history = options.history || [];
-        let contextualSearchQuery = await this.buildContextualSearchQuery(
+        const contextualSearchQuery = await this.buildContextualSearchQuery(
           message,
           history,
         );
+        const currentMessageHasProgram =
+          localData.isPregradoProgramQuery(message);
+        const currentMessageHasAcademicLevel =
+          POSGRADO_KEYWORDS.test(message) || PREGRADO_KEYWORDS.test(message);
+        // An explicit program or level in the new message is a context
+        // boundary. Previous turns may only fill in genuinely short follow-ups
+        // that do not identify a different academic subject.
+        let searchQuery =
+          currentMessageHasProgram || currentMessageHasAcademicLevel
+            ? message
+            : contextualSearchQuery;
         const mentionsAdmissionBenefit = ADMISSION_BENEFIT_SIGNAL.test(message);
         const followsMedicineConversation =
+          !currentMessageHasProgram &&
+          !currentMessageHasAcademicLevel &&
           mentionsAdmissionBenefit &&
           MEDICINE_PROGRAM_SIGNAL.test(message) === false &&
           studentPreviouslyMentionedMedicine(history);
         if (followsMedicineConversation) {
-          contextualSearchQuery = `${contextualSearchQuery} Medicina`;
+          searchQuery = `${searchQuery} Medicina`;
         }
-        const mentionsPostgrado = POSGRADO_KEYWORDS.test(
-          contextualSearchQuery,
-        );
+        const mentionsPostgrado = POSGRADO_KEYWORDS.test(searchQuery);
+        const mentionsPregradoProgram =
+          localData.isPregradoProgramQuery(searchQuery);
+
+        if (
+          REGISTRATION_COST_QUERY.test(normalizeText(message)) &&
+          !POSGRADO_KEYWORDS.test(message)
+        ) {
+          return {
+            response: getRegistrationCostAnswer(),
+            documents: [
+              { id: "local", filename: "admission-faq.ts", score: 1 },
+            ],
+          };
+        }
+
+        if (
+          REGISTRATION_PORTAL_QUERY.test(normalizeText(message)) &&
+          !POSGRADO_KEYWORDS.test(message)
+        ) {
+          return {
+            response: getRegistrationPortalAnswer(),
+            documents: [
+              { id: "local", filename: "admission-faq.ts", score: 1 },
+            ],
+          };
+        }
+
+        if (MULTIPLE_PROGRAM_QUERY.test(normalizeText(message))) {
+          return {
+            response: getMultipleProgramAnswer(),
+            documents: [
+              { id: "local", filename: "admission-faq.ts", score: 1 },
+            ],
+          };
+        }
+
+        if (DURATION_QUERY.test(normalizeText(message))) {
+          const durationContext = buildProgramDurationContext(message);
+          if (!durationContext) {
+            return {
+              response: buildMissingDurationResponse(),
+              documents: [],
+            };
+          }
+          return await this.processWithLocalOffering(
+            message,
+            durationContext,
+            history,
+          );
+        }
+
+        if (POSTGRADUATE_OFFERING_QUERY.test(message)) {
+          return {
+            response: buildPostgraduateOfferingContext(),
+            documents: [
+              { id: "local", filename: "programas_academicos_api.json", score: 1 },
+            ],
+          };
+        }
 
         // Ruta 0: preguntas de pensum/materias ("dame el de ...", como
         // seguimiento de una oferta) → usar datos locales directamente.
-        // Debe evaluarse antes de la oferta porque contextualSearchQuery
-        // también contiene la pregunta anterior sobre "programas".
+        // Debe evaluarse antes de la oferta porque el contexto puede contener
+        // también la pregunta anterior sobre "programas".
         if (
           !mentionsPostgrado &&
           isImplicitPensumQuery(message, contextualSearchQuery, history)
         ) {
-          const pensumContext = buildPensumContext(contextualSearchQuery);
+          const pensumContext =
+            buildPensumContext(message) ??
+            buildPensumContext(contextualSearchQuery);
           if (pensumContext) {
             return await this.processWithLocalPensum(
               message,
@@ -563,19 +695,35 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
         // prueba contra el query con contexto para que un "me refiero a
         // posgrado" como aclaración corta siga heredando el tema anterior.
         const mentionsProgramOrCareer =
-          PROGRAM_OR_CAREER_WORD.test(contextualSearchQuery);
+          PROGRAM_OR_CAREER_WORD.test(searchQuery);
         const isMedicineSpecialAdmissionQuery =
-          MEDICINE_PROGRAM_SIGNAL.test(contextualSearchQuery) &&
+          MEDICINE_PROGRAM_SIGNAL.test(searchQuery) &&
           mentionsAdmissionBenefit;
-        const isOfferingQuery =
-          !mentionsPostgrado &&
+        const isDirectOfferingQuery =
+          !POSGRADO_KEYWORDS.test(message) &&
           !PENSUM_KEYWORDS.test(message) &&
           !PEP_PROFILE_KEYWORDS.test(message) &&
-          mentionsProgramOrCareer &&
+          PROGRAM_OR_CAREER_WORD.test(message) &&
+          OFFERING_QUERY_SIGNAL.test(message) &&
           !mentionsAdmissionBenefit;
+        const isOfferingQuery =
+          isDirectOfferingQuery ||
+          (!mentionsPostgrado &&
+            !PENSUM_KEYWORDS.test(message) &&
+            !PEP_PROFILE_KEYWORDS.test(message) &&
+            mentionsProgramOrCareer &&
+            OFFERING_QUERY_SIGNAL.test(message) &&
+            !mentionsAdmissionBenefit);
 
         if (isOfferingQuery) {
-          const offeringContext = buildOfferingContext(contextualSearchQuery);
+          const requestedSede = getRequestedSede(message);
+          if (requestedSede && !KNOWN_SEDE_ALIASES[requestedSede]) {
+            return {
+              response: buildUnavailableSedeResponse(requestedSede),
+              documents: [],
+            };
+          }
+          const offeringContext = buildOfferingContext(searchQuery);
           return await this.processWithLocalOffering(
             message,
             offeringContext,
@@ -583,22 +731,34 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
           );
         }
 
-        // Ruta 2: resto → vector store RAG
-        // Si no es una pregunta de perfil de programa (PEP), se excluyen los
-        // PEP de las carreras y el KB de FAQ (que tiene su propio flujo de
-        // coincidencia exacta) de la búsqueda, para que no compitan con
-        // reglamentos/admisión en preguntas que no tienen nada que ver con
-        // ellos — sin importar qué grupo o tema puntual se pregunte.
+        // Ruta 2: resto → vector store RAG. El FAQ KB se excluye siempre de
+        // esta búsqueda para que la base documental institucional sea la
+        // fuente de verdad de la conversación.
         const isPepProfileQuery = PEP_PROFILE_KEYWORDS.test(message);
         const wantsExhaustiveDetail = DETAIL_QUERY_KEYWORDS.test(message);
         const isAcademicCalendarQuery = ACADEMIC_CALENDAR_QUERY.test(
-          contextualSearchQuery,
+          searchQuery,
         );
+        const calendarSearchQuery =
+          isAcademicCalendarQuery &&
+          ADMISSION_RESULTS_DATE_QUERY.test(searchQuery)
+            ? `${searchQuery} resultados de admisión admitidos primer llamado segundo llamado publicación`
+            : searchQuery;
+        const retrievalSearchQuery = calendarSearchQuery.replace(
+          /m[aá]ster(?:es)?\b/gi,
+          "maestría posgrado programas oferta académica",
+        );
+        const agentQuestion = /m[aá]ster(?:es)?\b/i.test(message)
+          ? "¿Qué programas de posgrado, especialmente maestrías, ofrece la Universidad de Córdoba?"
+          : message;
         const academicLevel = mentionsPostgrado
           ? "posgrado"
-          : PREGRADO_KEYWORDS.test(message)
+          : PREGRADO_KEYWORDS.test(searchQuery) ||
+              mentionsPregradoProgram
             ? "pregrado"
-            : undefined;
+            : isAcademicCalendarQuery
+              ? "pregrado"
+              : undefined;
         const calendarFilter = {
           type: "eq" as const,
           key: "kind",
@@ -670,7 +830,7 @@ Responde de forma amable, breve y útil. Puedes dar orientación general para ay
         const searchResult = await this.client.vectorStores.search(
           this.config.vectorStoreId,
           {
-            query: contextualSearchQuery,
+            query: retrievalSearchQuery,
             max_num_results: wantsExhaustiveDetail
               ? DETAIL_QUERY_MAX_RESULTS
               : this.config.maxResults,
@@ -766,9 +926,9 @@ ${relevantDocs}
 Historial reciente de la conversación:
 ${formatHistoryForPrompt(history)}
 
-Pregunta del estudiante: ${message}
+Pregunta del estudiante: ${agentQuestion}
 
-Responde de forma clara y amigable. Para datos específicos, básate SOLO en la información de los documentos anteriores. Usa el historial únicamente para entender referencias de seguimiento del estudiante. Si la información específica no está en el contexto, dilo claramente y ofrece una siguiente pregunta concreta para continuar.`;
+Responde de forma clara y amigable. Para datos específicos, básate SOLO en la información de los documentos anteriores. Usa el historial únicamente para entender referencias de seguimiento del estudiante. Si la información específica no está en el contexto, responde exactamente: "No tengo esa información en mis documentos actuales." No uses datos de otro programa, sede, nivel académico o período. Para fechas, usa únicamente el documento de calendario vigente filtrado para el nivel consultado; ignora fechas de documentos antiguos o de otro nivel.`;
 
         const conversationHistory: AgentInputItem[] = [
           {
