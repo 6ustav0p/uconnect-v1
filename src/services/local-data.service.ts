@@ -80,6 +80,12 @@ export class LocalDataService {
     return results;
   }
 
+  getPosgrados(): ProgramaAcademico[] {
+    return this.programas.filter((programa) =>
+      this.esPostgrado(programa.prog_nombre),
+    );
+  }
+
   getProgramaById(id: string): ProgramaAcademico | undefined {
     return this.programas.find((p) => p.prog_id === id);
   }
@@ -185,6 +191,12 @@ export class LocalDataService {
    */
   buscarProgramaPorKeyword(keyword: string): string | null {
     const normalized = normalizeText(keyword);
+    const exactCatalogMatch = this.getProgramas()
+      .map((programa) => programa.prog_nombre)
+      .sort((a, b) => b.length - a.length)
+      .find((programa) => normalized.includes(normalizeText(programa)));
+
+    if (exactCatalogMatch) return exactCatalogMatch;
 
     // Mapeo de keywords comunes a nombres de programas (ordenados por especificidad)
     // Las frases más específicas van primero para evitar coincidencias parciales
@@ -324,6 +336,7 @@ export class LocalDataService {
       if (regex.test(normalized)) {
         return prog;
       }
+
     }
 
     // Buscar directamente en los programas del pensum
@@ -333,6 +346,33 @@ export class LocalDataService {
     );
 
     return match || null;
+  }
+
+  /**
+   * Determina si una consulta menciona un programa de pregrado del catálogo
+   * local, aunque no use las palabras "pregrado" o "carrera".
+   */
+  isPregradoProgramQuery(query: string): boolean {
+    const normalizedQuery = normalizeText(query);
+    const matchedProgram = this.buscarProgramaPorKeyword(query);
+
+    if (
+      matchedProgram &&
+      this.getProgramas(matchedProgram).some(
+        (programa) =>
+          normalizeText(programa.prog_nombre) === normalizeText(matchedProgram),
+      )
+    ) {
+      return true;
+    }
+
+    return this.getProgramas().some((programa) => {
+      const normalizedName = normalizeText(programa.prog_nombre);
+      return (
+        normalizedQuery.includes(normalizedName) ||
+        normalizedName.includes(normalizedQuery)
+      );
+    });
   }
 
   /**

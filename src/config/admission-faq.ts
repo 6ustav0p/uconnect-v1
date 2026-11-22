@@ -12,6 +12,9 @@ interface FAQItem {
   category: string;
 }
 
+export const ADMISSIONS_REGISTRATION_URL =
+  "https://unicordoba.edu.co/admisiones-y-registro/";
+
 export const ADMISSION_FAQ: {
   featured: FAQItem[];
   faq: FAQItem[];
@@ -24,7 +27,7 @@ export const ADMISSION_FAQ: {
       question:
         "¿Cuándo se abren las inscripciones para los programas de pregrado?",
       answer:
-        "Para la convocatoria vigente de pregrado 2027-I, las inscripciones están abiertas del 15 de octubre al 27 de noviembre de 2026. Consulta el calendario oficial de la Universidad de Córdoba: https://www.unicordoba.edu.co/admisiones-y-registro/",
+        `Consulta las fechas vigentes de inscripción únicamente en el calendario académico oficial. El proceso se inicia desde el portal de Admisiones y Registro: ${ADMISSIONS_REGISTRATION_URL}`,
     },
     {
       id: "q2",
@@ -32,7 +35,7 @@ export const ADMISSION_FAQ: {
       question:
         "¿Dónde puedo realizar el proceso de inscripción a la Universidad de Córdoba?",
       answer:
-        "La inscripción se realiza de forma virtual desde el portal oficial de Admisiones y Registro: https://www.unicordoba.edu.co/admisiones-y-registro/. Usa únicamente los canales institucionales y no entregues tus datos a intermediarios.",
+        `La inscripción se realiza de forma virtual desde el portal oficial de Admisiones y Registro: ${ADMISSIONS_REGISTRATION_URL}\n\nIngresa al enlace, selecciona la convocatoria y sigue las instrucciones del formulario. Usa únicamente los canales institucionales y no entregues tus datos a intermediarios.`,
     },
     {
       id: "q3",
@@ -49,14 +52,14 @@ export const ADMISSION_FAQ: {
       category: "Inscripciones",
       question: "¿Qué documentos necesito para realizar la inscripción?",
       answer:
-        "Debes cargar los documentos solicitados en la convocatoria vigente. Si te inscribes por una circunscripción o cupo especial, revisa los soportes adicionales exigidos para esa modalidad.",
+        `Debes cargar los documentos solicitados en la convocatoria vigente. Si te inscribes por una circunscripción o cupo especial, revisa los soportes adicionales exigidos para esa modalidad. Consulta la convocatoria e inicia el proceso en: ${ADMISSIONS_REGISTRATION_URL}`,
     },
     {
       id: "q5",
       category: "Inscripciones",
       question: "¿Cómo sé si mi inscripción quedó correctamente registrada?",
       answer:
-        "Al completar el formulario, revisa la confirmación enviada al correo registrado y conserva el token o comprobante generado por el sistema. Estos datos permiten consultar o modificar la información cuando el sistema lo habilite.",
+        `Al completar el formulario, revisa la confirmación enviada al correo registrado y conserva el token o comprobante generado por el sistema. Estos datos permiten consultar o modificar la información cuando el sistema lo habilite. Portal oficial: ${ADMISSIONS_REGISTRATION_URL}`,
     },
     {
       id: "q9",
@@ -70,7 +73,7 @@ export const ADMISSION_FAQ: {
       category: "Resultados y Matrícula",
       question: "¿Dónde puedo consultar los resultados de admisión?",
       answer:
-        "Los resultados se publican en el portal oficial de Admisiones y Registro. Para la convocatoria vigente de pregrado 2027-I, el listado de admitidos está programado para el 22 de diciembre de 2026. Consulta allí la lista y sigue las instrucciones oficiales: https://www.unicordoba.edu.co/admisiones-y-registro/",
+        `Los resultados se consultan en el portal oficial de Admisiones y Registro. Revisa el calendario académico vigente para conocer la fecha de publicación: ${ADMISSIONS_REGISTRATION_URL}`,
     },
     {
       id: "q26",
@@ -88,7 +91,7 @@ export const ADMISSION_FAQ: {
       category: "Inscripciones",
       question: "¿Puedo inscribirme a más de un programa académico?",
       answer:
-        "La inscripción está sujeta a las condiciones de la convocatoria vigente. Verifica allí cuántos programas puedes seleccionar y las restricciones aplicables.",
+        "En la Universidad de Córdoba (Unicórdoba), cada aspirante puede inscribirse formalmente a un solo programa académico por convocatoria o periodo de admisión.",
     },
     {
       id: "q7",
@@ -96,7 +99,7 @@ export const ADMISSION_FAQ: {
       question:
         "¿Qué debo hacer si cometí un error al diligenciar el formulario de inscripción?",
       answer:
-        "Si la convocatoria permite modificar los datos, utiliza la opción habilitada en el sistema con el token de inscripción. Si no tienes el token o no puedes realizar el cambio, contacta a Admisiones y Registro mediante los canales publicados en el portal oficial.",
+        `Si la convocatoria permite modificar los datos, utiliza la opción habilitada en el sistema con el token de inscripción. Si no tienes el token o no puedes realizar el cambio, contacta a Admisiones y Registro mediante los canales publicados en el portal oficial: ${ADMISSIONS_REGISTRATION_URL}`,
     },
     {
       id: "q8",
@@ -104,7 +107,7 @@ export const ADMISSION_FAQ: {
       question:
         "¿Qué sucede si no puedo finalizar mi inscripción dentro de las fechas establecidas?",
       answer:
-        "Una inscripción incompleta o realizada después del cierre de la convocatoria no participa en el proceso de admisión, salvo que la Universidad publique una instrucción diferente.",
+        `Una inscripción incompleta o realizada después del cierre de la convocatoria no participa en el proceso de admisión, salvo que la Universidad publique una instrucción diferente. Revisa las fechas e instrucciones en: ${ADMISSIONS_REGISTRATION_URL}`,
     },
     {
       id: "q10",
@@ -183,6 +186,38 @@ export function getFAQAnswer(questionId: string): string | null {
     if (item) return item.answer;
   }
   return null;
+}
+
+/**
+ * Respuesta canónica para consultas sobre el PIN o derecho de inscripción.
+ * Se mantiene en la FAQ estática para que la respuesta no dependa de que el
+ * banco vectorial esté disponible o de que la consulta mencione "programa".
+ */
+export function getRegistrationCostAnswer(): string {
+  return (
+    getFAQAnswer("q3") ??
+    "Para la convocatoria de pregrado vigente, consulta el valor publicado por la Universidad en la convocatoria oficial antes de realizar el pago."
+  );
+}
+
+export function getRegistrationPortalAnswer(): string {
+  return (
+    "La inscripción se realiza de forma virtual en el portal oficial de Admisiones y Registro:\n\n" +
+    `[Ir al portal de inscripción](${ADMISSIONS_REGISTRATION_URL})\n\n` +
+    "Selecciona la convocatoria correspondiente y sigue las instrucciones del formulario. Usa únicamente los canales institucionales."
+  );
+}
+
+export function getAdmissionResultsAnswer(): string {
+  return getFAQAnswer("q14") ??
+    `Consulta los resultados de admisión en el portal oficial: ${ADMISSIONS_REGISTRATION_URL}`;
+}
+
+export function getMultipleProgramAnswer(): string {
+  return (
+    getFAQAnswer("q6") ??
+    "En la Universidad de Córdoba (Unicórdoba), cada aspirante puede inscribirse formalmente a un solo programa académico por convocatoria o periodo de admisión."
+  );
 }
 
 /**

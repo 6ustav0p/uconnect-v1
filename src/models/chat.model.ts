@@ -144,7 +144,6 @@ const CacheSchema = new Schema<ICacheEntry>(
     expiresAt: {
       type: Date,
       required: true,
-      index: true,
     },
   },
   {
